@@ -50,10 +50,10 @@ const Login = () => {
 
                 {loading ? <ActivityIndicator size="large" color="#0000ff" /> : (
                     <>
-                        <TouchableOpacity style={globalStyles.generalButton}>
+                        <TouchableOpacity style={globalStyles.generalButton} onPress={signIn}>
                             <Text style={styles.loginButtonText}>Sign In</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity style={globalStyles.generalButton}>
+                        <TouchableOpacity style={globalStyles.generalButton} onPress={signUp}>
                             <Text style={styles.loginButtonText}>Sign Up</Text>
                         </TouchableOpacity>
                     </>
