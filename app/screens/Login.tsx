@@ -1,19 +1,21 @@
 import { View, TextInput, StyleSheet, Button, Text, TouchableOpacity, ActivityIndicator, KeyboardAvoidingView } from 'react-native'
 import React, { useState } from 'react'
-import { FIREBASE_AUTH } from '../../FirebaseConfig';
+import { FIREBASE_AUTH, GOOGLE_PROVIDER, MICROSOFT_PROVIDER } from '../../FirebaseConfig';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
 import globalStyles from '../styles/globalStyles';
+import { getAuth, signInWithPopup, GoogleAuthProvider, OAuthProvider } from "firebase/auth";
 
 const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
-    const auth = FIREBASE_AUTH;
+    const fbAuth = FIREBASE_AUTH;
+    const auth = getAuth();
 
     const signIn = async () => {
         setLoading(true);
         try {
-            const response = await signInWithEmailAndPassword(auth, email, password);
+            const response = await signInWithEmailAndPassword(fbAuth, email, password);
             console.log(response);
             alert('Signed in');
         } catch (error: any) {
@@ -27,7 +29,7 @@ const Login = () => {
     const signUp = async () => {
         setLoading(true);
         try {
-            const response = await createUserWithEmailAndPassword(auth, email, password);
+            const response = await createUserWithEmailAndPassword(fbAuth, email, password);
             console.log(response);
             alert('Account created');
         } catch (error: any) {
@@ -56,11 +58,67 @@ const Login = () => {
                         <TouchableOpacity style={globalStyles.generalButton} onPress={signUp}>
                             <Text style={styles.loginButtonText}>Sign Up</Text>
                         </TouchableOpacity>
+
+                        {/* sign in with google */}
+                        <TouchableOpacity
+                            style={globalStyles.generalButton}
+                            onPress={() => {
+                                signInWithPopup(auth, GOOGLE_PROVIDER)
+                                    .then((result) => {
+                                        // This gives you a Google Access Token. You can use it to access the Google API.
+                                        const credential = GoogleAuthProvider.credentialFromResult(result);
+                                        if (credential) {
+                                            const token = credential.accessToken;
+                                        }
+                                        // The signed-in user info.
+                                        const user = result.user;
+                                        // IdP data available using getAdditionalUserInfo(result)
+                                        // ...
+                                    })
+                                    .catch((error) => {
+                                        // Handle Errors here.
+                                        const errorCode = error.code;
+                                        const errorMessage = error.message;
+                                        // The email of the user's account used.
+                                        const email = error.customData.email;
+                                        // The AuthCredential type that was used.
+                                        const credential = GoogleAuthProvider.credentialFromError(error);
+                                        // ...
+                                    });
+                            }}
+                        >
+                            <Text style={styles.loginButtonText}>Sign In With Google</Text>
+                        </TouchableOpacity>
+
+                        {/* sign in with microsoft */}
+                        <TouchableOpacity
+                            style={globalStyles.generalButton}
+                            onPress={() => {
+                                signInWithPopup(auth, MICROSOFT_PROVIDER)
+                                    .then((result) => {
+                                        // User is signed in.
+                                        // IdP data available in result.additionalUserInfo.profile.
+
+                                        // Get the OAuth access token and ID Token
+                                        const credential = OAuthProvider.credentialFromResult(result);
+                                        if (credential) {
+                                            const accessToken = credential.accessToken;
+                                            const idToken = credential.idToken;
+                                        }
+                                    })
+                                    .catch((error) => {
+                                        // Handle error.
+                                    });
+                            }}
+                        >
+                            <Text style={styles.loginButtonText}>Sign In With Microsoft</Text>
+                        </TouchableOpacity>
+
                     </>
                 )}
             </KeyboardAvoidingView>
         </View>
-        
+
         // <View style={styles.container}>
         //     <KeyboardAvoidingView behavior='padding'>
         //         <TextInput value={email} style={styles.input} onChangeText={(text) => setEmail(text)}></TextInput>
