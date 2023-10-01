@@ -3,6 +3,7 @@
 ### Install Dependencies
 - Node.js
 - Express & Expo
+- install node packages ```npm install```
 - Firebase packages: ```npx expo install firebase```
 
 ## How to run
