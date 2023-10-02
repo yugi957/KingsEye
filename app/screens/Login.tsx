@@ -1,4 +1,5 @@
 import { View, TextInput, StyleSheet, Button, Text, TouchableOpacity, ActivityIndicator, KeyboardAvoidingView } from 'react-native'
+import {NavigationContainer, useNavigation} from '@react-navigation/native';
 import React, { useState } from 'react'
 import { FIREBASE_AUTH, GOOGLE_PROVIDER, MICROSOFT_PROVIDER } from '../../FirebaseConfig';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
@@ -40,15 +41,23 @@ const Login = () => {
         }
     }
 
+    const navigation = useNavigation();
+    const navToSignup = () => {
+        navigation.navigate('Signup')
+    }
+
     return (
         <View style={globalStyles.container}>
             <View style={globalStyles.header}>
                 {/* <Image source={{ uri: 'URL_TO_YOUR_LOGO' }} style={styles.logo} /> */}
-                <Text style={styles.signUpText}>Sign up</Text>
+                <Text style={styles.signUpText}>Sign In</Text>
+                <TouchableOpacity onPress={navToSignup}>
+                    <Text style={styles.signupButtonText}>Signup</Text>
+                </TouchableOpacity>
             </View>
             <KeyboardAvoidingView behavior='padding'>
-                <TextInput value={email} style={globalStyles.input} onChangeText={(text) => setEmail(text)}></TextInput>
-                <TextInput secureTextEntry value={password} style={globalStyles.input} onChangeText={(text) => setPassword(text)}></TextInput>
+                <TextInput placeholder="Username" placeholderTextColor="#C3C3C3" value={email} style={globalStyles.input} onChangeText={(text) => setEmail(text)}></TextInput>
+                <TextInput placeholder="Password" placeholderTextColor="#C3C3C3" secureTextEntry value={password} style={globalStyles.input} onChangeText={(text) => setPassword(text)}></TextInput>
 
                 {loading ? <ActivityIndicator size="large" color="#0000ff" /> : (
                     <>
@@ -144,12 +153,21 @@ const styles = StyleSheet.create({
         resizeMode: 'contain', // adjust this to your needs
     },
     signUpText: {
+        textAlign: 'center',
+        flex:1,
         color: 'white',
-        fontSize: 16,
+        fontSize: 30,
+        fontWeight: 'bold',  
     },
     loginButtonText: {
         color: 'white',
         fontSize: 16,
         fontWeight: 'bold',
     },
+    signupButtonText: {
+        color: 'white',
+        fontSize: 16,
+        fontWeight: 'bold',
+    },
+
 });
