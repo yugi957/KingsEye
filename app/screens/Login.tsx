@@ -1,6 +1,6 @@
 import { View, TextInput, StyleSheet, Button, Text, TouchableOpacity, ActivityIndicator, KeyboardAvoidingView } from 'react-native'
 import {NavigationContainer, useNavigation} from '@react-navigation/native';
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { FIREBASE_AUTH, GOOGLE_PROVIDER, MICROSOFT_PROVIDER } from '../../FirebaseConfig';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
 import globalStyles from '../styles/globalStyles';
@@ -169,5 +169,5 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: 'bold',
     },
-
+    
 });
