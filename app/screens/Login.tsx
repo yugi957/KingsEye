@@ -24,7 +24,7 @@ const Login = () => {
             const response = await signInWithEmailAndPassword(fbAuth, email, password);
             console.log(response);
             // alert('Signed in');
-            navigation.navigate('Home')
+            navigation.navigate('Home');
         } catch (error: any) {
             console.log(error);
             alert("Sign in failed" + error.message);
@@ -84,6 +84,7 @@ const Login = () => {
                                         const user = result.user;
                                         // IdP data available using getAdditionalUserInfo(result)
                                         // ...
+                                        navigation.navigate('Home');
                                     })
                                     .catch((error) => {
                                         // Handle Errors here.
@@ -115,6 +116,7 @@ const Login = () => {
                                             const accessToken = credential.accessToken;
                                             const idToken = credential.idToken;
                                         }
+                                        navigation.navigate('Home');
                                     })
                                     .catch((error) => {
                                         // Handle error.
