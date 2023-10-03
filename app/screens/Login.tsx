@@ -13,12 +13,18 @@ const Login = () => {
     const fbAuth = FIREBASE_AUTH;
     const auth = getAuth();
 
+    const navigation = useNavigation();
+    const navToSignup = () => {
+        navigation.navigate('Signup')
+    }
+
     const signIn = async () => {
         setLoading(true);
         try {
             const response = await signInWithEmailAndPassword(fbAuth, email, password);
             console.log(response);
             alert('Signed in');
+            navigation.navigate('Home')
         } catch (error: any) {
             console.log(error);
             alert("Sign in failed" + error.message);
@@ -39,11 +45,6 @@ const Login = () => {
         } finally {
             setLoading(false);
         }
-    }
-
-    const navigation = useNavigation();
-    const navToSignup = () => {
-        navigation.navigate('Signup')
     }
 
     return (
