@@ -24,3 +24,4 @@ export const FIREBASE_APP = initializeApp(firebaseConfig);
 export const FIREBASE_AUTH = getAuth(FIREBASE_APP);
 
 export const GOOGLE_PROVIDER = new GoogleAuthProvider();
+export const MICROSOFT_PROVIDER = new OAuthProvider('microsoft.com');
