@@ -1,7 +1,7 @@
 import { View, TextInput, StyleSheet, Button, Text, TouchableOpacity, ActivityIndicator, KeyboardAvoidingView } from 'react-native'
 import {NavigationContainer, useNavigation} from '@react-navigation/native';
 import React, { useState, useEffect } from 'react'
-import { FIREBASE_AUTH, GOOGLE_PROVIDER, MICROSOFT_PROVIDER } from '../../FirebaseConfig';
+import { FIREBASE_AUTH, GOOGLE_PROVIDER, MICROSOFT_PROVIDER } from '../../FirebaseConfig'
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
 import globalStyles from '../styles/globalStyles';
 import { getAuth, signInWithPopup, GoogleAuthProvider, OAuthProvider } from "firebase/auth";
