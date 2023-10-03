@@ -23,7 +23,7 @@ const Login = () => {
         try {
             const response = await signInWithEmailAndPassword(fbAuth, email, password);
             console.log(response);
-            alert('Signed in');
+            // alert('Signed in');
             navigation.navigate('Home')
         } catch (error: any) {
             console.log(error);

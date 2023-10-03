@@ -20,7 +20,7 @@ const globalStyles = StyleSheet.create({
         color: 'white',
     },
     generalButton: {
-        backgroundColor: '#58C658',
+        backgroundColor: '#85a94f',
         borderRadius: 10,
         padding: 15,
         margin:5,

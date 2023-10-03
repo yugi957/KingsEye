@@ -11,28 +11,39 @@ const Home = () => {
     const auth = getAuth();
     
     return (
-        <View style={globalStyles.container}>
+        <View style={[globalStyles.container, styles.container]}>
           {/* Logo and Search */}
-          <View style={globalStyles.header}>
-            <Text style={styles.logo}>INSERT LOGO HERE</Text>
+          <View style={[globalStyles.header, styles.header]}>
+            <Text style={styles.title}>Game Archive</Text>
           </View>
     
           {/* Game Archive List */}
           <ScrollView style={styles.archiveList}>
             {Array(10).fill(null).map((_, index) => (
-              <View key={index} style={styles.opponentItem}>
+              <TouchableOpacity key={index} style={styles.opponentItem}>
                 <Text style={styles.opponentName}>Opponent Name</Text>
-                <TouchableOpacity style={styles.iconButton}>
-                  {/* Representing icons with text here; replace with actual icons */}
-                  <Text>{['+', '-', '='][index % 3]}</Text>
-                </TouchableOpacity>
-              </View>
+                {index%3 == 0 && (
+                    <View style={[styles.icon, styles.green]}>
+                        <Text>+</Text>
+                    </View>
+                )}
+                {index%3 == 1 && (
+                    <View style={[styles.icon, styles.red]}>
+                        <Text>-</Text>
+                    </View>
+                )}
+                {index%3 == 2 && (
+                    <View style={styles.icon}>
+                        <Text>=</Text>
+                    </View>
+                )}
+              </TouchableOpacity>
             ))}
           </ScrollView>
     
           {/* Play Button */}
-          <TouchableOpacity style={globalStyles.generalButton}>
-            <Text style={styles.playButtonText}>Play</Text>
+          <TouchableOpacity style={[globalStyles.generalButton, styles.playButton]}>
+            <Text style={styles.playButtonText}>Take Picture</Text>
           </TouchableOpacity>
         </View>
       );
@@ -42,20 +53,20 @@ export default Home;
 
 const styles = StyleSheet.create({
     container: {
-      flex: 1,
-      backgroundColor: 'black',
-      padding: 15,
+      padding: 0,
+      paddingBottom: 20
     },
     header: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      marginBottom: 20,
+      padding: 25,
+      marginBottom: 0,
+      alignItems: 'center'
     },
-    logo: {
+    title: {
       flex: 1,
       color: 'white',
       fontSize: 20,
       fontWeight: 'bold',
+      textAlign: 'center'
     },
     search: {
       flex: 2,
@@ -71,27 +82,35 @@ const styles = StyleSheet.create({
     opponentItem: {
       flexDirection: 'row',
       alignItems: 'center',
-      marginBottom: 10,
+      paddingBottom: 5,
+      paddingTop: 5,
+      paddingHorizontal: 15,
+      borderWidth: 1,
+      borderRadius: 10,
+      borderColor: "#24231f",
     },
     opponentName: {
       flex: 1,
       color: 'white',
       fontSize: 18,
     },
-    iconButton: {
+    icon: {
       width: 30,
       height: 30,
       backgroundColor: 'gray',
       alignItems: 'center',
       justifyContent: 'center',
-      borderRadius: 15,
+      borderRadius: 8,
       marginLeft: 10,
     },
+    green: {
+        backgroundColor: '#90b35a'
+    },
+    red: {
+        backgroundColor: '#c44542'
+    },
     playButton: {
-      backgroundColor: 'green',
-      borderRadius: 20,
-      paddingVertical: 10,
-      alignItems: 'center',
+      margin: 20
     },
     playButtonText: {
       color: 'white',
