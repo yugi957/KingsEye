@@ -7,10 +7,7 @@ var http = require('http');
 const port = process.env.PORT || 5000;
 
 const fenregex = "/^([rnbqkpRNBQKP1-8]+\/){7}([rnbqkpRNBQKP1-8]+)\s[bw]\s(-|K?Q?k?q?)\s(-|[a-h][36])\s(0|[1-9][0-9]*)\s([1-9][0-9]*)/"
-
-// app.get('/', (req, res) => {
-//   res.send('Its Chess World!')
-// })
+// TODO: implement fen validation, use regex or chess.js library
 
 engine.onmessage = function(msg) {
   console.log(msg);
@@ -40,12 +37,9 @@ app.post('/bestmove', (request, response) => {
 // run chess engine
   engine.postMessage("ucinewgame");
   engine.postMessage("position fen " + request.body.fen);
-  engine.postMessage("go depth 18");
+  engine.postMessage("go depth 10");
 });
 
-app.listen(port, (err) => {
-  if (err) {
-    return console.log('Something bad happened', err);
-  }
-  console.log('Server is listening on', port);
-})
+app.listen(process.env.PORT || 5000, function(){
+  console.log("Express server listening on port", port);
+});
