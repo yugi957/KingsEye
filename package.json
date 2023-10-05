@@ -3,10 +3,7 @@
   "version": "1.0.0",
   "main": "node_modules/expo/AppEntry.js",
   "scripts": {
-    "start": "expo start",
-    "android": "expo start --android",
-    "ios": "expo start --ios",
-    "web": "expo start --web"
+    "start": "node server.js"
   },
   "dependencies": {
     "@expo/webpack-config": "^19.0.0",
@@ -18,6 +15,7 @@
     "expo-status-bar": "~1.6.0",
     "express": "^4.18.2",
     "firebase": "^10.4.0",
+    "heroku": "^8.5.0",
     "react": "^18.2.0",
     "react-dom": "18.2.0",
     "react-native": "0.72.5",
@@ -30,6 +28,10 @@
     "@babel/core": "^7.20.0",
     "@types/react": "~18.2.14",
     "typescript": "^5.1.3"
+  },
+  "engines": {
+    "node": "16.16.0",
+    "npm": "8.17.0"
   },
   "private": true,
   "proxy": "http://localhost:5000"
