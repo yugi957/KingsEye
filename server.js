@@ -40,7 +40,7 @@ app.post('/bestmove', (request, response) => {
 // run chess engine
   engine.postMessage("ucinewgame");
   engine.postMessage("position fen " + request.body.fen);
-  engine.postMessage("go depth 18");
+  engine.postMessage("go depth 10");
 });
 
 app.listen(port, (err) => {
