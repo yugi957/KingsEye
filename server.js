@@ -16,6 +16,7 @@ engine.onmessage = function(msg) {
   console.log(msg);
 };
 
+engine.postMessage("setoption name MultiPV value 3");
 engine.postMessage("uci");
 
 app.use(express.json()) // for parsing application/json
