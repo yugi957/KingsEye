@@ -2,6 +2,7 @@
 import { initializeApp } from "firebase/app";
 // import { getAnalytics } from "firebase/analytics";
 import { getAuth, GoogleAuthProvider, OAuthProvider } from "firebase/auth";
+import { getDatabase } from "firebase/database"
 
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -11,6 +12,7 @@ import { getAuth, GoogleAuthProvider, OAuthProvider } from "firebase/auth";
 const firebaseConfig = {
   apiKey: "AIzaSyAekALAJx0_v1DYMn2z8ylTGAS8UJpo-mk",
   authDomain: "kings-eye-dd86f.firebaseapp.com",
+  databaseURL: "https://kings-eye-dd86f-default-rtdb.firebaseio.com/",
   projectId: "kings-eye-dd86f",
   storageBucket: "kings-eye-dd86f.appspot.com",
   messagingSenderId: "923986711752",
@@ -25,3 +27,4 @@ export const FIREBASE_AUTH = getAuth(FIREBASE_APP);
 
 export const GOOGLE_PROVIDER = new GoogleAuthProvider();
 export const MICROSOFT_PROVIDER = new OAuthProvider('microsoft.com');
+export const DATABASE = getDatabase(FIREBASE_APP);

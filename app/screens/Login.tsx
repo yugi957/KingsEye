@@ -1,10 +1,12 @@
 import { View, TextInput, StyleSheet, Button, Text, TouchableOpacity, ActivityIndicator, KeyboardAvoidingView } from 'react-native'
-import {NavigationContainer, useNavigation} from '@react-navigation/native';
+import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import React, { useState, useEffect } from 'react'
-import { FIREBASE_AUTH, GOOGLE_PROVIDER, MICROSOFT_PROVIDER } from '../../FirebaseConfig'
+import { FIREBASE_AUTH, GOOGLE_PROVIDER, MICROSOFT_PROVIDER, DATABASE } from '../../FirebaseConfig'
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
 import globalStyles from '../styles/globalStyles';
 import { getAuth, signInWithPopup, GoogleAuthProvider, OAuthProvider } from "firebase/auth";
+import { set, ref, update } from "firebase/database"
+
 
 const Login = () => {
     const [email, setEmail] = useState('');
@@ -21,6 +23,21 @@ const Login = () => {
     const signIn = async () => {
         setLoading(true);
         try {
+            let url = "http://localhost:3000/api/endpoint";
+            
+            let data = { email: email, password: password };
+            
+            fetch(url, {
+                method: 'POST', 
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data), 
+            })
+            .then(response => response.json())
+            .then(data => console.log(data))
+            .catch((error) => console.error('Error:', error));            
+
             const response = await signInWithEmailAndPassword(fbAuth, email, password);
             console.log(response);
             // alert('Signed in');
@@ -36,9 +53,26 @@ const Login = () => {
     const signUp = async () => {
         setLoading(true);
         try {
-            const response = await createUserWithEmailAndPassword(fbAuth, email, password);
+            const response = await createUserWithEmailAndPassword(fbAuth, email, password).then((userCredential) => {
+                // Signed in
+                const user = userCredential.user;
+                set(ref(DATABASE, 'users/' + user.uid), {
+                    email: email,
+                    password: password,
+                    firstname: "",
+                    lastname: "",
+                    username: "",
+                    profilePic: "",
+                    games: []
+                })
+                    .then(() => {
+                        alert('User created!');
+                    })
+                    .catch((error) => {
+                        alert(error);
+                    });
+            })
             console.log(response);
-            alert('Account created');
         } catch (error: any) {
             console.log(error);
             alert("Sign up failed" + error.message);
@@ -157,10 +191,10 @@ const styles = StyleSheet.create({
     },
     signUpText: {
         textAlign: 'center',
-        flex:1,
+        flex: 1,
         color: 'white',
         fontSize: 30,
-        fontWeight: 'bold',  
+        fontWeight: 'bold',
     },
     loginButtonText: {
         color: 'white',
@@ -172,5 +206,5 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: 'bold',
     },
-    
+
 });
