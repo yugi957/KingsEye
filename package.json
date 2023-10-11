@@ -14,6 +14,7 @@
     "@react-navigation/native-stack": "^6.9.14",
     "@react-navigation/stack": "^6.3.18",
     "axios": "^1.5.1",
+    "cors": "^2.8.5",
     "expo": "~49.0.13",
     "expo-status-bar": "~1.6.0",
     "express": "^4.18.2",
