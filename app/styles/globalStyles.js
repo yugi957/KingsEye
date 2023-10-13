@@ -18,6 +18,7 @@ const globalStyles = StyleSheet.create({
         padding: 15,
         marginBottom: 20,
         color: 'white',
+        placeholderTextColor: '#C3C3C3'
     },
     generalButton: {
         backgroundColor: '#85a94f',

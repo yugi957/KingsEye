@@ -33,41 +33,41 @@ const Login = () => {
         }
     }
 
-    const signUp = async () => {
-        setLoading(true);
-        try {
-            const response = await createUserWithEmailAndPassword(fbAuth, email, password);
-            console.log(response);
-            alert('Account created');
-        } catch (error: any) {
-            console.log(error);
-            alert("Sign up failed" + error.message);
-        } finally {
-            setLoading(false);
-        }
-    }
+    // const signUp = async () => {
+    //     setLoading(true);
+    //     try {
+    //         const response = await createUserWithEmailAndPassword(fbAuth, email, password);
+    //         console.log(response);
+    //         alert('Account created');
+    //     } catch (error: any) {
+    //         console.log(error);
+    //         alert("Sign up failed" + error.message);
+    //     } finally {
+    //         setLoading(false);
+    //     }
+    // }
 
     return (
         <View style={globalStyles.container}>
             <View style={globalStyles.header}>
                 {/* <Image source={{ uri: 'URL_TO_YOUR_LOGO' }} style={styles.logo} /> */}
-                <Text style={styles.signUpText}>Sign In</Text>
+                <Text style={styles.signInText}>Login</Text>
                 <TouchableOpacity onPress={navToSignup}>
                     <Text style={styles.signupButtonText}>Signup</Text>
                 </TouchableOpacity>
             </View>
             <KeyboardAvoidingView behavior='padding'>
-                <TextInput placeholder="Username" placeholderTextColor="#C3C3C3" value={email} style={globalStyles.input} onChangeText={(text) => setEmail(text)}></TextInput>
-                <TextInput placeholder="Password" placeholderTextColor="#C3C3C3" secureTextEntry value={password} style={globalStyles.input} onChangeText={(text) => setPassword(text)}></TextInput>
+                <TextInput placeholder="Username" value={email} style={globalStyles.input} onChangeText={(text) => setEmail(text)}></TextInput>
+                <TextInput placeholder="Password" secureTextEntry value={password} style={globalStyles.input} onChangeText={(text) => setPassword(text)}></TextInput>
 
                 {loading ? <ActivityIndicator size="large" color="#0000ff" /> : (
                     <>
                         <TouchableOpacity style={globalStyles.generalButton} onPress={signIn}>
                             <Text style={styles.loginButtonText}>Sign In</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity style={globalStyles.generalButton} onPress={signUp}>
+                        {/* <TouchableOpacity style={globalStyles.generalButton} onPress={signUp}>
                             <Text style={styles.loginButtonText}>Sign Up</Text>
-                        </TouchableOpacity>
+                        </TouchableOpacity> */}
 
                         {/* sign in with google */}
                         <TouchableOpacity
@@ -155,7 +155,7 @@ const styles = StyleSheet.create({
         height: 100,
         resizeMode: 'contain', // adjust this to your needs
     },
-    signUpText: {
+    signInText: {
         textAlign: 'center',
         flex:1,
         color: 'white',
