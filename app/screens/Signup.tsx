@@ -21,10 +21,24 @@ const Signup = () => {
     const signUp = async () => {
         setLoading(true);
         try {
-            const response = await createUserWithEmailAndPassword(fbAuth, email, password);
-            console.log(response);
-            alert('Account created');
-        } catch (error: any) {
+          let url = "http://localhost:3000/api/endpoint";
+          let data = { email: email, password: password };
+          fetch(url, {
+              method: 'POST', 
+              headers: {
+                  'Content-Type': 'application/json',
+              },
+              body: JSON.stringify(data)
+          })
+          .then(response => response.json())
+          .then(data => console.log(data))
+          .catch((error) => console.error('Error:', error));            
+          
+          const response = await createUserWithEmailAndPassword(fbAuth, email, password);
+          console.log(response);
+          // alert('Signed in');
+          navigation.navigate('Home');
+      } catch (error: any) {
             console.log(error);
             alert("Sign up failed" + error.message);
         } finally {

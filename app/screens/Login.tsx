@@ -1,11 +1,10 @@
 import { View, TextInput, StyleSheet, Button, Text, TouchableOpacity, ActivityIndicator, KeyboardAvoidingView } from 'react-native'
 import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import React, { useState, useEffect } from 'react'
-import { FIREBASE_AUTH, GOOGLE_PROVIDER, MICROSOFT_PROVIDER, DATABASE } from '../../FirebaseConfig'
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
+import { FIREBASE_AUTH, GOOGLE_PROVIDER } from '../../FirebaseConfig'
+import { signInWithEmailAndPassword } from 'firebase/auth';
 import globalStyles from '../styles/globalStyles';
 import { getAuth, signInWithPopup, GoogleAuthProvider, OAuthProvider } from "firebase/auth";
-import { set, ref, update } from "firebase/database"
 
 
 const Login = () => {
@@ -23,24 +22,7 @@ const Login = () => {
     const signIn = async () => {
         setLoading(true);
         try {
-            let url = "http://localhost:3000/api/endpoint";
-            
-            let data = { email: email, password: password };
-            
-            fetch(url, {
-                method: 'POST', 
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(data), 
-            })
-            .then(response => response.json())
-            .then(data => console.log(data))
-            .catch((error) => console.error('Error:', error));            
-
             const response = await signInWithEmailAndPassword(fbAuth, email, password);
-            console.log(response);
-            // alert('Signed in');
             navigation.navigate('Home');
         } catch (error: any) {
             console.log(error);
@@ -49,20 +31,6 @@ const Login = () => {
             setLoading(false);
         }
     }
-
-    // const signUp = async () => {
-    //     setLoading(true);
-    //     try {
-    //         const response = await createUserWithEmailAndPassword(fbAuth, email, password);
-    //         console.log(response);
-    //         alert('Account created');
-    //     } catch (error: any) {
-    //         console.log(error);
-    //         alert("Sign up failed" + error.message);
-    //     } finally {
-    //         setLoading(false);
-    //     }
-    // }
 
     return (
         <View style={globalStyles.container}>
@@ -101,6 +69,24 @@ const Login = () => {
                                         const user = result.user;
                                         // IdP data available using getAdditionalUserInfo(result)
                                         // ...
+                                        try {
+                                            let url = "http://localhost:3000/api/endpoint";
+                                            let data = { email: user.email, password: null };
+                                            fetch(url, {
+                                                method: 'POST',
+                                                headers: {
+                                                    'Content-Type': 'application/json',
+                                                },
+                                                body: JSON.stringify(data)
+                                            })
+                                                .then(response => response.json())
+                                                .then(data => console.log(data))
+                                                .catch((error) => console.error('Error:', error));
+                                            // alert('Signed in');
+                                        } catch (error: any) {
+                                            console.log(error);
+                                            alert("Sign in failed" + error.message);
+                                        }
                                         navigation.navigate('Home');
                                     })
                                     .catch((error) => {
@@ -117,32 +103,6 @@ const Login = () => {
                         >
                             <Text style={styles.loginButtonText}>Sign In With Google</Text>
                         </TouchableOpacity>
-
-                        {/* sign in with microsoft */}
-                        <TouchableOpacity
-                            style={globalStyles.generalButton}
-                            onPress={() => {
-                                signInWithPopup(auth, MICROSOFT_PROVIDER)
-                                    .then((result) => {
-                                        // User is signed in.
-                                        // IdP data available in result.additionalUserInfo.profile.
-
-                                        // Get the OAuth access token and ID Token
-                                        const credential = OAuthProvider.credentialFromResult(result);
-                                        if (credential) {
-                                            const accessToken = credential.accessToken;
-                                            const idToken = credential.idToken;
-                                        }
-                                        navigation.navigate('Home');
-                                    })
-                                    .catch((error) => {
-                                        // Handle error.
-                                    });
-                            }}
-                        >
-                            <Text style={styles.loginButtonText}>Sign In With Microsoft</Text>
-                        </TouchableOpacity>
-
                     </>
                 )}
             </KeyboardAvoidingView>
