@@ -1,13 +1,11 @@
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView, TextInput } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView, TextInput, Image } from 'react-native';
 import {NavigationContainer, useNavigation} from '@react-navigation/native';
 import React, { useState, useEffect } from 'react'
 import { FIREBASE_AUTH } from '../../FirebaseConfig'
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
 import { getAuth, signInWithPopup, GoogleAuthProvider, OAuthProvider } from "firebase/auth";
-import { Image } from 'react-native';
 import globalStyles from '../styles/globalStyles';
-// import profileImage from '../../assets/profile.png';
-import testImg from '../../assets/profile.png'
+import profileImage from '../../assets/profile.png';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 
@@ -33,7 +31,7 @@ const Home = () => {
           <View style={[globalStyles.header, styles.header]}>
             <Text style={styles.title}>Game Archive</Text>
             <TouchableOpacity>
-                <Image source={testImg} style={styles.profileImageStyle}></Image>
+                <Image source={profileImage} style={styles.profileImageStyle}></Image>
             </TouchableOpacity>
           </View>
     
