@@ -22,7 +22,19 @@ const Login = () => {
     const signIn = async () => {
         setLoading(true);
         try {
-            const response = await signInWithEmailAndPassword(fbAuth, email, password);
+            let url = "http://localhost:3000/login";
+            let data = { email: email, password: password };
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            })
+                .then(response => response.json())
+                .then(data => console.log(data))
+                .catch((error) => console.error('Error:', error));
+
             navigation.navigate('Home');
         } catch (error: any) {
             console.log(error);

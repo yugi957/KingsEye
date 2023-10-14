@@ -1,17 +1,12 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity, ActivityIndicator, KeyboardAvoidingView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { FIREBASE_AUTH } from '../../FirebaseConfig'
-import { getAuth } from "firebase/auth";
-import { createUserWithEmailAndPassword } from 'firebase/auth';
 import globalStyles from '../styles/globalStyles';
 
 const Signup = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const fbAuth = FIREBASE_AUTH;
-  const auth = getAuth();
 
   const navigation = useNavigation();
   const navToLogin = () => {
@@ -21,12 +16,8 @@ const Signup = () => {
   const signUp = async () => {
     setLoading(true);
     try {
-      let url = "http://localhost:3000/api/endpoint";
+      let url = "http://localhost:3000/signup";
       let data = { email: email, password: password };
-
-      const response = await createUserWithEmailAndPassword(fbAuth, email, password);
-      console.log(response);
-
       fetch(url, {
         method: 'POST',
         headers: {
@@ -38,7 +29,6 @@ const Signup = () => {
         .then(data => console.log(data))
         .catch((error) => console.error('Error:', error));
 
-      // alert('Signed in');
       navigation.navigate('Home');
     } catch (error: any) {
       console.log(error);
@@ -47,7 +37,6 @@ const Signup = () => {
       setLoading(false);
     }
   }
-
 
   return (
     <View style={globalStyles.container}>
