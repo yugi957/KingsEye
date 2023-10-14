@@ -8,6 +8,21 @@ const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 
+function stringToHash(string) {
+             
+    let hash = 0;
+     
+    if (string.length == 0) return hash;
+     
+    for (i = 0; i < string.length; i++) {
+        char = string.charCodeAt(i);
+        hash = ((hash << 5) - hash) + char;
+        hash = hash & hash;
+    }
+     
+    return hash;
+}
+
 app.post('/api/endpoint', async (req, res) => {
 
     let email = req.body.email;
@@ -18,10 +33,10 @@ app.post('/api/endpoint', async (req, res) => {
 
     try {
         await client.connect();
-
         const result = await client.db("kings-eye").collection("user-database").insertOne(
             {
                 email: email,
+                id: stringToHash(email),
                 password: password,
                 fname: 'adi',
                 lname: 'kumar',
