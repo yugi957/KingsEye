@@ -5,6 +5,7 @@ const globalStyles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#2E2E2E',
         padding: 20,
+        overflow: 'hidden',
     },
     header: {
         flexDirection: 'row',
@@ -18,7 +19,6 @@ const globalStyles = StyleSheet.create({
         padding: 15,
         marginBottom: 20,
         color: 'white',
-        placeholderTextColor: '#C3C3C3'
     },
     generalButton: {
         backgroundColor: '#85a94f',
