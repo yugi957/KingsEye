@@ -30,7 +30,7 @@ const Home = () => {
           {/* Logo and Search */}
           <View style={[globalStyles.header, styles.header]}>
             <Text style={styles.title}>Game Archive</Text>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={navToProfile}>
                 <Image source={profileImage} style={styles.profileImageStyle}></Image>
             </TouchableOpacity>
           </View>
