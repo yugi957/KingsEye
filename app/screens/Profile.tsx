@@ -13,12 +13,12 @@ const Profile = () => {
         <Text style={styles.profileText}>Profile</Text>
       </View>
       <View style={styles.profileContent}>
-        {/*<Image source={{ pfpImage }} style={styles.profileImage} /> */}
+        {/* <Image source={{ pfpImage }} style={styles.profileImage} /> */}
         <View style={styles.profileInfo}>
-          { /* <Text style={styles.userName}>{userName}</Text> /*}
+           <Text style={styles.userName}>Username</Text>
           {/* tool button example: */}
           {/* <TouchableOpacity style={styles.toolButton}> */}
-            {/* <Text style={styles.toolButtonText}>Change Password</Text> */}
+            <Text style={styles.toolButtonText}>Change Password</Text>
           {/* </TouchableOpacity> */}
         </View>
       </View>
