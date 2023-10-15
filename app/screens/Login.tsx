@@ -5,6 +5,8 @@ import { FIREBASE_AUTH, GOOGLE_PROVIDER } from '../../FirebaseConfig'
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import globalStyles from '../styles/globalStyles';
 import { getAuth, signInWithPopup, GoogleAuthProvider, OAuthProvider } from "firebase/auth";
+// import { SafeAreaView } from 'react-native-safe-area-context';
+// import { StatusBar } from 'expo-status-bar';
 
 
 const Login = () => {
@@ -54,8 +56,8 @@ const Login = () => {
                 </TouchableOpacity>
             </View>
             <KeyboardAvoidingView behavior='padding'>
-                <TextInput placeholder="Username" value={email} style={globalStyles.input} onChangeText={(text) => setEmail(text)}></TextInput>
-                <TextInput placeholder="Password" secureTextEntry value={password} style={globalStyles.input} onChangeText={(text) => setPassword(text)}></TextInput>
+                <TextInput placeholder="Username" placeholderTextColor='#C3C3C3' value={email} style={globalStyles.input} onChangeText={(text) => setEmail(text)}></TextInput>
+                <TextInput placeholder="Password" placeholderTextColor='#C3C3C3' secureTextEntry value={password} style={globalStyles.input} onChangeText={(text) => setPassword(text)}></TextInput>
 
                 {loading ? <ActivityIndicator size="large" color="#0000ff" /> : (
                     <>
@@ -70,7 +72,7 @@ const Login = () => {
                         <TouchableOpacity
                             style={globalStyles.generalButton}
                             onPress={() => {
-                                signInWithPopup(auth, GOOGLE_PROVIDER)
+                                signInWithPopup(fbAuth, GOOGLE_PROVIDER)
                                     .then((result) => {
                                         // This gives you a Google Access Token. You can use it to access the Google API.
                                         const credential = GoogleAuthProvider.credentialFromResult(result);

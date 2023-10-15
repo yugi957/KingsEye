@@ -1,20 +1,38 @@
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView, TextInput } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView, TextInput, Image } from 'react-native';
 import {NavigationContainer, useNavigation} from '@react-navigation/native';
 import React, { useState, useEffect } from 'react'
 import { FIREBASE_AUTH } from '../../FirebaseConfig'
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
 import { getAuth, signInWithPopup, GoogleAuthProvider, OAuthProvider } from "firebase/auth";
 import globalStyles from '../styles/globalStyles';
+import profileImage from '../../assets/profile.png';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
 
 const Home = () => {
     const fbAuth = FIREBASE_AUTH;
     const auth = getAuth();
     
+    const insets = useSafeAreaInsets();
+
+    const navigation = useNavigation();
+    const navToProfile = () => {
+        try {
+            navigation.navigate('Profile')
+        } catch (error) {
+            console.error(error);
+        }
+        
+    }
+
     return (
         <View style={[globalStyles.container, styles.container]}>
           {/* Logo and Search */}
           <View style={[globalStyles.header, styles.header]}>
             <Text style={styles.title}>Game Archive</Text>
+            <TouchableOpacity>
+                <Image source={profileImage} style={styles.profileImageStyle}></Image>
+            </TouchableOpacity>
           </View>
     
           {/* Game Archive List */}
@@ -116,6 +134,10 @@ const styles = StyleSheet.create({
       color: 'white',
       fontSize: 20,
       fontWeight: 'bold',
+    },
+    profileImageStyle: {
+        width: 24,
+        height: 24
     },
   });
   
