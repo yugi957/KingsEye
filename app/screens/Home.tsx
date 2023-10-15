@@ -18,11 +18,10 @@ const Home = () => {
     const navigation = useNavigation();
     const navToProfile = () => {
         try {
-            navigation.navigate('Profile')
+            navigation.navigate('Profile');
         } catch (error) {
             console.error(error);
         }
-  
     }
 
     return (
