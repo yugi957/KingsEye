@@ -83,7 +83,7 @@ const Profile = () => {
 		{editMode && (
 			<View>
 			<TouchableOpacity onPress={handleImageOptionsClick} style={[globalStyles.generalButton, styles.buttonContainer]}>
-				<Text style={styles.buttonText}>Image Options</Text>
+				<Text style={styles.buttonText}>Edit Picture</Text>
 			</TouchableOpacity>
 			<TouchableOpacity onPress={handleChangePasswordClick} style={[globalStyles.generalButton, styles.buttonContainer]}>
 				<Text style={styles.buttonText}>Change Password</Text>
