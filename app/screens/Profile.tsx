@@ -86,7 +86,7 @@ const Profile = () => {
 				<Text style={styles.buttonText}>Edit Picture</Text>
 			</TouchableOpacity>
 			<TouchableOpacity onPress={handleChangePasswordClick} style={[globalStyles.generalButton, styles.buttonContainer]}>
-				<Text style={styles.buttonText}>Change Password</Text>
+				<Text style={styles.buttonText}>Reset Password</Text>
 			</TouchableOpacity>
 			</View>
       	)}
