@@ -43,7 +43,7 @@ const Signup = () => {
   }
 
   return (
-        <View style={globalStyles.container}>
+        <View style={[globalStyles.container, styles.container]}>
         <View style={globalStyles.header}>
             <Text style={styles.signUpText}>Sign Up</Text>
             <TouchableOpacity onPress={navToLogin}>
@@ -77,6 +77,10 @@ const Signup = () => {
 export default Signup;
 
 const styles = StyleSheet.create({
+    container: {
+      paddingBottom: 20,
+      paddingTop: 30,
+    },
     signUpText: {
         textAlign: 'center',
         flex:1,

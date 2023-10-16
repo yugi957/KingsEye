@@ -17,11 +17,7 @@ const Home = () => {
 
     const navigation = useNavigation();
     const navToProfile = () => {
-        try {
-            navigation.navigate('Profile');
-        } catch (error) {
-            console.error(error);
-        }
+		navigation.navigate('Profile');
     }
 
     return (
@@ -71,7 +67,8 @@ export default Home;
 const styles = StyleSheet.create({
     container: {
       padding: 0,
-      paddingBottom: 20
+      paddingBottom: 20,
+      paddingTop: 30,
     },
     header: {
       padding: 25,

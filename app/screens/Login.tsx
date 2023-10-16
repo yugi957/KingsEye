@@ -47,7 +47,7 @@ const Login = () => {
     }
 
     return (
-        <View style={globalStyles.container}>
+        <View style={[globalStyles.container, styles.container]}>
             <View style={globalStyles.header}>
                 {/* <Image source={{ uri: 'URL_TO_YOUR_LOGO' }} style={styles.logo} /> */}
                 <Text style={styles.signInText}>Login</Text>
@@ -141,6 +141,10 @@ const Login = () => {
 export default Login;
 
 const styles = StyleSheet.create({
+    container: {
+        paddingBottom: 20,
+        paddingTop: 30,
+    },
     logo: {
         width: 100,
         height: 100,
