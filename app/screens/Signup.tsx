@@ -8,6 +8,8 @@ import { useHeaderHeight } from '@react-navigation/elements';
 const Signup = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [fname, setFname] = useState('');
+  const [lname, setLname] = useState('');
   const [loading, setLoading] = useState(false);
 
     const navBarHeight = useHeaderHeight();
@@ -43,7 +45,7 @@ const Signup = () => {
   }
 
   return (
-        <View style={globalStyles.container}>
+        <View style={[globalStyles.container, styles.container]}>
         <View style={globalStyles.header}>
             <Text style={styles.signUpText}>Sign Up</Text>
             <TouchableOpacity onPress={navToLogin}>
@@ -51,8 +53,22 @@ const Signup = () => {
                     </TouchableOpacity>
         </View>
         <KeyboardAvoidingView behavior='padding'>
+			<TextInput
+                placeholder="First Name"
+                style={globalStyles.input}
+                value={fname}
+                placeholderTextColor='#C3C3C3'
+                onChangeText={setFname}
+            />
+			<TextInput
+                placeholder="Last Name"
+                style={globalStyles.input}
+                value={lname}
+                placeholderTextColor='#C3C3C3'
+                onChangeText={setLname}
+            />
             <TextInput
-                placeholder="Username"
+                placeholder="Email"
                 style={globalStyles.input}
                 value={email}
                 placeholderTextColor='#C3C3C3'
@@ -77,6 +93,10 @@ const Signup = () => {
 export default Signup;
 
 const styles = StyleSheet.create({
+    container: {
+      paddingBottom: 20,
+      paddingTop: 30,
+    },
     signUpText: {
         textAlign: 'center',
         flex:1,
