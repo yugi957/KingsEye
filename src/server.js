@@ -4,6 +4,7 @@ const stockfish = require("stockfish");
 const engine = stockfish();
 const bodyParser = require('body-parser');
 const cors = require('cors');
+app.use(cors("https://kingseye-1cd08c4764e5.herokuapp.com/"));
 const { MongoClient } = require('mongodb');
 const { createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithRedirect } = require('firebase/auth');
 const { initializeApp } = require('firebase/app');
@@ -33,8 +34,6 @@ const GOOGLE_PROVIDER = new GoogleAuthProvider();
 const auth = getAuth();
 
 // const app = express();
-
-app.use(cors());
 app.use(bodyParser.json());
 
 function stringToHash(string) {
