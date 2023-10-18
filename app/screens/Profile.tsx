@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Image, KeyboardAvoidingView } from 'react-native';
+import { Alert, View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Image, KeyboardAvoidingView } from 'react-native';
 import globalStyles from '../styles/globalStyles';
 import sampleProfileImage from '../../assets/sampleProfile.png'
 import profileEditIcon from '../../assets/profileEdit.png'
@@ -36,7 +36,31 @@ const Profile = () => {
 	
 	const handleChangePasswordClick = () => {
 		setShowChangePassword(!showChangePassword);
+		showPasswordResetConfirmation();
 	};
+
+	const showPasswordResetConfirmation = () => {
+		Alert.alert(
+		  'Password Reset Confirmation',
+		  'Are you sure you want to reset your password? An email will be sent to your {email}.',
+		  [
+			{
+				text: 'No',
+				style: 'destructive',
+			},
+			{
+			  text: 'Yes',
+			  style: 'default',
+			  onPress: () => {
+				//handle the password reset logic here @qazx
+				//sendPasswordResetEmail();
+			  },
+			},
+		  ],
+		  { cancelable: false }
+		);
+	  };
+	  
 
   return (
 	<View style={[globalStyles.container, styles.container]}>
