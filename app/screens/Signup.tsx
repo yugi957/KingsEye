@@ -22,8 +22,8 @@ const Signup = () => {
   const signUp = async () => {
     setLoading(true);
     try {
-      let url = "https://kingseye-1cd08c4764e5.herokuapp.com/signup";
-      let data = { email: email, password: password };
+      let url = "http://localhost:3000/signup";
+      let data = { email: email, password: password }; //first name last name add here @qazx
       fetch(url, {
         method: 'POST',
         headers: {
@@ -33,9 +33,9 @@ const Signup = () => {
       })
         .then(response => response.json())
         .then(data => console.log(data))
+        .then(() => navigation.navigate('Home'))
         .catch((error) => console.error('Error:', error));
 
-      navigation.navigate('Home');
     } catch (error: any) {
       console.log(error);
       alert("Sign up failed" + error.message);
