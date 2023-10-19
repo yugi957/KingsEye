@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Alert, View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Image, KeyboardAvoidingView } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Image, KeyboardAvoidingView } from 'react-native';
 import globalStyles from '../styles/globalStyles';
 import sampleProfileImage from '../../assets/sampleProfile.png';
 import profileEditIcon from '../../assets/profileEdit.png';
@@ -123,7 +123,6 @@ const Profile = () => {
 
 	const handleChangePasswordClick = () => {
 		setShowChangePassword(!showChangePassword);
-		showPasswordResetConfirmation();
 	};
 
 	const showPasswordResetConfirmation = () => {
