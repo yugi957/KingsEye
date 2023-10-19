@@ -31,11 +31,7 @@
     "react-native-safe-area-context": "4.6.3",
     "react-native-screens": "~3.22.0",
     "react-native-web": "~0.19.6",
-<<<<<<< HEAD
-    "stockfish": "^16.0.0",
-=======
     "stockfish": "^16.0.0"
->>>>>>> parent of 2118600 (jank)
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
