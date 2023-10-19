@@ -1,7 +1,8 @@
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView, TextInput, Image } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView, TextInput, Image, Dimensions } from 'react-native';
 import {NavigationContainer, useNavigation} from '@react-navigation/native';
 import React, { useState, useEffect } from 'react'
 import { FIREBASE_AUTH } from '../../FirebaseConfig'
+import { Camera } from 'expo-camera';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
 import { getAuth, signInWithPopup, GoogleAuthProvider, OAuthProvider } from "firebase/auth";
 import globalStyles from '../styles/globalStyles';
@@ -15,11 +16,19 @@ const Home = () => {
     
     const insets = useSafeAreaInsets();
 
+	const [camera, setCamera] = useState<Camera | null>(null);
+
     const navigation = useNavigation();
     const navToProfile = () => {
 		navigation.navigate('Profile');
     }
-
+    const takePhoto = async () => {
+		if (camera) {
+		  const photo = await camera.takePictureAsync();
+		  console.log(photo);
+		}
+	};
+	const { width, height } = Dimensions.get('window');
     return (
         <View style={[globalStyles.container, styles.container]}>
           {/* Logo and Search */}
@@ -53,9 +62,12 @@ const Home = () => {
               </TouchableOpacity>
             ))}
           </ScrollView>
+		  {/* <View style={styles.cameraContainer}>
+			<Camera style={{ width, height }} type={CameraType.back} ref={ref => setCamera(ref)} />
+		  </View> */}
     
           {/* Play Button */}
-          <TouchableOpacity style={[globalStyles.generalButton, styles.playButton]}>
+          <TouchableOpacity style={[globalStyles.generalButton, styles.playButton]} onPress={takePhoto}>
             <Text style={styles.playButtonText}>Take Picture</Text>
           </TouchableOpacity>
         </View>
@@ -126,6 +138,12 @@ const styles = StyleSheet.create({
     playButton: {
       margin: 20
     },
+	cameraContainer: {
+		flex: 1,
+		alignItems: 'center',
+		justifyContent: 'center',
+		backgroundColor: 'black',
+	},
     playButtonText: {
       color: 'white',
       fontSize: 20,
