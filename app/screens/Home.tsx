@@ -2,7 +2,6 @@ import { View, Text, TouchableOpacity, StyleSheet, ScrollView, TextInput, Image,
 import {NavigationContainer, useNavigation} from '@react-navigation/native';
 import React, { useState, useEffect } from 'react'
 import { FIREBASE_AUTH } from '../../FirebaseConfig'
-import { Camera } from 'expo-camera';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
 import { getAuth, signInWithPopup, GoogleAuthProvider, OAuthProvider } from "firebase/auth";
 import globalStyles from '../styles/globalStyles';
