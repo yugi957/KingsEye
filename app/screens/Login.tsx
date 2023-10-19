@@ -23,7 +23,7 @@ const Login = () => {
     const signIn = async () => {
         setLoading(true);
         try {
-            let url = "http://localhost:3000/login";
+            let url = "https://kingseye-1cd08c4764e5.herokuapp.com/login";
             let data = { email: email, password: password };
             fetch(url, {
                 method: 'POST',
