@@ -2,7 +2,6 @@ import { View, TextInput, StyleSheet, Button, Text, TouchableOpacity, ActivityIn
 import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import React, { useState, useEffect } from 'react'
 import { FIREBASE_AUTH, GOOGLE_PROVIDER } from '../../FirebaseConfig'
-import { signInWithEmailAndPassword } from 'firebase/auth';
 import globalStyles from '../styles/globalStyles';
 import { getAuth, signInWithPopup, GoogleAuthProvider, OAuthProvider } from "firebase/auth";
 // import { SafeAreaView } from 'react-native-safe-area-context';
@@ -24,7 +23,7 @@ const Login = () => {
     const signIn = async () => {
         setLoading(true);
         try {
-            let url = "https://kingseye-1cd08c4764e5.herokuapp.com/login";
+            let url = "http://localhost:3000/login";
             let data = { email: email, password: password };
             fetch(url, {
                 method: 'POST',
@@ -33,14 +32,24 @@ const Login = () => {
                 },
                 body: JSON.stringify(data)
             })
-                .then(response => response.json())
-                .then(data => console.log(data))
-                .catch((error) => console.error('Error:', error));
-
-            navigation.navigate('Home');
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error("Sign-in failed");
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log(data);
+                    // Navigate to Home screen after successful sign-up
+                    navigation.navigate('Home');
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                    alert(error.message);
+                });
         } catch (error: any) {
             console.log(error);
-            alert("Sign in failed" + error.message);
+            alert(error.message);
         } finally {
             setLoading(false);
         }
@@ -72,7 +81,7 @@ const Login = () => {
                         <TouchableOpacity
                             style={globalStyles.generalButton}
                             onPress={() => {
-                                signInWithPopup(fbAuth, GOOGLE_PROVIDER)
+                                signInWithPopup(auth, GOOGLE_PROVIDER)
                                     .then((result) => {
                                         // This gives you a Google Access Token. You can use it to access the Google API.
                                         const credential = GoogleAuthProvider.credentialFromResult(result);
@@ -83,24 +92,7 @@ const Login = () => {
                                         const user = result.user;
                                         // IdP data available using getAdditionalUserInfo(result)
                                         // ...
-                                        try {
-                                            let url = "http://localhost:3000/api/endpoint";
-                                            let data = { email: user.email, password: null };
-                                            fetch(url, {
-                                                method: 'POST',
-                                                headers: {
-                                                    'Content-Type': 'application/json',
-                                                },
-                                                body: JSON.stringify(data)
-                                            })
-                                                .then(response => response.json())
-                                                .then(data => console.log(data))
-                                                .catch((error) => console.error('Error:', error));
-                                            // alert('Signed in');
-                                        } catch (error: any) {
-                                            console.log(error);
-                                            alert("Sign in failed" + error.message);
-                                        }
+                                        // Navigate to Home screen after successful sign-in
                                         navigation.navigate('Home');
                                     })
                                     .catch((error) => {
@@ -117,6 +109,7 @@ const Login = () => {
                         >
                             <Text style={styles.loginButtonText}>Sign In With Google</Text>
                         </TouchableOpacity>
+
                     </>
                 )}
             </KeyboardAvoidingView>
