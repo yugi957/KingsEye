@@ -3,7 +3,7 @@ import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import React, { useState, useEffect } from 'react'
 import { FIREBASE_AUTH, GOOGLE_PROVIDER } from '../../FirebaseConfig'
 import globalStyles from '../styles/globalStyles';
-import { getAuth, signInWithPopup, GoogleAuthProvider, OAuthProvider } from "firebase/auth";
+import { getAuth, signInWithPopup, GoogleAuthProvider, signInWithEmailAndPassword } from "firebase/auth";
 // import { SafeAreaView } from 'react-native-safe-area-context';
 // import { StatusBar } from 'expo-status-bar';
 
@@ -12,7 +12,6 @@ const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
-    const fbAuth = FIREBASE_AUTH;
     const auth = getAuth();
 
     const navigation = useNavigation();
@@ -23,30 +22,32 @@ const Login = () => {
     const signIn = async () => {
         setLoading(true);
         try {
-            let url = "https://kingseye-1cd08c4764e5.herokuapp.com/login";
-            let data = { email: email, password: password };
-            fetch(url, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(data)
-            })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error("Sign-in failed");
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    console.log(data);
-                    // Navigate to Home screen after successful sign-up
-                    navigation.navigate('Home');
-                })
-                .catch((error) => {
-                    console.error('Error:', error);
-                    alert(error.message);
-                });
+            // let url = "https://kingseye-1cd08c4764e5.herokuapp.com/login";
+            // let data = { email: email, password: password };
+            // fetch(url, {
+            //     method: 'POST',
+            //     headers: {
+            //         'Content-Type': 'application/json',
+            //     },
+            //     body: JSON.stringify(data)
+            // })
+            //     .then(response => {
+            //         if (!response.ok) {
+            //             throw new Error("Sign-in failed");
+            //         }
+            //         return response.json();
+            //     })
+            //     .then(data => {
+            //         console.log(data);
+            //         // Navigate to Home screen after successful sign-up
+            //         navigation.navigate('Home');
+            //     })
+            //     .catch((error) => {
+            //         console.error('Error:', error);
+            //         alert(error.message);
+            //     });
+            await signInWithEmailAndPassword(FIREBASE_AUTH, email, password);
+            navigation.navigate('Home');
         } catch (error: any) {
             console.log(error);
             alert(error.message);

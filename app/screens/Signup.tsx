@@ -4,6 +4,8 @@ import { useNavigation } from '@react-navigation/native';
 import globalStyles from '../styles/globalStyles';
 // import { SafeAreaView } from 'react-native-safe-area-context';
 import { useHeaderHeight } from '@react-navigation/elements';
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { FIREBASE_AUTH } from '../../FirebaseConfig';
 
 const Signup = () => {
   const [email, setEmail] = useState('');
@@ -28,7 +30,10 @@ const Signup = () => {
         return;
       }
 
-      let url = "https://kingseye-1cd08c4764e5.herokuapp.com/signup";
+      createUserWithEmailAndPassword(FIREBASE_AUTH, email, password);
+
+      // let url = "https://kingseye-1cd08c4764e5.herokuapp.com/signup";
+      let url = "http://localhost:3000/signup"
       let data = { email: email, password: password, fname: fname, lname: lname };
       fetch(url, {
         method: 'POST',

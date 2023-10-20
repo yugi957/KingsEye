@@ -5,9 +5,9 @@ const engine = stockfish();
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const { MongoClient } = require('mongodb');
-const { createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithRedirect } = require('firebase/auth');
-const { initializeApp } = require('firebase/app');
-const { getAuth, GoogleAuthProvider, signInWithPopup } = require('firebase/auth');
+// const { createUserWithEmailAndPassword, signInWithEmailAndPassword } = require('firebase/auth');
+// const { initializeApp } = require('firebase/app');
+// const { getAuth, GoogleAuthProvider, signInWithPopup } = require('firebase/auth');
 
 const app = express();
 app.use(cors("https://kingseye-1cd08c4764e5.herokuapp.com/"));
@@ -16,22 +16,22 @@ const port = process.env.PORT || 3000;
 
 const fenregex = "/^([rnbqkpRNBQKP1-8]+\/){7}([rnbqkpRNBQKP1-8]+)\s[bw]\s(-|K?Q?k?q?)\s(-|[a-h][36])\s(0|[1-9][0-9]*)\s([1-9][0-9]*)/"
 
-const firebaseConfig = {
-  apiKey: "AIzaSyAekALAJx0_v1DYMn2z8ylTGAS8UJpo-mk",
-  authDomain: "kings-eye-dd86f.firebaseapp.com",
-  databaseURL: "https://kings-eye-dd86f-default-rtdb.firebaseio.com/",
-  projectId: "kings-eye-dd86f",
-  storageBucket: "kings-eye-dd86f.appspot.com",
-  messagingSenderId: "923986711752",
-  appId: "1:923986711752:web:847f178a8186a1549cc1fd",
-  measurementId: "G-HKQ6670810"
-};
+// const firebaseConfig = {
+//   apiKey: "AIzaSyAekALAJx0_v1DYMn2z8ylTGAS8UJpo-mk",
+//   authDomain: "kings-eye-dd86f.firebaseapp.com",
+//   databaseURL: "https://kings-eye-dd86f-default-rtdb.firebaseio.com/",
+//   projectId: "kings-eye-dd86f",
+//   storageBucket: "kings-eye-dd86f.appspot.com",
+//   messagingSenderId: "923986711752",
+//   appId: "1:923986711752:web:847f178a8186a1549cc1fd",
+//   measurementId: "G-HKQ6670810"
+// };
 
-// Initialize Firebase
-const FIREBASE_APP = initializeApp(firebaseConfig);
-const FIREBASE_AUTH = getAuth(FIREBASE_APP);
-const GOOGLE_PROVIDER = new GoogleAuthProvider();
-const auth = getAuth();
+// // Initialize Firebase
+// const FIREBASE_APP = initializeApp(firebaseConfig);
+// const FIREBASE_AUTH = getAuth(FIREBASE_APP);
+// const GOOGLE_PROVIDER = new GoogleAuthProvider();
+// const auth = getAuth();
 
 // const app = express();
 app.use(bodyParser.json());
@@ -53,20 +53,16 @@ function stringToHash(string) {
 
 app.post('/signup', async (req, res) => {
 
-  let email = req.body.email;
-  let password = req.body.password;
-
   const uri = "mongodb+srv://local_kings_eye:BlbbhGACvgksJqL5@kings-eye.ouonoms.mongodb.net/?retryWrites=true&w=majority";
   const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
-
   try {
-    const response = await createUserWithEmailAndPassword(FIREBASE_AUTH, email, password);
+    // await createUserWithEmailAndPassword(FIREBASE_AUTH, email, password);
     await client.connect();
-    const result = await client.db("kings-eye").collection("user-database").insertOne(
+    await client.db("kings-eye").collection("user-database").insertOne(
       {
-        email: email,
+        email: req.body.email,
         id: stringToHash(email),
-        password: password,
+        password: req.body.password,  //delete later
         fname: req.body.fname,
         lname: req.body.lname,
         profilePic: 'base64string',
@@ -74,27 +70,53 @@ app.post('/signup', async (req, res) => {
       });
 
     await client.close();
-
-    console.log("signed up", email, password);
     res.json({ message: 'Data received!' });
   } catch (err) {
     console.error(err);
   }
 });
 
-app.post('/login', async (req, res) => {
-  let email = req.body.email;
-  let password = req.body.password;
+// app.post('/login', async (req, res) => {
+//   let email = req.body.email;
+//   let password = req.body.password;
 
-  try {
-    const response = await signInWithEmailAndPassword(FIREBASE_AUTH, email, password);
-    console.log("logged in", email, password);
-    res.json({ message: 'Data received!' });
-  } catch (err) {
-    console.error(err);
-    // Send a response with a status code indicating an error and a message describing the error
-    res.status(401).json({ message: 'Sign-in failed' });
+//   try {
+//     await signInWithEmailAndPassword(FIREBASE_AUTH, email, password);
+//     console.log("logged in", email, password);
+//     res.json({ message: 'Data received!' });
+//   } catch (err) {
+//     console.error(err);
+//     res.status(401).json({ message: 'Sign-in failed' });
+//   }
+// });
+
+app.post('/getUser', (req, res) => {
+  const uri = "mongodb+srv://local_kings_eye:BlbbhGACvgksJqL5@kings-eye.ouonoms.mongodb.net/?retryWrites=true&w=majority";
+  const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+  var userData = {};
+  async function run() {
+    try {
+      await client.connect();
+      const collection = client.db("kings-eye").collection("user-database");
+
+      const query = { email: req.body.email };
+      const user = await collection.findOne(query);
+      console.log(user["email"]);
+      userData = {
+        email: user["email"],
+        firstName: user["fname"],
+        lastName: user["lname"]
+      };
+
+      // Move res.json(userData); here
+      res.json(userData);
+    } finally {
+      // Ensures that the client will close when you finish/error
+      await client.close();
+    }
   }
+
+  run().catch(console.dir);
 });
 
 
