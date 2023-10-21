@@ -1,9 +1,9 @@
-import { View, TextInput, StyleSheet, Button, Text, TouchableOpacity, ActivityIndicator, KeyboardAvoidingView } from 'react-native'
+import { View, Modal, TextInput, StyleSheet, Button, Text, TouchableOpacity, ActivityIndicator, KeyboardAvoidingView } from 'react-native'
 import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import React, { useState, useEffect } from 'react'
 import { FIREBASE_AUTH, GOOGLE_PROVIDER } from '../../FirebaseConfig'
 import globalStyles from '../styles/globalStyles';
-import { getAuth, signInWithPopup, GoogleAuthProvider, signInWithEmailAndPassword } from "firebase/auth";
+import { getAuth, sendPasswordResetEmail, signInWithPopup, GoogleAuthProvider, signInWithEmailAndPassword } from "firebase/auth";
 import { UserImportBuilder } from 'firebase-admin/lib/auth/user-import-builder';
 // import { SafeAreaView } from 'react-native-safe-area-context';
 // import { StatusBar } from 'expo-status-bar';
@@ -13,6 +13,8 @@ const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
+    const [resetEmail, setResetEmail] = React.useState('');
+    const [isModalVisible, setIsModalVisible] = React.useState(false);
     const auth = getAuth();
 
     const navigation = useNavigation();
@@ -33,6 +35,10 @@ const Login = () => {
         }
     }
 
+    const handleForgotPassword = () => {
+        setIsModalVisible(true);
+    };
+
     return (
         <View style={[globalStyles.container, styles.container]}>
             <View style={globalStyles.header}>
@@ -43,7 +49,7 @@ const Login = () => {
                 </TouchableOpacity>
             </View>
             <KeyboardAvoidingView behavior='padding'>
-                <TextInput placeholder="Email" placeholderTextColor='#C3C3C3' value={email} style={globalStyles.input} onChangeText={(text) => setEmail(text)}></TextInput>
+                <TextInput placeholder="Email" placeholderTextColor='#C3C3C3' autoCapitalize="none" value={email} style={globalStyles.input} onChangeText={(text) => setEmail(text)}></TextInput>
                 <TextInput placeholder="Password" placeholderTextColor='#C3C3C3' secureTextEntry value={password} style={globalStyles.input} onChangeText={(text) => setPassword(text)}></TextInput>
 
                 {loading ? <ActivityIndicator size="large" color="#0000ff" /> : (
@@ -71,7 +77,7 @@ const Login = () => {
                                             headers: {
                                                 'Content-Type': 'application/json',
                                             },
-                                            body: JSON.stringify({name: result.user.displayName, photo: result.user.photoURL, email: result.user.email})
+                                            body: JSON.stringify({ name: result.user.displayName, photo: result.user.photoURL, email: result.user.email })
                                         })
                                             .then(response => response.json())
                                             .then(data => {
@@ -97,8 +103,50 @@ const Login = () => {
 
                     </>
                 )}
+                <Text style={styles.forgotPassword} onPress={handleForgotPassword}>Forgot your password?</Text>
             </KeyboardAvoidingView>
+
+            <Modal
+                animationType="slide"
+                transparent={true}
+                visible={isModalVisible}
+                onRequestClose={() => {
+                    setIsModalVisible(!isModalVisible);
+                }}
+            >
+                <View style={styles.centeredView}>
+                    <View style={styles.modalView}>
+                        <TouchableOpacity
+                            style={styles.closeButton}
+                            onPress={() => {
+                                setIsModalVisible(!isModalVisible);
+                            }}
+                        >
+                            <Text style={styles.closeButtonText}>X</Text>
+                        </TouchableOpacity>
+                        <Text style={styles.modalText}>Enter your email to reset your password</Text>
+                        <TextInput
+                            style={styles.signInText}
+                            placeholder="Email"
+                            keyboardType="email-address"
+                            autoCapitalize="none"
+                            onChangeText={setResetEmail}
+                        />
+                        <TouchableOpacity style={styles.passButton}
+                            onPress={() => {
+                                sendPasswordResetEmail(getAuth(), resetEmail);
+                                alert('Email sent');
+                                setIsModalVisible(!isModalVisible);
+                            }}>
+                            <Text>Send email</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </Modal>
+
         </View>
+
+
 
         // <View style={styles.container}>
         //     <KeyboardAvoidingView behavior='padding'>
@@ -119,9 +167,60 @@ const Login = () => {
 export default Login;
 
 const styles = StyleSheet.create({
+    passButton: {
+        backgroundColor: "#88ac4c"
+    },
+    closeButton: {
+        position: 'absolute',
+        right: 0,
+        top: 0,
+        padding: 10,
+    },
+    closeButtonText: {
+        fontSize: 20,
+        color: 'white',
+    },
+    centeredView: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        marginTop: 22
+    },
+    modalView: {
+        margin: 20,
+        backgroundColor: "#2e2e2e",
+        borderRadius: 20,
+        padding: 35,
+        alignItems: "center",
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 2
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 4,
+        elevation: 5
+    },
+    modalText: {
+        marginBottom: 15,
+        textAlign: "center",
+        color: "white"
+    },
+    signInText: {
+        height: 40,
+        width: 220,
+        margin: 12,
+        borderWidth: 1,
+        padding: 10,
+        color: "white"
+    },
     container: {
         paddingBottom: 20,
         paddingTop: 30,
+    },
+    forgotPassword: {
+        textDecorationLine: 'underline',
+        color: 'white',
     },
     logo: {
         width: 100,

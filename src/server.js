@@ -31,28 +31,6 @@ function stringToHash(string) {
   return hash;
 }
 
-app.post('/signup', async (req, res) => {
-  const uri = "mongodb+srv://local_kings_eye:BlbbhGACvgksJqL5@kings-eye.ouonoms.mongodb.net/?retryWrites=true&w=majority";
-  const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
-  try {
-    await client.connect();
-    await client.db("kings-eye").collection("user-database").insertOne(
-      {
-        email: req.body.email,
-        id: stringToHash(req.body.email),
-        fname: req.body.fname,
-        lname: req.body.lname,
-        profilePic: 'base64string',
-        games: []
-      });
-
-    await client.close();
-    res.json({ message: 'Data received!' });
-  } catch (err) {
-    console.error(err);
-  }
-});
-
 app.post('/googleLogin', async (req, res) => {
   const uri = "mongodb+srv://local_kings_eye:BlbbhGACvgksJqL5@kings-eye.ouonoms.mongodb.net/?retryWrites=true&w=majority";
   const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
@@ -96,7 +74,8 @@ app.post('/getUser', (req, res) => {
       userData = {
         email: user["email"],
         firstName: user["fname"],
-        lastName: user["lname"]
+        lastName: user["lname"],
+        profileImage: user["profilePic"],
       };
 
       // Move res.json(userData); here
@@ -110,6 +89,29 @@ app.post('/getUser', (req, res) => {
   run().catch(console.dir);
 });
 
+
+app.post('/setUserData', async (req, res) => {
+  const uri = "mongodb+srv://local_kings_eye:BlbbhGACvgksJqL5@kings-eye.ouonoms.mongodb.net/?retryWrites=true&w=majority";
+  const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+  try {
+    await client.connect();
+    const collection = client.db("kings-eye").collection("user-database");
+
+    const query = { email: req.body.email };
+    const newValues = { $set: { fname: req.body.fname, lname: req.body.lname, profilePic: req.body.photo } };
+
+    const result = await collection.updateOne(query, newValues);
+
+    if (result.modifiedCount > 0) {
+      res.send(`User ${req.body.email} updated`);
+    } else {
+      res.status(400).send(`User ${req.body.email} not found`);
+    }
+  }
+  catch (error) {
+    res.status(400).json({ message: error.message })
+  }
+});
 
 engine.onmessage = function (msg) {
   console.log(msg);

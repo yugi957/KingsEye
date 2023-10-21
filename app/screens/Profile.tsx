@@ -6,6 +6,9 @@ import profileEditIcon from '../../assets/profileEdit.png';
 import profileSaveIcon from '../../assets/editDoneIcon.png';
 import { getAuth, sendPasswordResetEmail } from "firebase/auth";
 import { FIREBASE_AUTH } from '../../FirebaseConfig';
+import { launchImageLibrary } from 'react-native-image-picker';
+import * as FileSystem from 'expo-file-system';
+import * as ImagePicker from 'react-native-image-picker';
 
 const Profile = () => {
 
@@ -15,6 +18,7 @@ const Profile = () => {
 	//not sure how the extent of how much we will use it tho
 
 	const [editMode, setEditMode] = useState(false);
+	const [profileImage, setProfileImage] = React.useState(null);
 	const [email, setEmail] = useState('');
 	const [firstName, setFirstName] = useState('Fname');
 	const [lastName, setLastName] = useState('Lname');
@@ -23,23 +27,52 @@ const Profile = () => {
 	const [showChangePassword, setShowChangePassword] = useState(false);
 	const fbAuth = FIREBASE_AUTH;
 
-	const actionCodeSettings = {
-		// URL you want to redirect back to. The domain (www.example.com) for
-		// this URL must be whitelisted in the Firebase Console.
-		url: 'https://www.example.com/checkout?cartId=1234',
-		// This must be true for email link sign-in.
-		handleCodeInApp: true,
-		iOS: {
-		  bundleId: 'com.example.ios',
-		},
-		android: {
-		  packageName: 'com.example.android',
-		  installApp: true,
-		  minimumVersion: '12',
-		},
-		// FDL custom domain.
-		dynamicLinkDomain: 'coolapp.page.link',
-	  };
+	const handleSubmit = (e) => {
+		e.preventDefault();
+	}
+
+	const handleFileUpload = async (e) => {
+		const file = e.target.files;
+		console.log(file);
+	}
+
+	// function convertToBase64(file) {
+	// 	return new Promise((resolve, reject) => {
+	// 		const fileReader = new FileReader();
+	// 		fileReader.readAsDataURL(file);
+	// 		fileReader.onload = () => {
+	// 			resolve(fileReader.result);
+	// 		};
+	// 		fileReader.onerror = (error) => {
+	// 			reject(error);
+	// 		}
+	// 	})
+	// }
+
+	const convertImageToBase64 = async (uri) => {
+		const base64 = await FileSystem.readAsStringAsync(uri, { encoding: FileSystem.EncodingType.Base64 });
+		return base64;
+	};
+
+	const handleImageOptionsClick = () => {
+		ImagePicker.launchImageLibrary({
+			mediaType: 'photo',
+			includeBase64: false,
+			maxHeight: 200,
+			maxWidth: 200,
+		  }, response => {
+			if (response.didCancel) {
+				console.log('User cancelled image picker');
+			} else if (response.error) {
+				console.log('ImagePicker Error: ', response.error);
+			} else {
+				const source = { uri: response.assets[0].uri };
+				console.log(convertImageToBase64(source))
+				setProfileImage(source);
+			}
+		});
+		setShowImageOptions(!showImageOptions);
+	};
 
 	useEffect(() => {
 		const userEmail = fbAuth.currentUser.email;
@@ -54,6 +87,7 @@ const Profile = () => {
 			.then(response => response.json())
 			.then(data => {
 				console.log(data)
+				setProfileImage(data.profileImage);
 				setFirstName(data.firstName);
 				setLastName(data.lastName);
 				setEmail(data.email);
@@ -61,31 +95,35 @@ const Profile = () => {
 			.catch(error => console.error('Error:', error));
 	}, []);
 
-
 	const handleEditClick = () => {
 		setEditMode(!editMode);
 
 		if (editMode) {
-			console.log('saved');
-			//call endpoint here to save changes to db
+			fetch('http://kingseye-1cd08c4764e5.herokuapp.com/setUserData', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify({ email: fbAuth.currentUser.email, fname: firstName, lname: lastName, photo: profileImage }),
+			})
+				.then(response => response.json())
+				.then(data => {
+					console.log('user updated');
+				})
+				.catch(error => console.error('Error:', error));
 			setEditIconSource(profileEditIcon);
 		} else {
 			setEditIconSource(profileSaveIcon);
 		}
 	};
 
-	const handleImageOptionsClick = () => {
-		setShowImageOptions(!showImageOptions);
-	};
-
 	const handleChangePasswordClick = () => {
-		sendPasswordResetEmail(getAuth(), email);
-		alert('Password reset email sent!');
 		setShowChangePassword(!showChangePassword);
 		showPasswordResetConfirmation();
 	};
 
 	const showPasswordResetConfirmation = () => {
+		console.log('asdf');
 		Alert.alert(
 			'Password Reset Confirmation',
 			'Are you sure you want to reset your password? An email will be sent to your {email}.',
@@ -98,8 +136,8 @@ const Profile = () => {
 					text: 'Yes',
 					style: 'default',
 					onPress: () => {
-						//handle the password reset logic here @qazx
-						//sendPasswordResetEmail();
+						sendPasswordResetEmail(getAuth(), email);
+						// alert('Password reset email sent!');
 					},
 				},
 			],
@@ -119,7 +157,7 @@ const Profile = () => {
 			</View>
 			<View style={styles.row}>
 				<Text style={styles.infoTitle}>Profile Picture</Text>
-				<Image source={sampleProfileImage} style={styles.profileImage} />
+				<Image source={profileImage || sampleProfileImage} style={styles.profileImage} />
 			</View>
 			<View style={styles.row}>
 				<Text style={styles.infoTitle}>Email</Text>

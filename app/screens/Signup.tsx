@@ -90,6 +90,7 @@ const Signup = () => {
           value={email}
           placeholderTextColor='#C3C3C3'
           onChangeText={setEmail}
+          autoCapitalize="none"
         />
         <TextInput
           placeholder="Password"
