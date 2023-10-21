@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react'
 import { FIREBASE_AUTH, GOOGLE_PROVIDER } from '../../FirebaseConfig'
 import globalStyles from '../styles/globalStyles';
 import { getAuth, signInWithPopup, GoogleAuthProvider, signInWithEmailAndPassword } from "firebase/auth";
+import { UserImportBuilder } from 'firebase-admin/lib/auth/user-import-builder';
 // import { SafeAreaView } from 'react-native-safe-area-context';
 // import { StatusBar } from 'expo-status-bar';
 
@@ -65,12 +66,19 @@ const Login = () => {
                                         if (credential) {
                                             const token = credential.accessToken;
                                         }
-                                        // The signed-in user info.
-                                        const user = result.user;
-                                        // IdP data available using getAdditionalUserInfo(result)
-                                        // ...
-                                        // Navigate to Home screen after successful sign-in
-                                        navigation.navigate('Home');
+                                        fetch("https://kingseye-1cd08c4764e5.herokuapp.com/googleLogin", {
+                                            method: 'POST',
+                                            headers: {
+                                                'Content-Type': 'application/json',
+                                            },
+                                            body: JSON.stringify({name: result.user.displayName, photo: result.user.photoURL, email: result.user.email})
+                                        })
+                                            .then(response => response.json())
+                                            .then(data => {
+                                                console.log(data);
+                                                navigation.navigate('Home');
+                                            })
+                                            .catch((error) => console.error('Error:', error));
                                     })
                                     .catch((error) => {
                                         // Handle Errors here.
