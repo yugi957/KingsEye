@@ -22,30 +22,6 @@ const Login = () => {
     const signIn = async () => {
         setLoading(true);
         try {
-            // let url = "https://kingseye-1cd08c4764e5.herokuapp.com/login";
-            // let data = { email: email, password: password };
-            // fetch(url, {
-            //     method: 'POST',
-            //     headers: {
-            //         'Content-Type': 'application/json',
-            //     },
-            //     body: JSON.stringify(data)
-            // })
-            //     .then(response => {
-            //         if (!response.ok) {
-            //             throw new Error("Sign-in failed");
-            //         }
-            //         return response.json();
-            //     })
-            //     .then(data => {
-            //         console.log(data);
-            //         // Navigate to Home screen after successful sign-up
-            //         navigation.navigate('Home');
-            //     })
-            //     .catch((error) => {
-            //         console.error('Error:', error);
-            //         alert(error.message);
-            //     });
             await signInWithEmailAndPassword(FIREBASE_AUTH, email, password);
             navigation.navigate('Home');
         } catch (error: any) {

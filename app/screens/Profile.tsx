@@ -26,7 +26,7 @@ const Profile = () => {
 	useEffect(() => {
 		const userEmail = fbAuth.currentUser.email;
 	  
-		fetch('http://localhost:3000/getUser', {
+		fetch('https://kingseye-1cd08c4764e5.herokuapp.com/getUser', {
 		  method: 'POST',
 		  headers: {
 			'Content-Type': 'application/json',

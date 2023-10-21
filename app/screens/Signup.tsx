@@ -32,10 +32,8 @@ const Signup = () => {
 
       createUserWithEmailAndPassword(FIREBASE_AUTH, email, password);
 
-      // let url = "https://kingseye-1cd08c4764e5.herokuapp.com/signup";
-      let url = "http://localhost:3000/signup"
       let data = { email: email, password: password, fname: fname, lname: lname };
-      fetch(url, {
+      fetch("https://kingseye-1cd08c4764e5.herokuapp.com/signup", {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

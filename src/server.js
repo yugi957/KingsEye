@@ -5,9 +5,6 @@ const engine = stockfish();
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const { MongoClient } = require('mongodb');
-// const { createUserWithEmailAndPassword, signInWithEmailAndPassword } = require('firebase/auth');
-// const { initializeApp } = require('firebase/app');
-// const { getAuth, GoogleAuthProvider, signInWithPopup } = require('firebase/auth');
 
 const app = express();
 app.use(cors("https://kingseye-1cd08c4764e5.herokuapp.com/"));
@@ -15,23 +12,6 @@ var http = require('http');
 const port = process.env.PORT || 3000;
 
 const fenregex = "/^([rnbqkpRNBQKP1-8]+\/){7}([rnbqkpRNBQKP1-8]+)\s[bw]\s(-|K?Q?k?q?)\s(-|[a-h][36])\s(0|[1-9][0-9]*)\s([1-9][0-9]*)/"
-
-// const firebaseConfig = {
-//   apiKey: "AIzaSyAekALAJx0_v1DYMn2z8ylTGAS8UJpo-mk",
-//   authDomain: "kings-eye-dd86f.firebaseapp.com",
-//   databaseURL: "https://kings-eye-dd86f-default-rtdb.firebaseio.com/",
-//   projectId: "kings-eye-dd86f",
-//   storageBucket: "kings-eye-dd86f.appspot.com",
-//   messagingSenderId: "923986711752",
-//   appId: "1:923986711752:web:847f178a8186a1549cc1fd",
-//   measurementId: "G-HKQ6670810"
-// };
-
-// // Initialize Firebase
-// const FIREBASE_APP = initializeApp(firebaseConfig);
-// const FIREBASE_AUTH = getAuth(FIREBASE_APP);
-// const GOOGLE_PROVIDER = new GoogleAuthProvider();
-// const auth = getAuth();
 
 // const app = express();
 app.use(bodyParser.json());
@@ -75,20 +55,6 @@ app.post('/signup', async (req, res) => {
     console.error(err);
   }
 });
-
-// app.post('/login', async (req, res) => {
-//   let email = req.body.email;
-//   let password = req.body.password;
-
-//   try {
-//     await signInWithEmailAndPassword(FIREBASE_AUTH, email, password);
-//     console.log("logged in", email, password);
-//     res.json({ message: 'Data received!' });
-//   } catch (err) {
-//     console.error(err);
-//     res.status(401).json({ message: 'Sign-in failed' });
-//   }
-// });
 
 app.post('/getUser', (req, res) => {
   const uri = "mongodb+srv://local_kings_eye:BlbbhGACvgksJqL5@kings-eye.ouonoms.mongodb.net/?retryWrites=true&w=majority";
