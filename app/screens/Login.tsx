@@ -43,7 +43,7 @@ const Login = () => {
                 </TouchableOpacity>
             </View>
             <KeyboardAvoidingView behavior='padding'>
-                <TextInput placeholder="Username" placeholderTextColor='#C3C3C3' value={email} style={globalStyles.input} onChangeText={(text) => setEmail(text)}></TextInput>
+                <TextInput placeholder="Email" placeholderTextColor='#C3C3C3' value={email} style={globalStyles.input} onChangeText={(text) => setEmail(text)}></TextInput>
                 <TextInput placeholder="Password" placeholderTextColor='#C3C3C3' secureTextEntry value={password} style={globalStyles.input} onChangeText={(text) => setPassword(text)}></TextInput>
 
                 {loading ? <ActivityIndicator size="large" color="#0000ff" /> : (

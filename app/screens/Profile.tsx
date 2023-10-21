@@ -4,7 +4,7 @@ import globalStyles from '../styles/globalStyles';
 import sampleProfileImage from '../../assets/sampleProfile.png';
 import profileEditIcon from '../../assets/profileEdit.png';
 import profileSaveIcon from '../../assets/editDoneIcon.png';
-import { getAuth } from "firebase/auth";
+import { getAuth, sendPasswordResetEmail } from "firebase/auth";
 import { FIREBASE_AUTH } from '../../FirebaseConfig';
 
 const Profile = () => {
@@ -23,25 +23,43 @@ const Profile = () => {
 	const [showChangePassword, setShowChangePassword] = useState(false);
 	const fbAuth = FIREBASE_AUTH;
 
+	const actionCodeSettings = {
+		// URL you want to redirect back to. The domain (www.example.com) for
+		// this URL must be whitelisted in the Firebase Console.
+		url: 'https://www.example.com/checkout?cartId=1234',
+		// This must be true for email link sign-in.
+		handleCodeInApp: true,
+		iOS: {
+		  bundleId: 'com.example.ios',
+		},
+		android: {
+		  packageName: 'com.example.android',
+		  installApp: true,
+		  minimumVersion: '12',
+		},
+		// FDL custom domain.
+		dynamicLinkDomain: 'coolapp.page.link',
+	  };
+
 	useEffect(() => {
 		const userEmail = fbAuth.currentUser.email;
-	  
+
 		fetch('https://kingseye-1cd08c4764e5.herokuapp.com/getUser', {
-		  method: 'POST',
-		  headers: {
-			'Content-Type': 'application/json',
-		  },
-		  body: JSON.stringify({ email: userEmail }),
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify({ email: userEmail }),
 		})
-		  .then(response => response.json())
-		  .then(data => {
-			console.log(data)
-			setFirstName(data.firstName);
-			setLastName(data.lastName);
-			setEmail(data.email);
-		  })
-		  .catch(error => console.error('Error:', error));
-	  }, []);
+			.then(response => response.json())
+			.then(data => {
+				console.log(data)
+				setFirstName(data.firstName);
+				setLastName(data.lastName);
+				setEmail(data.email);
+			})
+			.catch(error => console.error('Error:', error));
+	}, []);
 
 
 	const handleEditClick = () => {
@@ -61,6 +79,8 @@ const Profile = () => {
 	};
 
 	const handleChangePasswordClick = () => {
+		sendPasswordResetEmail(getAuth(), email);
+		alert('Password reset email sent!');
 		setShowChangePassword(!showChangePassword);
 		showPasswordResetConfirmation();
 	};

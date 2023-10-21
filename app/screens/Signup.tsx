@@ -30,29 +30,35 @@ const Signup = () => {
         return;
       }
 
-      createUserWithEmailAndPassword(FIREBASE_AUTH, email, password);
-
       let data = { email: email, password: password, fname: fname, lname: lname };
-      fetch("https://kingseye-1cd08c4764e5.herokuapp.com/signup", {
+
+      // Send a POST request to the server
+      let response = await fetch("https://kingseye-1cd08c4764e5.herokuapp.com/signup", {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(data)
-      })
-        .then(response => response.json())
-        .then(data => {
-          console.log(data);
-          navigation.navigate('Home');
-        })
-        .catch((error) => console.error('Error:', error));
+      });
+
+      // Check if the server responded with an error
+      if (!response.ok) {
+        throw new Error('Server responded with an error');
+      }
+
+      // Create the user in Firebase
+      await createUserWithEmailAndPassword(FIREBASE_AUTH, email, password);
+
+      // Navigate to the home page
+      navigation.navigate('Home');
     } catch (error: any) {
       console.log(error);
       alert("Sign up failed" + error.message);
     } finally {
       setLoading(false);
     }
-  }
+  };
+
 
 
   return (
