@@ -32,7 +32,7 @@ function stringToHash(string) {
 }
 
 app.post('/signup', async (req, res) => {
-
+  console.log(req);
   const uri = "mongodb+srv://local_kings_eye:BlbbhGACvgksJqL5@kings-eye.ouonoms.mongodb.net/?retryWrites=true&w=majority";
   const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
   try {
@@ -41,7 +41,7 @@ app.post('/signup', async (req, res) => {
     await client.db("kings-eye").collection("user-database").insertOne(
       {
         email: req.body.email,
-        id: stringToHash(email),
+        id: stringToHash(req.body.email),
         password: req.body.password,  //delete later
         fname: req.body.fname,
         lname: req.body.lname,
