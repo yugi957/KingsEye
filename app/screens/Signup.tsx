@@ -43,7 +43,6 @@ const Signup = () => {
         .then(response => response.json())
         .then(data => {
           console.log(data);
-          // Navigate to Home screen after successful sign-up
           navigation.navigate('Home');
         })
         .catch((error) => console.error('Error:', error));

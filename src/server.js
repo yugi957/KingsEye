@@ -7,7 +7,7 @@ const cors = require('cors');
 const { MongoClient } = require('mongodb');
 
 const app = express();
-app.use(cors("https://kingseye-1cd08c4764e5.herokuapp.com/"));
+app.use(cors());
 var http = require('http');
 const port = process.env.PORT || 3000;
 

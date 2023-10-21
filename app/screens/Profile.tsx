@@ -35,6 +35,7 @@ const Profile = () => {
 		})
 		  .then(response => response.json())
 		  .then(data => {
+			console.log(data)
 			setFirstName(data.firstName);
 			setLastName(data.lastName);
 			setEmail(data.email);
