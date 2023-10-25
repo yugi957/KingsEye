@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigation } from '@react-navigation/native';
 import { Alert, View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Image, KeyboardAvoidingView } from 'react-native';
 import globalStyles from '../styles/globalStyles';
 import sampleProfileImage from '../../assets/sampleProfile.png';
 import profileEditIcon from '../../assets/profileEdit.png';
 import profileSaveIcon from '../../assets/editDoneIcon.png';
+import HomeIcon from '../../assets/homeIcon.png';
 import { getAuth, sendPasswordResetEmail } from "firebase/auth";
 import { FIREBASE_AUTH } from '../../FirebaseConfig';
 import { launchImageLibrary } from 'react-native-image-picker';
@@ -76,8 +78,8 @@ const Profile = () => {
 		setShowImageOptions(!showImageOptions);
 	};
 
-	useEffect(() => {
-		const userEmail = fbAuth.currentUser.email;
+	// useEffect(() => {
+	// 	const userEmail = fbAuth.currentUser.email;
 
 		fetch('https://kingseye-1cd08c4764e5.herokuapp.com/getUser', {
 			method: 'POST',
@@ -126,6 +128,11 @@ const Profile = () => {
 		showPasswordResetConfirmation();
 	};
 
+	const navigation = useNavigation();
+	const navToHome = () => {
+        navigation.navigate('Home')
+    }
+
 	const showPasswordResetConfirmation = () => {
 		Alert.alert(
 		  'Password Reset Confirmation',
@@ -155,10 +162,13 @@ const Profile = () => {
 	return (
 		<View style={[globalStyles.container, styles.container]}>
 			<View style={[globalStyles.header, styles.header]}>
+				<TouchableOpacity onPress={navToHome}>
+					<Image source={HomeIcon} style={styles.IconStyle} />
+				</TouchableOpacity>
 				<Text style={styles.profileText}>Profile</Text>
 				<TouchableOpacity onPress={handleEditClick}>
 					{/* <Image source={profileEditIcon} style={styles.editIconStyle}></Image> */}
-					<Image source={editIconSource} style={styles.editIconStyle} />
+					<Image source={editIconSource} style={styles.EditIconStyle} />
 				</TouchableOpacity>
 			</View>
 			<View style={styles.row}>
@@ -253,9 +263,13 @@ const styles = StyleSheet.create({
 		width: 100,
 		height: 100,
 	},
-	editIconStyle: {
+	EditIconStyle: {
 		width: 24,
 		height: 24
+	},
+	IconStyle: {
+		width: 30,
+		height: 30,
 	},
 	row: {
 		flexDirection: 'row',
