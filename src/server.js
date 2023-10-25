@@ -31,6 +31,28 @@ function stringToHash(string) {
   return hash;
 }
 
+app.post('/signup', async (req, res) => {
+  const uri = "mongodb+srv://local_kings_eye:BlbbhGACvgksJqL5@kings-eye.ouonoms.mongodb.net/?retryWrites=true&w=majority";
+  const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+  try {
+    await client.connect();
+    await client.db("kings-eye").collection("user-database").insertOne(
+      {
+        email: req.body.email,
+        id: stringToHash(req.body.email),
+        fname: req.body.fname,
+        lname: req.body.lname,
+        profilePic: 'base64string',
+        games: []
+      });
+
+    await client.close();
+    res.json({ message: 'Data received!' });
+  } catch (err) {
+    console.error(err);
+  }
+});
+
 app.post('/googleLogin', async (req, res) => {
   const uri = "mongodb+srv://local_kings_eye:BlbbhGACvgksJqL5@kings-eye.ouonoms.mongodb.net/?retryWrites=true&w=majority";
   const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
