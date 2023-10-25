@@ -1,4 +1,4 @@
-import { View, Modal, TextInput, StyleSheet, Button, Text, TouchableOpacity, ActivityIndicator, KeyboardAvoidingView } from 'react-native'
+import { Alert, View, Modal, TextInput, StyleSheet, Button, Text, TouchableOpacity, ActivityIndicator, KeyboardAvoidingView } from 'react-native'
 import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import React, { useState, useEffect } from 'react'
 import { FIREBASE_AUTH, GOOGLE_PROVIDER } from '../../FirebaseConfig'
@@ -13,8 +13,9 @@ const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
-    const [resetEmail, setResetEmail] = React.useState('');
-    const [isModalVisible, setIsModalVisible] = React.useState(false);
+    // const [resetEmail, setResetEmail] = React.useState('');
+    // const [isModalVisible, setIsModalVisible] = React.useState(false);
+    const [showForgotPassword, setShowForgotPassword] = useState(false);
     const auth = getAuth();
 
     const navigation = useNavigation();
@@ -35,9 +36,32 @@ const Login = () => {
         }
     }
 
-    const handleForgotPassword = () => {
-        setIsModalVisible(true);
-    };
+    // const handleForgotPassword = () => {
+    //     setIsModalVisible(true);
+    // };
+    const handleForgotPasswordClick = () => {
+		setShowForgotPassword(!showForgotPassword);
+		showPasswordForgotConfirmation();
+	};
+    const showPasswordForgotConfirmation = () => {
+		Alert.prompt(
+			"Enter Email",
+			"Enter your email to reset your password",
+            //change placeholder to email
+            [
+			  {
+				text: "Cancel",
+				onPress: () => console.log("Cancel Pressed"),
+				style: "destructive"
+			  },
+			  {
+				text: "Send Email",
+				onPress: email => console.log("OK Pressed, password: " + email)
+			  }
+			],
+            'plain-text'
+		  );
+	  };
 
     return (
         <View style={[globalStyles.container, styles.container]}>
@@ -103,10 +127,10 @@ const Login = () => {
 
                     </>
                 )}
-                <Text style={styles.forgotPassword} onPress={handleForgotPassword}>Forgot your password?</Text>
+                <Text style={styles.forgotPassword} onPress={handleForgotPasswordClick}>Forgot your password?</Text>
             </KeyboardAvoidingView>
 
-            <Modal
+            {/* <Modal
                 animationType="slide"
                 transparent={true}
                 visible={isModalVisible}
@@ -142,7 +166,7 @@ const Login = () => {
                         </TouchableOpacity>
                     </View>
                 </View>
-            </Modal>
+            </Modal> */}
 
         </View>
 
