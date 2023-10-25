@@ -19,6 +19,9 @@ const Home = () => {
     const navToProfile = () => {
 		navigation.navigate('Profile');
     }
+    const navToGame = () => {
+		navigation.navigate('Game');
+    }
 
     return (
         <View style={[globalStyles.container, styles.container]}>
@@ -33,7 +36,7 @@ const Home = () => {
           {/* Game Archive List */}
           <ScrollView style={styles.archiveList}>
             {Array(10).fill(null).map((_, index) => (
-              <TouchableOpacity key={index} style={styles.opponentItem}>
+              <TouchableOpacity key={index} style={styles.opponentItem} onPress={navToGame}>
                 <Text style={styles.opponentName}>Opponent Name</Text>
                 {index%3 == 0 && (
                     <View style={[styles.icon, styles.green]}>
