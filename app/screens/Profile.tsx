@@ -78,9 +78,8 @@ const Profile = () => {
 		setShowImageOptions(!showImageOptions);
 	};
 
-	// useEffect(() => {
-	// 	const userEmail = fbAuth.currentUser.email;
-
+	useEffect(() => {
+		const userEmail = fbAuth.currentUser.email;
 		fetch('https://kingseye-1cd08c4764e5.herokuapp.com/getUser', {
 			method: 'POST',
 			headers: {
