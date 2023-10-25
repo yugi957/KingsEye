@@ -25,6 +25,8 @@ const Profile = () => {
 	const [editIconSource, setEditIconSource] = useState(profileEditIcon);
 	const [showImageOptions, setShowImageOptions] = useState(false);
 	const [showChangePassword, setShowChangePassword] = useState(false);
+	const [loading, setLoading] = useState(true);
+
 	const fbAuth = FIREBASE_AUTH;
 
 	const handleSubmit = (e) => {
@@ -60,7 +62,7 @@ const Profile = () => {
 			includeBase64: false,
 			maxHeight: 200,
 			maxWidth: 200,
-		  }, response => {
+		}, response => {
 			if (response.didCancel) {
 				console.log('User cancelled image picker');
 			} else if (response.error) {
@@ -91,9 +93,11 @@ const Profile = () => {
 				setFirstName(data.firstName);
 				setLastName(data.lastName);
 				setEmail(data.email);
+				setLoading(false); // Set loading to false after data has been fetched
 			})
 			.catch(error => console.error('Error:', error));
 	}, []);
+
 
 	const handleEditClick = () => {
 		setEditMode(!editMode);
@@ -145,7 +149,10 @@ const Profile = () => {
 		);
 	};
 
-
+	if (loading) {
+		return <Text>Loading...</Text>; // Replace with a loading spinner or other loading indicator
+	}
+	
 	return (
 		<View style={[globalStyles.container, styles.container]}>
 			<View style={[globalStyles.header, styles.header]}>
