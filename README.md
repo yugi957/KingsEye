@@ -15,3 +15,7 @@
 > Might ask to install expo, say yes
 - You can scan the qr code on your phone to view development that way, or install an emulator (ios, android), or view on web
 > To run from web, install web package: ```npx expo install react-native-web@~0.19.6 react-dom@18.2.0 @expo/webpack-config@^19.0.0```
+
+curl -X POST -H "Content-Type: application/json" -d "{\"fen\": \"r4rk1/p2qn1pp/2pbbp2/3pp3/4P3/Q1Nn1N2/P1PBBPPP/R4RK1 w - - 0 14\"}" "https://kingseye-1cd08c4764e5.herokuapp.com/bestmove"
+
+curl -X POST -H "Content-Type: application/json" -d "{\"fen\": \"rnbqkbnr/pppp1ppp/8/4p3/4P3/5N2/PPPP1PPP/RNBQKB1R b - - 0 14\"}" "https://kingseye-1cd08c4764e5.herokuapp.com/bestmove"

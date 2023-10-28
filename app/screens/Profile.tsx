@@ -307,8 +307,9 @@ const styles = StyleSheet.create({
 		alignItems: 'center',
 		position: 'absolute',
 		top: 570,
-		right: 150//fix
-	},
+		left: '50%',
+		transform: 'translateX(-50%)'
+	},	
 	signOutButtonText: {
 		color: '#fff',
 		fontSize: 16,
