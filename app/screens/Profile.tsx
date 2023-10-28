@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigation } from '@react-navigation/native';
-import { Alert, View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Image, KeyboardAvoidingView } from 'react-native';
+import { Button, Alert, View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Image, KeyboardAvoidingView } from 'react-native';
 import globalStyles from '../styles/globalStyles';
 import sampleProfileImage from '../../assets/sampleProfile.png';
 import profileEditIcon from '../../assets/profileEdit.png';
 import profileSaveIcon from '../../assets/editDoneIcon.png';
 import HomeIcon from '../../assets/homeIcon.png';
-import { getAuth, sendPasswordResetEmail } from "firebase/auth";
+import { getAuth, sendPasswordResetEmail, signOut } from "firebase/auth";
 import { FIREBASE_AUTH } from '../../FirebaseConfig';
 import { launchImageLibrary } from 'react-native-image-picker';
 import * as FileSystem from 'expo-file-system';
@@ -39,6 +39,16 @@ const Profile = () => {
 		const file = e.target.files;
 		console.log(file);
 	}
+
+	const handleSignOut = async () => {
+		try {
+			await fbAuth.signOut();
+			navigation.navigate('Login');
+			// Handle successful sign out here
+		} catch (error) {
+			// Handle error here
+		}
+	};
 
 	// function convertToBase64(file) {
 	// 	return new Promise((resolve, reject) => {
@@ -129,35 +139,35 @@ const Profile = () => {
 
 	const navigation = useNavigation();
 	const navToHome = () => {
-        navigation.navigate('Home')
-    }
+		navigation.navigate('Home')
+	}
 
 	const showPasswordResetConfirmation = () => {
 		Alert.alert(
-		  'Password Reset Confirmation',
-		  'Are you sure you want to reset your password? An email will be sent to your {email}.',
-		  [
-			{
-				text: 'No',
-				style: 'destructive',
-			},
-			{
-			  text: 'Yes',
-			  style: 'default',
-			  onPress: () => {
-				//handle the password reset logic here @qazx
-				//sendPasswordResetEmail();
-			  },
-			},
-		  ],
-		  { cancelable: false }
+			'Password Reset Confirmation',
+			'Are you sure you want to reset your password? An email will be sent to your {email}.',
+			[
+				{
+					text: 'No',
+					style: 'destructive',
+				},
+				{
+					text: 'Yes',
+					style: 'default',
+					onPress: () => {
+						//handle the password reset logic here @qazx
+						//sendPasswordResetEmail();
+					},
+				},
+			],
+			{ cancelable: false }
 		);
 	};
 
 	if (loading) {
 		return <Text>Loading...</Text>; // Replace with a loading spinner or other loading indicator
 	}
-	
+
 	return (
 		<View style={[globalStyles.container, styles.container]}>
 			<View style={[globalStyles.header, styles.header]}>
@@ -213,6 +223,9 @@ const Profile = () => {
 					</TouchableOpacity>
 				</View>
 			)}
+			<TouchableOpacity onPress={handleSignOut} style={styles.signOutButton}>
+				<Text style={styles.signOutButtonText}>Sign Out</Text>
+			</TouchableOpacity>
 		</View>
 	);
 };
@@ -286,5 +299,19 @@ const styles = StyleSheet.create({
 		textAlign: 'center',
 		fontWeight: '500',
 	},
+	signOutButton: {
+		width: 100,
+		backgroundColor: 'red',
+		padding: 10,
+		borderRadius: 5,
+		alignItems: 'center',
+		position: 'absolute',
+		top: 570,
+		right: 150//fix
+	},
+	signOutButtonText: {
+		color: '#fff',
+		fontSize: 16,
+	}
 });
 

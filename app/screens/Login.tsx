@@ -243,6 +243,8 @@ const styles = StyleSheet.create({
         paddingTop: 30,
     },
     forgotPassword: {
+        textAlign: 'right',
+        padding: 10,
         textDecorationLine: 'underline',
         color: 'white',
     },
