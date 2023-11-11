@@ -135,6 +135,41 @@ app.post('/setUserData', async (req, res) => {
   }
 });
 
+app.post('/saveGame', async (req, res) => {
+  const uri = "mongodb+srv://local_kings_eye:BlbbhGACvgksJqL5@kings-eye.ouonoms.mongodb.net/?retryWrites=true&w=majority";
+  const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+  try {
+    await client.connect();
+    const collection = client.db("kings-eye").collection("user-database");
+
+    const query = { 
+      email: req.body.email,
+    };
+
+    const user = await collection.findOne(query);
+    let games = user["games"];
+    const game_id = games.length + 1;
+    const new_games = games.push({
+      "gameID": game_id,
+      "opponentName": req.body.opponent,
+      "date": req.body.date,
+      "moves": [req.body.fen]
+    });
+
+    const updateQuery = {
+      $set: {
+        games: games
+      }
+    };
+ 
+    await collection.updateOne(query, updateQuery);
+    res.send({ message: "Game saved successfully" });
+  }
+  catch (error) {
+    res.status(400).json({ message: error.message })
+  }
+});
+
 engine.onmessage = function (msg) {
   console.log(msg);
 };
