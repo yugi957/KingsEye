@@ -153,7 +153,7 @@ app.post('/saveGame', async (req, res) => {
       "gameID": game_id,
       "opponentName": req.body.opponent,
       "date": req.body.date,
-      "moves": [req.body.fen]
+      "moves": [req.body.fen_string]
     });
 
     const updateQuery = {
