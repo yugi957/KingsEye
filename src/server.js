@@ -170,9 +170,50 @@ app.post('/saveGame', async (req, res) => {
   }
 });
 
-engine.onmessage = function (msg) {
-  console.log(msg);
-};
+app.post('/setUserData', async (req, res) => {
+  const uri = "mongodb+srv://local_kings_eye:BlbbhGACvgksJqL5@kings-eye.ouonoms.mongodb.net/?retryWrites=true&w=majority";
+  const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+  try {
+    await client.connect();
+    const collection = client.db("kings-eye").collection("user-database");
+
+    const query = { email: req.body.email };
+    const newValues = { $set: { fname: req.body.fname, lname: req.body.lname, profilePic: req.body.photo } };
+
+    const result = await collection.updateOne(query, newValues);
+
+    if (result.modifiedCount > 0) {
+      res.send(`User ${req.body.email} updated`);
+    } else {
+      res.status(400).send(`User ${req.body.email} not found`);
+    }
+  }
+  catch (error) {
+    res.status(400).json({ message: error.message })
+  }
+});
+
+app.post('/getGames', async (req, res) => {
+  const uri = "mongodb+srv://local_kings_eye:BlbbhGACvgksJqL5@kings-eye.ouonoms.mongodb.net/?retryWrites=true&w=majority";
+  const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+  try {
+    await client.connect();
+    const collection = client.db("kings-eye").collection("user-database");
+
+    const query = { 
+      email: req.body.email,
+    };
+
+    const user = await collection.findOne(query);
+    let games = user["games"];
+
+    res.json({ pastGames: games });
+    res.send({ message: "Games retrieved" });
+  }
+  catch (error) {
+    res.status(400).json({ message: error.message })
+  }
+});
 
 engine.postMessage("uci");
 
