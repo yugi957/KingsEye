@@ -14,6 +14,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 const Home = () => {
 		const fbAuth = FIREBASE_AUTH;
 		const auth = getAuth();
+    // auth.currentUser?.email
 		
 		const insets = useSafeAreaInsets();
 
@@ -28,6 +29,26 @@ const Home = () => {
       navigation.navigate('Camera');
     }
     
+    useEffect(() => {
+        const postData = async () => {
+          const response = await fetch("https://kingseye-1cd08c4764e5.herokuapp.com/getGames", {
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({ email: "andychange@gmail.com" }), // CHANGE TO auth.currentUser?.email
+          });
+
+          if (!response.ok) {
+              throw new Error(`HTTP error! status: ${response.status}`);
+          }
+
+          const data = await response.json();
+          console.log("Successfully signed up:", data);
+        };
+
+        postData();
+    }, []);
 
     return (
         <View style={[globalStyles.container, styles.container]}>
