@@ -1,11 +1,11 @@
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView, TextInput, Image, Dimensions } from 'react-native';
-import Board from '../components2/Board';
+import ChessBoard from '../components/Chess.tsx';
 // import Chessboard from 'react-native-chessboard';
 
 
 const Game = () => (
   <View style={styles.square}>
-    <Board/>
+    <ChessBoard/>
   </View>
 );
 
@@ -16,5 +16,6 @@ const styles = StyleSheet.create({
   square: {
     width: screenWidth,
     height: screenWidth,
+    backgroundColor: 'blue',  // Optional: for visualization
   },
 });
