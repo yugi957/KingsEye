@@ -1,5 +1,5 @@
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView, TextInput, Image, Dimensions } from 'react-native';
-import Board from '../components2/Board';
+import Board from '../components/Board';
 // import Chessboard from 'react-native-chessboard';
 
 
