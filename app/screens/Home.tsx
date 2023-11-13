@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView, TextInput, Image } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView, TextInput, Image, FlatList } from 'react-native';
 import { Camera, CameraType } from 'expo-camera';
 import * as Permissions from 'expo-permissions';
 import {NavigationContainer, useNavigation} from '@react-navigation/native';
@@ -14,7 +14,6 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 const Home = () => {
 		const fbAuth = FIREBASE_AUTH;
 		const auth = getAuth();
-    // auth.currentUser?.email
 		
 		const insets = useSafeAreaInsets();
 
@@ -22,16 +21,15 @@ const Home = () => {
 		const navToProfile = () => {
 			navigation.navigate('Profile');
 		}
-    const navToGame = () => {
-		navigation.navigate('Game');
-    }
     const navToCamera = () => {
       navigation.navigate('Camera');
     }
+
+    const [games, setGames] = useState([]);
     
     useEffect(() => {
         const postData = async () => {
-          const response = await fetch("https://kingseye-1cd08c4764e5.herokuapp.com/getGames", {
+          const response = await fetch("https://kingseye-1cd08c4764e5.herokuapp.com/signUp", {
               method: 'POST',
               headers: {
                   'Content-Type': 'application/json',
@@ -44,11 +42,42 @@ const Home = () => {
           }
 
           const data = await response.json();
+          setGames(data);
+          console.log('DATA', data)
           console.log("Successfully signed up:", data);
         };
 
         postData();
     }, []);
+
+    const renderItem = ({ item }) => (
+      <TouchableOpacity 
+          style={styles.opponentItem}
+          onPress={() => navigation.navigate('Game', { item })}
+      >
+          <Text style={styles.opponentName}>{item.opponentName}</Text>
+          {0%3 == 0 && (
+              <View style={[styles.icon, styles.green]}>
+                  <Text>+</Text>
+              </View>
+          )}
+          {0%3 == 1 && (
+              <View style={[styles.icon, styles.red]}>
+                  <Text>-</Text>
+              </View>
+          )}
+          {0%3 == 2 && (
+              <View style={styles.icon}>
+                  <Text>=</Text>
+              </View>
+          )}
+          {2%3 == 2 && (
+              <View style={styles.icon}>
+                  <Text>?</Text>
+              </View>
+          )}
+      </TouchableOpacity>
+    );
 
     return (
         <View style={[globalStyles.container, styles.container]}>
@@ -61,7 +90,12 @@ const Home = () => {
           </View>
     
           {/* Game Archive List */}
-          <ScrollView style={styles.archiveList}>
+          <FlatList
+            data={games}
+            renderItem={renderItem}
+            keyExtractor={item => item.gameId.toString()} // Replace with unique identifier
+          />
+          {/* <ScrollView style={styles.archiveList}>
             {Array(10).fill(null).map((_, index) => (
               <TouchableOpacity key={index} style={styles.opponentItem} onPress={navToGame}>
                 <Text style={styles.opponentName}>Opponent Name</Text>
@@ -82,7 +116,7 @@ const Home = () => {
                 )}
               </TouchableOpacity>
             ))}
-          </ScrollView>
+          </ScrollView> */}
 
           {/* Play Button */}
         <TouchableOpacity style={[globalStyles.generalButton, styles.playButton]} onPress={navToCamera}>
