@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity, ActivityIndicator, KeyboardAvoidingView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import globalStyles from '../styles/globalStyles';
-// import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useHeaderHeight } from '@react-navigation/elements';
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { FIREBASE_AUTH } from '../../FirebaseConfig';
@@ -63,12 +63,15 @@ const Signup = () => {
 
   return (
     <View style={[globalStyles.container, styles.container]}>
+		<SafeAreaView style={globalStyles.safeArea}>
       <View style={globalStyles.header}>
+	  <View style={{ width: 50, height: 50 }} />
         <Text style={styles.signUpText}>Sign Up</Text>
         <TouchableOpacity onPress={navToLogin}>
           <Text style={styles.signupButtonText}>Login</Text>
         </TouchableOpacity>
       </View>
+	  </SafeAreaView>
       <KeyboardAvoidingView behavior='padding'>
         <TextInput
           placeholder="First Name"
@@ -111,10 +114,10 @@ const Signup = () => {
 export default Signup;
 
 const styles = StyleSheet.create({
-  container: {
-    paddingBottom: 20,
-    paddingTop: 30,
-  },
+	container: {
+		// paddingBottom: 10,
+		paddingTop: 1,
+	},
   signUpText: {
     textAlign: 'center',
     flex: 1,
