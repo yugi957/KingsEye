@@ -13,6 +13,8 @@ const port = process.env.PORT || 3000;
 
 const fenregex = "/^([rnbqkpRNBQKP1-8]+\/){7}([rnbqkpRNBQKP1-8]+)\s[bw]\s(-|K?Q?k?q?)\s(-|[a-h][36])\s(0|[1-9][0-9]*)\s([1-9][0-9]*)/"
 
+console.log('foo bar')
+
 // const app = express();
 app.use(bodyParser.json());
 
