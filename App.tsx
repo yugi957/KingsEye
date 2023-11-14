@@ -1,3 +1,4 @@
+import { LogBox } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -8,6 +9,10 @@ import Home from './app/screens/Home';
 import Profile from './app/screens/Profile';
 import Game from './app/screens/Game';
 import Camera from './app/screens/Camera';
+
+LogBox.ignoreAllLogs(true);
+
+// console.disableYellowBox = true;
 
 const Stack = createNativeStackNavigator();
 
