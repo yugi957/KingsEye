@@ -65,9 +65,38 @@ const CameraComponent = () => {
         }
     }
 
-    const handleAcceptPicture = () => {
-        // @qazx: do something with the captured image
-        // @adi9103: nav to the game screen and pass the image as a prop
+    const handleAcceptPicture = async () => {
+        if (!capturedImage) {
+            console.error("No image captured");
+            return;
+        }
+        navigation.navigate("Confirmation");
+        // try {
+        //     const imageResponse = await fetch(capturedImage.uri);
+        //     const blob = await imageResponse.blob();
+    
+        //     let formData = new FormData();
+        //     formData.append("image", blob, 'upload.jpg');
+    
+        //     let response = await fetch("https://your-server.com/upload", {
+        //         method: "POST",
+        //         body: formData,
+        //         headers: {
+        //             'Accept': 'application/json',
+        //             'Content-Type': 'multipart/form-data',
+        //         },
+        //     });
+    
+        //     let responseJson = await response.json();
+        //     console.log(responseJson);
+    
+            // navigation.navigate("Game", { image: capturedImage });
+            
+    
+        // } catch (error) {
+        //     console.error("Error uploading image: ", error);
+        // }
+    
         setCapturedImage(null);
     };
 

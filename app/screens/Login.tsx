@@ -156,7 +156,7 @@ const styles = StyleSheet.create({
     },
     container: {
         // paddingBottom: 10,
-        paddingTop: 1,
+        paddingTop: 0,
     },
     forgotPassword: {
         textAlign: 'right',
