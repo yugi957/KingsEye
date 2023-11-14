@@ -41,3 +41,4 @@
 -H "Content-Type: application/json" \
 -d '{"fen": "r4rk1/p2qn1pp/2pbbp2/3pp3/4P3/Q1Nn1N2/P1PBBPPP/R4RK1 w - - 0 14"}'
 > Gives optimal moves for a bunch of turns. First 2 moves should always be same as the /bestMove api call
+```{"moves":["a3a5","d3c5","d2c1","d5d4","c3a4","c5e4","f3d2","e4d2","c1d2","d6c7","a5a6","d7d6","d2a5","c7b6","a5d2","e7d5","a6d3","b6c7","c2c4","d5f4","d2f4","e5f4","a1b1"]}```
