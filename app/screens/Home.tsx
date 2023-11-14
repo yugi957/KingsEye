@@ -55,10 +55,9 @@ const Home = () => {
     }, [games]);
 
     const renderItem = ({ item }) => {
-      console.log("ITEM", item);
       return <TouchableOpacity 
           style={styles.opponentItem}
-          onPress={() => navigation.navigate('Game', { item })}
+          onPress={() => navigation.navigate('Game', { item: item })}
       >
           <Text style={styles.opponentName}>{item.opponentName}</Text>
           {1%3 == 0 && (
