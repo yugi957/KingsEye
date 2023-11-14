@@ -23,6 +23,7 @@ const Home = () => {
 		const navToProfile = () => {
 			navigation.navigate('Profile');
 		}
+		
     const navToCamera = () => {
       navigation.navigate('Camera');
     }
@@ -31,16 +32,18 @@ const Home = () => {
     
     useEffect(() => {
         const postData = async () => {
-          const response = await fetch("https://kingseye-1cd08c4764e5.herokuapp.com/getGames", {
+          console.log('POSTING DATA')
+          const response = await fetch("http://10.0.2.2:3000/getGames", {
               method: 'POST',
               headers: {
                   'Content-Type': 'application/json',
               },
               body: JSON.stringify({ email: "andychange@gmail.com" }), // CHANGE TO auth.currentUser?.email
           });
+          console.log('RESPONSE', response);
 
           const data = await response.json();
-          setGames(data);
+          setGames(data.pastGames);
           console.log('DATA', data);
         };
 
@@ -48,7 +51,7 @@ const Home = () => {
     }, []);
 
     useEffect(() => {
-      console.log(games)
+      console.log('GAMES', games)
     }, [games]);
 
     const renderItem = ({ item }) => {
@@ -58,7 +61,7 @@ const Home = () => {
           onPress={() => navigation.navigate('Game', { item })}
       >
           <Text style={styles.opponentName}>{item.opponentName}</Text>
-          {0%3 == 0 && (
+          {1%3 == 0 && (
               <View style={[styles.icon, styles.green]}>
                   <Text>+</Text>
               </View>
@@ -94,6 +97,12 @@ const Home = () => {
           </View>
           </SafeAreaView>
           {/* Game Archive List */}
+          <FlatList
+            data={games}
+            renderItem={renderItem}
+            keyExtractor={item => item.gameId.toString()} // Replace with unique identifier
+          />
+          {/* <ScrollView style={styles.archiveList}>
           <FlatList
             data={games}
             renderItem={renderItem}

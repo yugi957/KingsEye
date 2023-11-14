@@ -90,8 +90,7 @@ const Profile = () => {
 
 	useEffect(() => {
 		const userEmail = fbAuth.currentUser.email;
-		console.log(userEmail);
-		fetch('https://kingseye-1cd08c4764e5.herokuapp.com/getUser', {
+		fetch('http://10.0.2.2:3000/getUser', {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
@@ -115,7 +114,7 @@ const Profile = () => {
 		setEditMode(!editMode);
 
 		if (editMode) {
-			fetch('http://kingseye-1cd08c4764e5.herokuapp.com/setUserData', {
+			fetch('http://10.0.2.2:3000/setUserData', {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
@@ -308,8 +307,7 @@ const styles = StyleSheet.create({
 		alignItems: 'center',
 		position: 'absolute',
 		top: 570,
-		left: '50%',
-		transform: 'translateX(-50%)'
+		left: '50%'
 	},	
 	signOutButtonText: {
 		color: '#fff',
