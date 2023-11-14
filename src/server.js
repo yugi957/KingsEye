@@ -1,4 +1,3 @@
-const axios = require('axios');
 const express = require("express");
 const stockfish = require("stockfish");
 const engine = stockfish();
@@ -10,6 +9,9 @@ const app = express();
 app.use(cors());
 var http = require('http');
 const port = process.env.PORT || 3000;
+
+const uri = "mongodb+srv://local_kings_eye:BlbbhGACvgksJqL5@kings-eye.ouonoms.mongodb.net/?retryWrites=true&w=majority";
+const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 
 const fenregex = "/^([rnbqkpRNBQKP1-8]+\/){7}([rnbqkpRNBQKP1-8]+)\s[bw]\s(-|K?Q?k?q?)\s(-|[a-h][36])\s(0|[1-9][0-9]*)\s([1-9][0-9]*)/"
 
@@ -31,8 +33,6 @@ function stringToHash(string) {
 }
 
 app.post('/signup', async (req, res) => {
-  const uri = "mongodb+srv://local_kings_eye:BlbbhGACvgksJqL5@kings-eye.ouonoms.mongodb.net/?retryWrites=true&w=majority";
-  const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
   try {
     await client.connect();
     await client.db("kings-eye").collection("user-database").insertOne(
@@ -53,8 +53,6 @@ app.post('/signup', async (req, res) => {
 });
 
 app.post('/googleLogin', async (req, res) => {
-  const uri = "mongodb+srv://local_kings_eye:BlbbhGACvgksJqL5@kings-eye.ouonoms.mongodb.net/?retryWrites=true&w=majority";
-  const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
   try {
     await client.connect();
     photo = req.body.photo
@@ -80,8 +78,6 @@ app.post('/googleLogin', async (req, res) => {
 });
 
 app.post('/getUser', (req, res) => {
-  const uri = "mongodb+srv://local_kings_eye:BlbbhGACvgksJqL5@kings-eye.ouonoms.mongodb.net/?retryWrites=true&w=majority";
-  const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
   var userData = {};
   async function run() {
     try {
@@ -108,8 +104,6 @@ app.post('/getUser', (req, res) => {
 });
 
 app.post('/setUserData', async (req, res) => {
-  const uri = "mongodb+srv://local_kings_eye:BlbbhGACvgksJqL5@kings-eye.ouonoms.mongodb.net/?retryWrites=true&w=majority";
-  const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
   try {
     await client.connect();
     const collection = client.db("kings-eye").collection("user-database");
@@ -131,8 +125,6 @@ app.post('/setUserData', async (req, res) => {
 });
 
 app.post('/saveGame', async (req, res) => {
-  const uri = "mongodb+srv://local_kings_eye:BlbbhGACvgksJqL5@kings-eye.ouonoms.mongodb.net/?retryWrites=true&w=majority";
-  const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
   try {
     await client.connect();
     const collection = client.db("kings-eye").collection("user-database");
@@ -166,8 +158,6 @@ app.post('/saveGame', async (req, res) => {
 });
 
 app.post('/setUserData', async (req, res) => {
-  const uri = "mongodb+srv://local_kings_eye:BlbbhGACvgksJqL5@kings-eye.ouonoms.mongodb.net/?retryWrites=true&w=majority";
-  const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
   try {
     await client.connect();
     const collection = client.db("kings-eye").collection("user-database");
@@ -189,8 +179,6 @@ app.post('/setUserData', async (req, res) => {
 });
 
 app.post('/getGames', async (req, res) => {
-  const uri = "mongodb+srv://local_kings_eye:BlbbhGACvgksJqL5@kings-eye.ouonoms.mongodb.net/?retryWrites=true&w=majority";
-  const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
   try {
     await client.connect();
     const collection = client.db("kings-eye").collection("user-database");
@@ -232,7 +220,6 @@ app.post('/bestMove', (request, response) => {
   engine.postMessage('position fen ' + request.body.fen);
   engine.postMessage('go depth 18');
 });
-
 
 app.post('/evaluateScore', (request, response) => {
   let evaluationScore = null;
