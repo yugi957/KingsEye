@@ -102,7 +102,6 @@ const Profile = () => {
 			},
 			body: JSON.stringify({ email: userEmail }),
 		})
-			.then(response => response.json())
 			.then(data => {
 				console.log(data)
 				setProfileImage(data.profileImage);
@@ -119,7 +118,7 @@ const Profile = () => {
 		setEditMode(!editMode);
 
 		if (editMode) {
-			fetch('http://kingseye-1cd08c4764e5.herokuapp.com/setUserData', {
+			fetch('https://kingseye-1cd08c4764e5.herokuapp.com/setUserData', {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
@@ -210,7 +209,7 @@ const Profile = () => {
 			</SafeAreaView>
 			<View style={styles.row}>
 				<Text style={styles.infoTitle}>Profile Picture</Text>
-				<Image source={profileImage || sampleProfileImage} style={styles.profileImage} />
+				<Image source={profileImage != "base64string" || sampleProfileImage} style={styles.profileImage} />
 			</View>
 			<View style={styles.row}>
 				<Text style={styles.infoTitle}>Email</Text>

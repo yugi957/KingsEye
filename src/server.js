@@ -196,21 +196,26 @@ app.post('/setUserData', async (req, res) => {
 });
 
 app.post('/getGames', async (req, res) => {
-  const uri = "mongodb+srv://local_kings_eye:BlbbhGACvgksJqL5@kings-eye.ouonoms.mongodb.net/?retryWrites=true&w=majority";
+    console.log('CHECKPOINT 0')
+    const uri = "mongodb+srv://local_kings_eye:BlbbhGACvgksJqL5@kings-eye.ouonoms.mongodb.net/?retryWrites=true&w=majority";
   const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
   try {
+    console.log('CHECKPOINT 1')
     await client.connect();
+    console.log('CHECKPOINT 2')
     const collection = client.db("kings-eye").collection("user-database");
 
     const query = { 
       email: req.body.email,
     };
+    console.log('CHECKPOINT 3')
 
     const user = await collection.findOne(query);
+    console.log('CHECKPOINT 4')
     let games = user["games"];
 
     res.json({ pastGames: games });
-    res.send({ message: "Games retrieved" });
+    // res.send({ message: "Games retrieved" });
   }
   catch (error) {
     res.status(400).json({ message: error.message })
@@ -227,13 +232,14 @@ app.post('/bestmove', (request, response) => {
 
   // if chess engine replies
   engine.onmessage = function (msg) {
-    console.log(msg);
+    console.log("MESSAGE", msg);
     // in case the response has already been sent?
     if (response.headersSent) {
       return;
     }
     // only send response when it is a recommendation
     if (typeof (msg == "string") && msg.match("bestmove")) {
+      console.log("SENDING RESPONSE", msg);
       response.send(msg);
     }
   }

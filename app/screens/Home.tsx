@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView, TextInput, Image } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView, TextInput, Image, FlatList } from 'react-native';
 import { Camera, CameraType } from 'expo-camera';
 import * as Permissions from 'expo-permissions';
 import {NavigationContainer, useNavigation} from '@react-navigation/native';
@@ -23,49 +23,112 @@ const Home = () => {
 		const navToProfile = () => {
 			navigation.navigate('Profile');
 		}
-    const navToGame = () => {
-		navigation.navigate('Game');
-    }
+		
     const navToCamera = () => {
       navigation.navigate('Camera');
     }
+
+    const [games, setGames] = useState([]);
     
+    useEffect(() => {
+        const postData = async () => {
+          console.log('POSTING DATA')
+          const response = await fetch("https://kingseye-1cd08c4764e5.herokuapp.com/getGames", {
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({ email: "andychange@gmail.com" }), // CHANGE TO auth.currentUser?.email
+          });
+          console.log('RESPONSE', response);
+
+          const data = await response.json();
+          setGames(data.pastGames);
+          console.log('DATA', data);
+        };
+
+        postData();
+    }, []);
+
+    useEffect(() => {
+      console.log('GAMES', games)
+    }, [games]);
+
+    const renderItem = ({ item }) => {
+      return <TouchableOpacity 
+          style={styles.opponentItem}
+          onPress={() => navigation.navigate('Game', { item: item })}
+      >
+          <Text style={styles.opponentName}>{item.opponentName}</Text>
+          {1%3 == 0 && (
+              <View style={[styles.icon, styles.green]}>
+                  <Text>+</Text>
+              </View>
+          )}
+          {0%3 == 1 && (
+              <View style={[styles.icon, styles.red]}>
+                  <Text>-</Text>
+              </View>
+          )}
+          {0%3 == 2 && (
+              <View style={styles.icon}>
+                  <Text>=</Text>
+              </View>
+          )}
+          {/* {2%3 == 2 && ( */}
+              <View style={styles.icon}>
+                  <Text>?</Text>
+              </View>
+          {/* )} */}
+      </TouchableOpacity>
+    };
 
     return (
-		<View style={[globalStyles.container, styles.container]}>
-			{/* Logo and Search */}
-			<SafeAreaView style={globalStyles.safeArea}>
-				<View style={globalStyles.header}>
-					<View style={styles.profileImagePlaceholder}></View>
-					<Text style={styles.title}>Game Archive</Text>
-					<TouchableOpacity onPress={navToProfile}>
-						<Image source={profileImage} style={styles.profileImageStyle}></Image>
-					</TouchableOpacity>
-        		</View>
-          	</SafeAreaView>
-          	{/* Game Archive List */}
-			<ScrollView style={styles.archiveList}>
-				{Array(10).fill(null).map((_, index) => (
-				<TouchableOpacity key={index} style={styles.opponentItem} onPress={navToGame}>
-					<Text style={styles.opponentName}>Opponent Name</Text>
-					{index%3 == 0 && (
-						<View style={[styles.icon, styles.green]}>
-							<Text>+</Text>
-						</View>
-					)}
-					{index%3 == 1 && (
-						<View style={[styles.icon, styles.red]}>
-							<Text>-</Text>
-						</View>
-					)}
-					{index%3 == 2 && (
-						<View style={styles.icon}>
-							<Text>=</Text>
-						</View>
-					)}
-				</TouchableOpacity>
-				))}
-			</ScrollView>
+        <View style={[globalStyles.container, styles.container]}>
+          {/* Logo and Search */}
+          <SafeAreaView style={globalStyles.safeArea}>
+          <View style={globalStyles.header}>
+          <View style={styles.profileImagePlaceholder}></View>
+            <Text style={styles.title}>Game Archive</Text>
+            <TouchableOpacity onPress={navToProfile}>
+                <Image source={profileImage} style={styles.profileImageStyle}></Image>
+            </TouchableOpacity>
+          </View>
+          </SafeAreaView>
+          {/* Game Archive List */}
+          <FlatList
+            data={games}
+            renderItem={renderItem}
+            keyExtractor={item => item.gameId.toString()} // Replace with unique identifier
+          />
+          {/* <ScrollView style={styles.archiveList}>
+          <FlatList
+            data={games}
+            renderItem={renderItem}
+            keyExtractor={item => item.gameId.toString()} // Replace with unique identifier
+          />
+          {/* <ScrollView style={styles.archiveList}>
+            {Array(10).fill(null).map((_, index) => (
+              <TouchableOpacity key={index} style={styles.opponentItem} onPress={navToGame}>
+                <Text style={styles.opponentName}>Opponent Name</Text>
+                {index%3 == 0 && (
+                    <View style={[styles.icon, styles.green]}>
+                        <Text>+</Text>
+                    </View>
+                )}
+                {index%3 == 1 && (
+                    <View style={[styles.icon, styles.red]}>
+                        <Text>-</Text>
+                    </View>
+                )}
+                {index%3 == 2 && (
+                    <View style={styles.icon}>
+                        <Text>=</Text>
+                    </View>
+                )}
+              </TouchableOpacity>
+            ))}
+          </ScrollView> */}
 
 			{/* Play Button */}
       <SafeAreaView style={globalStyles.safeArea}>
