@@ -68,9 +68,11 @@ const Home = () => {
 			</ScrollView>
 
 			{/* Play Button */}
+      <SafeAreaView style={globalStyles.safeArea}>
 			<TouchableOpacity style={[globalStyles.generalButton, styles.playButton]} onPress={navToCamera}>
 			<Text style={styles.playButtonText}>Take Picture</Text>
 			</TouchableOpacity>
+      </SafeAreaView>
 		</View>
 		
       );
