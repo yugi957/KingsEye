@@ -9,6 +9,8 @@ import { getAuth, signInWithPopup, GoogleAuthProvider, OAuthProvider } from "fir
 import globalStyles from '../styles/globalStyles';
 import profileImage from '../../assets/profile.png';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { SafeAreaView } from 'react-native-safe-area-context';
+
 
 
 const Home = () => {
@@ -78,13 +80,15 @@ const Home = () => {
     return (
         <View style={[globalStyles.container, styles.container]}>
           {/* Logo and Search */}
-          <View style={[globalStyles.header, styles.header]}>
+          <SafeAreaView style={globalStyles.safeArea}>
+          <View style={globalStyles.header}>
+          <View style={styles.profileImagePlaceholder}></View>
             <Text style={styles.title}>Game Archive</Text>
             <TouchableOpacity onPress={navToProfile}>
                 <Image source={profileImage} style={styles.profileImageStyle}></Image>
             </TouchableOpacity>
           </View>
-    
+          </SafeAreaView>
           {/* Game Archive List */}
           <FlatList
             data={games}
@@ -128,13 +132,8 @@ export default Home;
 const styles = StyleSheet.create({
     container: {
       padding: 0,
-      paddingBottom: 20,
-      paddingTop: 30,
-    },
-    header: {
-      padding: 25,
-      marginBottom: 0,
-      alignItems: 'center'
+      // paddingBottom: 20,
+      // paddingTop: 30,
     },
     title: {
       flex: 1,
@@ -194,7 +193,14 @@ const styles = StyleSheet.create({
     },
     profileImageStyle: {
         width: 24,
-        height: 24
+        height: 24,
+        marginRight: 10,
+    },
+    profileImagePlaceholder: {
+      width: 24,
+      height: 24,
+      marginRight: 10,
+      opacity: 0, // make the placeholder invisible
     },
   });
   

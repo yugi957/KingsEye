@@ -13,6 +13,12 @@ const globalStyles = StyleSheet.create({
         alignItems: 'center',
         marginBottom: 50,
     },
+    safeArea: {
+        // flex: 1,
+        // backgroundColor: '#fff', 
+        paddingTop: 0, 
+        paddingBottom: 0,
+    },
     input: {
         backgroundColor: '#5A5A5A',
         borderRadius: 10,

@@ -9,6 +9,9 @@ import HomeIcon from '../../assets/homeIcon.png';
 import acceptImage from '../../assets/acceptImage.png';
 import rejectImage from '../../assets/rejectImage.png';
 import retakeImage from '../../assets/retakeImage.png'
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Dimensions } from 'react-native';
 // import Reanimated, {
 //     useAnimatedProps,
 //     useSharedValue,
@@ -16,14 +19,12 @@ import retakeImage from '../../assets/retakeImage.png'
 //     addWhitelistedNativeProps
 //   } from "react-native-reanimated"
 
-
+const screenWidth = Dimensions.get('window').width;
+const buttonSize = screenWidth * 0.2;
 
 const CameraComponent = () => {
 
-    const navigation = useNavigation();
-	const navToHome = () => {
-        navigation.navigate('Home')
-    }
+	const insets = useSafeAreaInsets();
 
 
     const [hasCameraPermission, setHasCameraPermission] = useState(false);
@@ -75,16 +76,21 @@ const CameraComponent = () => {
         setShowCamera(true);
     };
 
+    const navigation = useNavigation();
     const handleCancelPicture = () => {
-        setCapturedImage(null);
-        setShowCamera(false);
+        navigation.navigate('Home')
+        const swapScreen = navigation.addListener('transitionEnd', () => {
+            setCapturedImage(null);
+            setShowCamera(true);
+            swapScreen();
+        });
     };
     const imageView = (
         <View style={{ flex: 1 }}>
             <Image source={{ uri: capturedImage }} style={{ flex: 1 }} resizeMode="contain" />
             <View style={{ flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center' }}>
                 <View style={{ flexDirection: 'column', alignItems: 'center', paddingBottom: 10 }}>
-                    <TouchableOpacity onPress={navToHome}>
+                    <TouchableOpacity onPress={handleCancelPicture}>
                         <Image source={rejectImage} style={styles.button} />
                     </TouchableOpacity>
                     <Text style={styles.buttonText}>Cancel</Text>
@@ -107,15 +113,18 @@ const CameraComponent = () => {
     
     return (
         <View style={[globalStyles.container, styles.container]}>
-            <View style={[globalStyles.header, styles.header]}>
-            <TouchableOpacity onPress={navToHome}>
-					<Image source={HomeIcon} style={styles.IconStyle} />
+            <SafeAreaView style={globalStyles.safeArea}>
+            <View style={[globalStyles.header, styles.header, styles.headingContainer]}>
+                <TouchableOpacity onPress={handleCancelPicture}>
+					<Image source={HomeIcon} style={styles.iconStyle} />
 				</TouchableOpacity>
                 <Text style={styles.cameraText}>Camera</Text>
+                <View style={styles.iconStylePlaceholder}></View>
             </View>
-            {showCamera ? (
+            </SafeAreaView>
+            {showCamera ? (  
             <View style={{ flex: 1 }}>
-			  <Camera style={{ flex: 1 }} type={CameraType.back} ref={cameraRef} enableZoomGesture={true}>
+			  <Camera style={{ flex: 1 , paddingBottom: insets.bottom > 0 ? insets.bottom : 10}} type={CameraType.back} ref={cameraRef}>
 				<View style={{ flex: 1, backgroundColor: 'transparent', flexDirection: 'row' }}>
                     <TouchableOpacity style={{ flex: 1, alignSelf: 'flex-end', alignItems: 'center' }} onPress={handleTakePicture}>
                         <Image source={takeImage} style={styles.takeImageStyle}></Image>
@@ -138,9 +147,11 @@ export default CameraComponent;
 const styles = StyleSheet.create({
     container: {
 		padding: 0,
-		paddingBottom: 20,
-		paddingTop: 30,
 	},
+    headingContainer: {
+        padding: 0,
+        paddingBottom: 10,
+    },
     header: {
 		padding: 25,
 		marginBottom: 0,
@@ -158,17 +169,26 @@ const styles = StyleSheet.create({
         height: 100,
     },
     button: {
-        width: 100,
-        height: 100,
+        // width: 100,
+        width: buttonSize,
+        height: buttonSize,
+        // height: 100,
         padding: 5,
         margin:5,
         alignItems: 'center',
         // margin: 20,
     },
-    IconStyle: {
+    iconStyle: {
 		width: 30,
 		height: 30,
+        marginLeft: 10,
 	},
+    iconStylePlaceholder: {
+        width: 30,
+        height: 30,
+        opacity: 0,
+        marginRight: 10,
+    },
     buttonText: {
         paddingLeft: 5,
         // paddingRight: 5,
