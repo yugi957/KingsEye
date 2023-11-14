@@ -218,30 +218,75 @@ app.post('/getGames', async (req, res) => {
 });
 
 engine.postMessage("uci");
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-app.use(express.json()) // for parsing application/json
-app.use(express.urlencoded({ extended: true })) // for parsing application/x-www-form-urlencoded
-
-// Receive request to calculate a best move
-app.post('/bestmove', (request, response) => {
-
-  // if chess engine replies
+app.post('/bestMove', (request, response) => {
   engine.onmessage = function (msg) {
     console.log(msg);
-    // in case the response has already been sent?
     if (response.headersSent) {
       return;
     }
-    // only send response when it is a recommendation
-    if (typeof (msg == "string") && msg.match("bestmove")) {
-      response.send(msg);
+    const match = /bestmove (\w+) (ponder (\w+))?/.exec(msg);
+    if (match) {
+      const bestMove = match[1];
+      const ponderMove = match[3];
+      response.send({ firstMove: bestMove, secondMove: ponderMove });
+    }
+  };
+
+  engine.postMessage('ucinewgame');
+  engine.postMessage('position fen ' + request.body.fen);
+  engine.postMessage('go depth 18');
+});
+
+
+app.post('/evaluateScore', (request, response) => {
+  let evaluationScore = null;
+  engine.onmessage = function (msg) {
+    console.log(msg);
+    if (response.headersSent) {
+      return;
+    }
+    const match = msg.match(/score (cp|mate) ([-\d]+)/);
+    if (match) {
+      const scoreType = match[1];
+      const scoreValue = match[2];
+      evaluationScore = scoreType === 'cp' ? parseInt(scoreValue, 10) : `Mate in ${scoreValue}`;
+    }
+
+    if (typeof (msg) === "string" && msg.match("bestmove") && evaluationScore !== null) {
+      response.send({ evaluation: evaluationScore });
     }
   }
 
-  // run chess engine
   engine.postMessage("ucinewgame");
   engine.postMessage("position fen " + request.body.fen);
   engine.postMessage("go depth 18");
+});
+
+app.post('/getPrincipalVariation', (request, response) => {
+  let principalVariation = null;
+  engine.onmessage = function (msg) {
+    console.log(msg);
+
+    const pvMatch = msg.match(/pv\s(.+)/);
+    if (pvMatch) {
+      principalVariation = pvMatch[1];
+    }
+
+    if (msg.startsWith('bestmove') && principalVariation) {
+      
+      const allElements = principalVariation.split(/\s+/);
+      console.log('a', allElements)
+      const moves = allElements.slice(11);
+      response.send({ moves: moves });
+    }
+  };
+
+  engine.postMessage('ucinewgame');
+  engine.postMessage('position fen ' + request.body.fen);
+  engine.postMessage('go depth 18');
 });
 
 app.listen(port, (err) => {
