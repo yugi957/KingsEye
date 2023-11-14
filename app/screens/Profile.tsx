@@ -90,14 +90,14 @@ const Profile = () => {
 
 	useEffect(() => {
 		const userEmail = fbAuth.currentUser.email;
-		fetch('https://kingseye-1cd08c4764e5.herokuapp.com/getUser', {
+		fetch('http://10.0.2.2:3000/getUser', {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
 			},
 			body: JSON.stringify({ email: userEmail }),
 		})
-			.then(response => response.json())
+			.then(response => {console.log(response); return response.json()})
 			.then(data => {
 				console.log(data)
 				setProfileImage(data.profileImage);
@@ -114,7 +114,7 @@ const Profile = () => {
 		setEditMode(!editMode);
 
 		if (editMode) {
-			fetch('http://kingseye-1cd08c4764e5.herokuapp.com/setUserData', {
+			fetch('http://10.0.2.2:3000/setUserData', {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
@@ -182,7 +182,7 @@ const Profile = () => {
 			</View>
 			<View style={styles.row}>
 				<Text style={styles.infoTitle}>Profile Picture</Text>
-				<Image source={profileImage || sampleProfileImage} style={styles.profileImage} />
+				<Image source={profileImage != "base64string" || sampleProfileImage} style={styles.profileImage} />
 			</View>
 			<View style={styles.row}>
 				<Text style={styles.infoTitle}>Email</Text>
