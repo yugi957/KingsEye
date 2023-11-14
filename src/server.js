@@ -176,6 +176,12 @@ app.post('/bestMove', (request, response) => {
     if (response.headersSent) {
       return;
     }
+
+    if (msg.includes("mate 0")) {
+      response.send({ message: "Game over" });
+      return;
+    }
+
     const match = /bestmove (\w+) (ponder (\w+))?/.exec(msg);
     if (match) {
       const bestMove = match[1];
@@ -188,6 +194,7 @@ app.post('/bestMove', (request, response) => {
   engine.postMessage('position fen ' + request.body.fen);
   engine.postMessage('go depth 18');
 });
+
 
 app.post('/evaluateScore', (request, response) => {
   let evaluationScore = null;
@@ -215,8 +222,14 @@ app.post('/evaluateScore', (request, response) => {
 
 app.post('/getPrincipalVariation', (request, response) => {
   let principalVariation = null;
+  let isGameOver = false;
+
   engine.onmessage = function (msg) {
-    console.log(msg);
+    if (msg.includes("mate 0")) {
+      isGameOver = true;
+      response.send({ message: "Game Over" });
+      return;
+    }
 
     const pvMatch = msg.match(/pv\s(.+)/);
     if (pvMatch) {
@@ -224,7 +237,6 @@ app.post('/getPrincipalVariation', (request, response) => {
     }
 
     if (msg.startsWith('bestmove') && principalVariation) {
-      
       const allElements = principalVariation.split(/\s+/);
       const moves = allElements.slice(11);
       response.send({ moves: moves });
@@ -235,6 +247,7 @@ app.post('/getPrincipalVariation', (request, response) => {
   engine.postMessage('position fen ' + request.body.fen);
   engine.postMessage('go depth 18');
 });
+
 
 app.listen(port, (err) => {
   if (err) {
