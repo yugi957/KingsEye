@@ -32,45 +32,45 @@ const Home = () => {
     
 
     return (
-        <View style={[globalStyles.container, styles.container]}>
-          {/* Logo and Search */}
-          <SafeAreaView style={globalStyles.safeArea}>
-          <View style={globalStyles.header}>
-          <View style={styles.profileImagePlaceholder}></View>
-            <Text style={styles.title}>Game Archive</Text>
-            <TouchableOpacity onPress={navToProfile}>
-                <Image source={profileImage} style={styles.profileImageStyle}></Image>
-            </TouchableOpacity>
-          </View>
-          </SafeAreaView>
-          {/* Game Archive List */}
-          <ScrollView style={styles.archiveList}>
-            {Array(10).fill(null).map((_, index) => (
-              <TouchableOpacity key={index} style={styles.opponentItem} onPress={navToGame}>
-                <Text style={styles.opponentName}>Opponent Name</Text>
-                {index%3 == 0 && (
-                    <View style={[styles.icon, styles.green]}>
-                        <Text>+</Text>
-                    </View>
-                )}
-                {index%3 == 1 && (
-                    <View style={[styles.icon, styles.red]}>
-                        <Text>-</Text>
-                    </View>
-                )}
-                {index%3 == 2 && (
-                    <View style={styles.icon}>
-                        <Text>=</Text>
-                    </View>
-                )}
-              </TouchableOpacity>
-            ))}
-          </ScrollView>
+		<View style={[globalStyles.container, styles.container]}>
+			{/* Logo and Search */}
+			<SafeAreaView style={globalStyles.safeArea}>
+				<View style={globalStyles.header}>
+					<View style={styles.profileImagePlaceholder}></View>
+					<Text style={styles.title}>Game Archive</Text>
+					<TouchableOpacity onPress={navToProfile}>
+						<Image source={profileImage} style={styles.profileImageStyle}></Image>
+					</TouchableOpacity>
+        		</View>
+          	</SafeAreaView>
+          	{/* Game Archive List */}
+			<ScrollView style={styles.archiveList}>
+				{Array(10).fill(null).map((_, index) => (
+				<TouchableOpacity key={index} style={styles.opponentItem} onPress={navToGame}>
+					<Text style={styles.opponentName}>Opponent Name</Text>
+					{index%3 == 0 && (
+						<View style={[styles.icon, styles.green]}>
+							<Text>+</Text>
+						</View>
+					)}
+					{index%3 == 1 && (
+						<View style={[styles.icon, styles.red]}>
+							<Text>-</Text>
+						</View>
+					)}
+					{index%3 == 2 && (
+						<View style={styles.icon}>
+							<Text>=</Text>
+						</View>
+					)}
+				</TouchableOpacity>
+				))}
+			</ScrollView>
 
-          {/* Play Button */}
-        <TouchableOpacity style={[globalStyles.generalButton, styles.playButton]} onPress={navToCamera}>
-          <Text style={styles.playButtonText}>Take Picture</Text>
-        </TouchableOpacity>
+			{/* Play Button */}
+			<TouchableOpacity style={[globalStyles.generalButton, styles.playButton]} onPress={navToCamera}>
+			<Text style={styles.playButtonText}>Take Picture</Text>
+			</TouchableOpacity>
 		</View>
 		
       );
