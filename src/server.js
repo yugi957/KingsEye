@@ -113,11 +113,12 @@ app.post('/setUserData', async (req, res) => {
 
     const result = await collection.updateOne(query, newValues);
 
-    if (result.modifiedCount > 0) {
-      res.send(`User ${req.body.email} updated`);
-    } else {
-      res.status(400).send(`User ${req.body.email} not found`);
-    }
+    console.log(result.modifiedCount)
+    // if (result.modifiedCount > 0) {
+    //   res.send(`User ${req.body.email} updated`);
+    // } else {
+    //   res.status(400).send(`User ${req.body.email} not found`);
+    // }
   }
   catch (error) {
     res.status(400).json({ message: error.message })
