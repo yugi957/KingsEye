@@ -47,6 +47,10 @@ const Home = () => {
         postData();
     }, []);
 
+    useEffect(() => {
+      console.log(games)
+    }, [games]);
+
     const renderItem = ({ item }) => {
       console.log("ITEM", item);
       return <TouchableOpacity 

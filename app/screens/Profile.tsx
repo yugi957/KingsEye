@@ -98,7 +98,7 @@ const Profile = () => {
 			},
 			body: JSON.stringify({ email: userEmail }),
 		})
-			.then(response => {console.log(response); response.json()})
+			.then(response => {console.log(response); return response.json()})
 			.then(data => {
 				console.log(data)
 				setProfileImage(data.profileImage);
