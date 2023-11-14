@@ -8,19 +8,21 @@ import Home from './app/screens/Home';
 import Profile from './app/screens/Profile';
 import Game from './app/screens/Game';
 import Camera from './app/screens/Camera';
+import Confirmation from './app/screens/Confirmation';
 
 const Stack = createNativeStackNavigator();
 
 export default function App() {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName='Home' screenOptions={{ headerShown: false }}>
+      <Stack.Navigator initialRouteName='Confirmation' screenOptions={{ headerShown: false }}>
         <Stack.Screen name = "Login" component={Login} />
         <Stack.Screen name = "Signup" component={Signup} />
         <Stack.Screen name="Home" component={Home} />
         <Stack.Screen name="Profile" component={Profile} />
         <Stack.Screen name="Game" component={Game} />
         <Stack.Screen name="Camera" component={Camera} />
+        <Stack.Screen name="Confirmation" component={Confirmation} />
       </Stack.Navigator>
     </NavigationContainer>
   );

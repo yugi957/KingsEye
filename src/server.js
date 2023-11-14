@@ -1,4 +1,3 @@
-const axios = require('axios');
 const express = require("express");
 const stockfish = require("stockfish");
 const engine = stockfish();
@@ -11,11 +10,11 @@ app.use(cors());
 var http = require('http');
 const port = process.env.PORT || 3000;
 
+const uri = "mongodb+srv://local_kings_eye:BlbbhGACvgksJqL5@kings-eye.ouonoms.mongodb.net/?retryWrites=true&w=majority";
+const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+
 const fenregex = "/^([rnbqkpRNBQKP1-8]+\/){7}([rnbqkpRNBQKP1-8]+)\s[bw]\s(-|K?Q?k?q?)\s(-|[a-h][36])\s(0|[1-9][0-9]*)\s([1-9][0-9]*)/"
 
-console.log('foo bar')
-
-// const app = express();
 app.use(bodyParser.json());
 
 function stringToHash(string) {
@@ -34,8 +33,6 @@ function stringToHash(string) {
 }
 
 app.post('/signup', async (req, res) => {
-  const uri = "mongodb+srv://local_kings_eye:BlbbhGACvgksJqL5@kings-eye.ouonoms.mongodb.net/?retryWrites=true&w=majority";
-  const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
   try {
     await client.connect();
     await client.db("kings-eye").collection("user-database").insertOne(
@@ -56,8 +53,6 @@ app.post('/signup', async (req, res) => {
 });
 
 app.post('/googleLogin', async (req, res) => {
-  const uri = "mongodb+srv://local_kings_eye:BlbbhGACvgksJqL5@kings-eye.ouonoms.mongodb.net/?retryWrites=true&w=majority";
-  const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
   try {
     await client.connect();
     photo = req.body.photo
@@ -82,10 +77,7 @@ app.post('/googleLogin', async (req, res) => {
   }
 });
 
-
 app.post('/getUser', (req, res) => {
-  const uri = "mongodb+srv://local_kings_eye:BlbbhGACvgksJqL5@kings-eye.ouonoms.mongodb.net/?retryWrites=true&w=majority";
-  const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
   var userData = {};
   async function run() {
     try {
@@ -102,10 +94,8 @@ app.post('/getUser', (req, res) => {
         profileImage: user["profilePic"],
       };
 
-      // Move res.json(userData); here
       res.json(userData);
     } finally {
-      // Ensures that the client will close when you finish/error
       await client.close();
     }
   }
@@ -113,10 +103,7 @@ app.post('/getUser', (req, res) => {
   run().catch(console.dir);
 });
 
-
 app.post('/setUserData', async (req, res) => {
-  const uri = "mongodb+srv://local_kings_eye:BlbbhGACvgksJqL5@kings-eye.ouonoms.mongodb.net/?retryWrites=true&w=majority";
-  const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
   try {
     await client.connect();
     const collection = client.db("kings-eye").collection("user-database");
@@ -124,13 +111,7 @@ app.post('/setUserData', async (req, res) => {
     const query = { email: req.body.email };
     const newValues = { $set: { fname: req.body.fname, lname: req.body.lname, profilePic: req.body.photo } };
 
-    const result = await collection.updateOne(query, newValues);
-
-    if (result.modifiedCount > 0) {
-      res.send(`User ${req.body.email} updated`);
-    } else {
-      res.status(400).send(`User ${req.body.email} not found`);
-    }
+    await collection.updateOne(query, newValues);
   }
   catch (error) {
     res.status(400).json({ message: error.message })
@@ -138,8 +119,6 @@ app.post('/setUserData', async (req, res) => {
 });
 
 app.post('/saveGame', async (req, res) => {
-  const uri = "mongodb+srv://local_kings_eye:BlbbhGACvgksJqL5@kings-eye.ouonoms.mongodb.net/?retryWrites=true&w=majority";
-  const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
   try {
     await client.connect();
     const collection = client.db("kings-eye").collection("user-database");
@@ -150,9 +129,8 @@ app.post('/saveGame', async (req, res) => {
 
     const user = await collection.findOne(query);
     let games = user["games"];
-    const game_id = games.length + 1;
-    const new_games = games.push({
-      "gameID": game_id,
+    games.push({
+      "gameID": games.length + 1,
       "opponentName": req.body.opponent,
       "date": req.body.date,
       "moves": [req.body.fen_string]
@@ -165,30 +143,6 @@ app.post('/saveGame', async (req, res) => {
     };
  
     await collection.updateOne(query, updateQuery);
-    res.send({ message: "Game saved successfully" });
-  }
-  catch (error) {
-    res.status(400).json({ message: error.message })
-  }
-});
-
-app.post('/setUserData', async (req, res) => {
-  const uri = "mongodb+srv://local_kings_eye:BlbbhGACvgksJqL5@kings-eye.ouonoms.mongodb.net/?retryWrites=true&w=majority";
-  const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
-  try {
-    await client.connect();
-    const collection = client.db("kings-eye").collection("user-database");
-
-    const query = { email: req.body.email };
-    const newValues = { $set: { fname: req.body.fname, lname: req.body.lname, profilePic: req.body.photo } };
-
-    const result = await collection.updateOne(query, newValues);
-
-    if (result.modifiedCount > 0) {
-      res.send(`User ${req.body.email} updated`);
-    } else {
-      res.status(400).send(`User ${req.body.email} not found`);
-    }
   }
   catch (error) {
     res.status(400).json({ message: error.message })
@@ -196,9 +150,6 @@ app.post('/setUserData', async (req, res) => {
 });
 
 app.post('/getGames', async (req, res) => {
-    console.log('CHECKPOINT 0')
-    const uri = "mongodb+srv://local_kings_eye:BlbbhGACvgksJqL5@kings-eye.ouonoms.mongodb.net/?retryWrites=true&w=majority";
-  const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
   try {
     console.log('CHECKPOINT 1')
     await client.connect();
@@ -215,7 +166,6 @@ app.post('/getGames', async (req, res) => {
     let games = user["games"];
 
     res.json({ pastGames: games });
-    // res.send({ message: "Games retrieved" });
   }
   catch (error) {
     res.status(400).json({ message: error.message })
@@ -223,31 +173,74 @@ app.post('/getGames', async (req, res) => {
 });
 
 engine.postMessage("uci");
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-app.use(express.json()) // for parsing application/json
-app.use(express.urlencoded({ extended: true })) // for parsing application/x-www-form-urlencoded
-
-// Receive request to calculate a best move
-app.post('/bestmove', (request, response) => {
-
-  // if chess engine replies
+app.post('/bestMove', (request, response) => {
   engine.onmessage = function (msg) {
-    console.log("MESSAGE", msg);
-    // in case the response has already been sent?
+    console.log(msg);
     if (response.headersSent) {
       return;
     }
-    // only send response when it is a recommendation
-    if (typeof (msg == "string") && msg.match("bestmove")) {
-      console.log("SENDING RESPONSE", msg);
-      response.send(msg);
+    const match = /bestmove (\w+) (ponder (\w+))?/.exec(msg);
+    if (match) {
+      const bestMove = match[1];
+      const ponderMove = match[3];
+      response.send({ firstMove: bestMove, secondMove: ponderMove });
+    }
+  };
+
+  engine.postMessage('ucinewgame');
+  engine.postMessage('position fen ' + request.body.fen);
+  engine.postMessage('go depth 18');
+});
+
+app.post('/evaluateScore', (request, response) => {
+  let evaluationScore = null;
+  engine.onmessage = function (msg) {
+    console.log(msg);
+    if (response.headersSent) {
+      return;
+    }
+    const match = msg.match(/score (cp|mate) ([-\d]+)/);
+    if (match) {
+      const scoreType = match[1];
+      const scoreValue = match[2];
+      evaluationScore = scoreType === 'cp' ? parseInt(scoreValue, 10) : `Mate in ${scoreValue}`;
+    }
+
+    if (typeof (msg) === "string" && msg.match("bestmove") && evaluationScore !== null) {
+      response.send({ evaluation: evaluationScore });
     }
   }
 
-  // run chess engine
   engine.postMessage("ucinewgame");
   engine.postMessage("position fen " + request.body.fen);
   engine.postMessage("go depth 18");
+});
+
+app.post('/getPrincipalVariation', (request, response) => {
+  let principalVariation = null;
+  engine.onmessage = function (msg) {
+    console.log(msg);
+
+    const pvMatch = msg.match(/pv\s(.+)/);
+    if (pvMatch) {
+      principalVariation = pvMatch[1];
+    }
+
+    if (msg.startsWith('bestmove') && principalVariation) {
+      
+      const allElements = principalVariation.split(/\s+/);
+      console.log('a', allElements)
+      const moves = allElements.slice(11);
+      response.send({ moves: moves });
+    }
+  };
+
+  engine.postMessage('ucinewgame');
+  engine.postMessage('position fen ' + request.body.fen);
+  engine.postMessage('go depth 18');
 });
 
 app.listen(port, (err) => {
