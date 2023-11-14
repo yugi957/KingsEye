@@ -4,6 +4,7 @@ import Chessboard, {ChessboardRef } from 'react-native-chessboard';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import globalStyles from '../styles/globalStyles';
 import AnalysisBar from '../components/AnalysisBar';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 
 const Game = ({ route }) => {
@@ -62,8 +63,9 @@ const Game = ({ route }) => {
   }, [fen]);
 
   return ( // Try removing GestureHandlerRootView
+	<SafeAreaView style={globalStyles.container}>
     <View style={[styles.square]}>
-      <GestureHandlerRootView style={{ flex: 1, paddingTop:40 }}>
+      <GestureHandlerRootView style={{ flex: 1 }}>
         <Chessboard
           // key={fen}
           fen={fen}
@@ -82,6 +84,7 @@ const Game = ({ route }) => {
         </TouchableOpacity>
       </View>
     </View>
+	</SafeAreaView>
   );
 };
 
@@ -95,7 +98,7 @@ const styles = StyleSheet.create({
     // height: screenWidth,
     backgroundColor: '#2E2E2E',
     flex: 1, 
-    // alignItems: 'center',
+    alignItems: 'center',
     justifyContent: 'center'
   },
   controls: {
