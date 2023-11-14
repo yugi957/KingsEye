@@ -1,6 +1,6 @@
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView, TextInput, Image, Dimensions } from 'react-native';
-import React, {useState} from 'react';
-import Chessboard from 'react-native-chessboard';
+import React, {useState, useEffect, useRef} from 'react';
+import Chessboard, {ChessboardRef } from 'react-native-chessboard';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import globalStyles from '../styles/globalStyles';
 
@@ -19,6 +19,7 @@ const Game = () => {
   const [fen, setFen] = useState(gameObj.moves[0]);
   const [fenHistory, setFenHistory] = useState(gameObj.moves);
   const [currentMoveIndex, setCurrentMoveIndex] = useState(0);
+  const chessboardRef = useRef<ChessboardRef>(null);
 
   const onMove = ({state}) => {
     console.log(state);
@@ -51,16 +52,21 @@ const Game = () => {
       setCurrentMoveIndex(currentMoveIndex + 1);
       setFen(fenHistory[currentMoveIndex + 1]);
     }
+    console.log(fenHistory, currentMoveIndex);
   };
+
+  useEffect(() => {
+    chessboardRef?.current?.resetBoard(fen);
+  }, [fen]);
 
   return ( // Try removing GestureHandlerRootView
     <View style={[styles.square]}>
       <GestureHandlerRootView style={{ flex: 1, paddingTop:40 }}>
         <Chessboard
-          key={fen}
+          // key={fen}
           fen={fen}
           onMove={onMove}
-          // Set any additional props according to react-native-chessboard documentation
+          ref={chessboardRef}
         />
       </GestureHandlerRootView>
       <View style={styles.controls}>

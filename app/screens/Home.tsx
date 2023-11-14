@@ -29,7 +29,7 @@ const Home = () => {
     
     useEffect(() => {
         const postData = async () => {
-          const response = await fetch("https://kingseye-1cd08c4764e5.herokuapp.com/signUp", {
+          const response = await fetch("https://kingseye-1cd08c4764e5.herokuapp.com/getGames", {
               method: 'POST',
               headers: {
                   'Content-Type': 'application/json',
@@ -37,21 +37,17 @@ const Home = () => {
               body: JSON.stringify({ email: "andychange@gmail.com" }), // CHANGE TO auth.currentUser?.email
           });
 
-          if (!response.ok) {
-              throw new Error(`HTTP error! status: ${response.status}`);
-          }
-
           const data = await response.json();
           setGames(data);
-          console.log('DATA', data)
-          console.log("Successfully signed up:", data);
+          console.log('DATA', data);
         };
 
         postData();
     }, []);
 
-    const renderItem = ({ item }) => (
-      <TouchableOpacity 
+    const renderItem = ({ item }) => {
+      console.log("ITEM", item);
+      return <TouchableOpacity 
           style={styles.opponentItem}
           onPress={() => navigation.navigate('Game', { item })}
       >
@@ -71,13 +67,13 @@ const Home = () => {
                   <Text>=</Text>
               </View>
           )}
-          {2%3 == 2 && (
+          {/* {2%3 == 2 && ( */}
               <View style={styles.icon}>
                   <Text>?</Text>
               </View>
-          )}
+          {/* )} */}
       </TouchableOpacity>
-    );
+    };
 
     return (
         <View style={[globalStyles.container, styles.container]}>

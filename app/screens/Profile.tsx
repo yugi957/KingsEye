@@ -90,6 +90,7 @@ const Profile = () => {
 
 	useEffect(() => {
 		const userEmail = fbAuth.currentUser.email;
+		console.log(userEmail);
 		fetch('https://kingseye-1cd08c4764e5.herokuapp.com/getUser', {
 			method: 'POST',
 			headers: {
@@ -97,7 +98,7 @@ const Profile = () => {
 			},
 			body: JSON.stringify({ email: userEmail }),
 		})
-			.then(response => response.json())
+			.then(response => {console.log(response); response.json()})
 			.then(data => {
 				console.log(data)
 				setProfileImage(data.profileImage);
@@ -182,7 +183,7 @@ const Profile = () => {
 			</View>
 			<View style={styles.row}>
 				<Text style={styles.infoTitle}>Profile Picture</Text>
-				<Image source={profileImage || sampleProfileImage} style={styles.profileImage} />
+				<Image source={profileImage != "base64string" || sampleProfileImage} style={styles.profileImage} />
 			</View>
 			<View style={styles.row}>
 				<Text style={styles.infoTitle}>Email</Text>
