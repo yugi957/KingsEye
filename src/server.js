@@ -13,9 +13,6 @@ const port = process.env.PORT || 3000;
 
 const fenregex = "/^([rnbqkpRNBQKP1-8]+\/){7}([rnbqkpRNBQKP1-8]+)\s[bw]\s(-|K?Q?k?q?)\s(-|[a-h][36])\s(0|[1-9][0-9]*)\s([1-9][0-9]*)/"
 
-console.log('foo bar')
-
-// const app = express();
 app.use(bodyParser.json());
 
 function stringToHash(string) {
@@ -82,7 +79,6 @@ app.post('/googleLogin', async (req, res) => {
   }
 });
 
-
 app.post('/getUser', (req, res) => {
   const uri = "mongodb+srv://local_kings_eye:BlbbhGACvgksJqL5@kings-eye.ouonoms.mongodb.net/?retryWrites=true&w=majority";
   const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
@@ -102,17 +98,14 @@ app.post('/getUser', (req, res) => {
         profileImage: user["profilePic"],
       };
 
-      // Move res.json(userData); here
       res.json(userData);
     } finally {
-      // Ensures that the client will close when you finish/error
       await client.close();
     }
   }
 
   run().catch(console.dir);
 });
-
 
 app.post('/setUserData', async (req, res) => {
   const uri = "mongodb+srv://local_kings_eye:BlbbhGACvgksJqL5@kings-eye.ouonoms.mongodb.net/?retryWrites=true&w=majority";

@@ -25,6 +25,7 @@
 -H "Content-Type: application/json" \
 -d '{"fen": "rnbqkbnr/pppp1ppp/8/4p3/4P3/5N2/PPPP1PPP/RNBQKB1R b - - 0 14"}'
 > This outputs {"firstMove":"b8c6","secondMove":"b1c3"}
+
 ### Get EV Score
 - curl -X POST https://kingseye-1cd08c4764e5.herokuapp.com/evaluateScore \
 -H "Content-Type: application/json" \
