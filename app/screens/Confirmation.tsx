@@ -7,11 +7,18 @@ export default function Confirmation({ navigation }) {
   const [fen, setFen] = useState('rn1qkbnr/pppb1Qpp/3p4/4p3/2B1P3/8/PPPP1PPP/RNB1K1NR b KQkq - 0 4');
 
   const handleAccept = () => {
-    navigation.navigate('NextScreenOnAccept');
+    navigation.navigate('Game', { item: {
+      "gameId": 1,
+      "opponentName": "Dhruv Agarwal",
+      "date": "2023/05/11",
+      "moves": [
+        fen
+      ]
+    } })
   };
 
   const handleReject = () => {
-    navigation.navigate('NextScreenOnReject');
+    navigation.navigate('Camera');
   };
 
   return (
