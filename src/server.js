@@ -86,7 +86,6 @@ app.post('/getUser', (req, res) => {
 
       const query = { email: req.body.email };
       const user = await collection.findOne(query);
-      console.log(user["email"]);
       userData = {
         email: user["email"],
         firstName: user["fname"],
@@ -174,7 +173,6 @@ app.use(express.urlencoded({ extended: true }));
 
 app.post('/bestMove', (request, response) => {
   engine.onmessage = function (msg) {
-    console.log(msg);
     if (response.headersSent) {
       return;
     }
@@ -228,7 +226,6 @@ app.post('/getPrincipalVariation', (request, response) => {
     if (msg.startsWith('bestmove') && principalVariation) {
       
       const allElements = principalVariation.split(/\s+/);
-      console.log('a', allElements)
       const moves = allElements.slice(11);
       response.send({ moves: moves });
     }
