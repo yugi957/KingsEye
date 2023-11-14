@@ -232,13 +232,14 @@ app.post('/bestmove', (request, response) => {
 
   // if chess engine replies
   engine.onmessage = function (msg) {
-    console.log(msg);
+    console.log("MESSAGE", msg);
     // in case the response has already been sent?
     if (response.headersSent) {
       return;
     }
     // only send response when it is a recommendation
     if (typeof (msg == "string") && msg.match("bestmove")) {
+      console.log("SENDING RESPONSE", msg);
       response.send(msg);
     }
   }

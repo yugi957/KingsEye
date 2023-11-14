@@ -57,6 +57,16 @@ const Game = () => {
 
   useEffect(() => {
     chessboardRef?.current?.resetBoard(fen);
+    fetch('http://10.0.2.2:3000/bestmove', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify({ fen: fen }),
+		})
+			.then(response => response.text())
+      .then(data => {console.log("BESTMOVE", data)})
+			.catch(error => console.error('Error:', error));
   }, [fen]);
 
   return ( // Try removing GestureHandlerRootView
