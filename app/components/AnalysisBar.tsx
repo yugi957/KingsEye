@@ -59,7 +59,7 @@ const AnalysisBar = ({ fen }) => {
         <Text style={[styles.scoreText, { color: scoreTextColor }]}>{evScore}</Text>
       </View>
       <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.movesList}>
-        {principalVariation.map((move, index) => (
+        {Array.isArray(principalVariation) && principalVariation.map((move, index) => (
           <View key={index} style={styles.moveItem}>
             <Text style={styles.moveText}>{`${index + 1}. ${move}`}</Text>
           </View>
