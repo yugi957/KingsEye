@@ -33,7 +33,7 @@ const Home = () => {
     useEffect(() => {
         const postData = async () => {
           console.log('POSTING DATA')
-          const response = await fetch("http://10.0.2.2:3000/getGames", {
+          const response = await fetch("https://kingseye-1cd08c4764e5.herokuapp.com/getGames", {
               method: 'POST',
               headers: {
                   'Content-Type': 'application/json',
@@ -55,10 +55,9 @@ const Home = () => {
     }, [games]);
 
     const renderItem = ({ item }) => {
-      console.log("ITEM", item);
       return <TouchableOpacity 
           style={styles.opponentItem}
-          onPress={() => navigation.navigate('Game', { item })}
+          onPress={() => navigation.navigate('Game', { item: item })}
       >
           <Text style={styles.opponentName}>{item.opponentName}</Text>
           {1%3 == 0 && (
@@ -132,9 +131,11 @@ const Home = () => {
           </ScrollView> */}
 
 			{/* Play Button */}
+      <SafeAreaView style={globalStyles.safeArea}>
 			<TouchableOpacity style={[globalStyles.generalButton, styles.playButton]} onPress={navToCamera}>
 			<Text style={styles.playButtonText}>Take Picture</Text>
 			</TouchableOpacity>
+      </SafeAreaView>
 		</View>
 		
       );

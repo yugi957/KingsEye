@@ -11,6 +11,7 @@ import { FIREBASE_AUTH } from '../../FirebaseConfig';
 import { launchImageLibrary } from 'react-native-image-picker';
 import * as FileSystem from 'expo-file-system';
 import * as ImagePicker from 'react-native-image-picker';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const Profile = () => {
 
@@ -49,6 +50,10 @@ const Profile = () => {
 			// Handle error here
 		}
 	};
+
+	const handleSignOutClick = () => {
+		showSignOutConfirmation();
+	}	
 
 	// function convertToBase64(file) {
 	// 	return new Promise((resolve, reject) => {
@@ -90,14 +95,13 @@ const Profile = () => {
 
 	useEffect(() => {
 		const userEmail = fbAuth.currentUser.email;
-		fetch('http://10.0.2.2:3000/getUser', {
+		fetch('https://kingseye-1cd08c4764e5.herokuapp.com/getUser', {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
 			},
 			body: JSON.stringify({ email: userEmail }),
 		})
-			.then(response => {console.log(response); return response.json()})
 			.then(data => {
 				console.log(data)
 				setProfileImage(data.profileImage);
@@ -114,7 +118,7 @@ const Profile = () => {
 		setEditMode(!editMode);
 
 		if (editMode) {
-			fetch('http://10.0.2.2:3000/setUserData', {
+			fetch('https://kingseye-1cd08c4764e5.herokuapp.com/setUserData', {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
@@ -164,22 +168,45 @@ const Profile = () => {
 		);
 	};
 
+	const showSignOutConfirmation = () => {
+		Alert.alert(
+			'Sign Out Confirmation',
+			'Are you sure you want to sign out? You will be taken back to the login page.',
+			[
+				{
+					text: 'No',
+					style: 'default',
+				},
+				{
+					text: 'Yes',
+					style: 'destructive',
+					onPress: () => {
+						handleSignOut();
+					},
+				},
+			],
+			{ cancelable: false }
+		);
+	};
+
 	if (loading) {
 		return <Text>Loading...</Text>; // Replace with a loading spinner or other loading indicator
 	}
 
 	return (
 		<View style={[globalStyles.container, styles.container]}>
-			<View style={[globalStyles.header, styles.header]}>
+			<SafeAreaView style={globalStyles.safeArea}>
+			<View style={globalStyles.header}>
 				<TouchableOpacity onPress={navToHome}>
 					<Image source={HomeIcon} style={styles.IconStyle} />
 				</TouchableOpacity>
 				<Text style={styles.profileText}>Profile</Text>
+				<View style={styles.IconStyleTransparent}></View>
 				<TouchableOpacity onPress={handleEditClick}>
-					{/* <Image source={profileEditIcon} style={styles.editIconStyle}></Image> */}
 					<Image source={editIconSource} style={styles.EditIconStyle} />
 				</TouchableOpacity>
 			</View>
+			</SafeAreaView>
 			<View style={styles.row}>
 				<Text style={styles.infoTitle}>Profile Picture</Text>
 				<Image source={profileImage != "base64string" || sampleProfileImage} style={styles.profileImage} />
@@ -223,9 +250,13 @@ const Profile = () => {
 					</TouchableOpacity>
 				</View>
 			)}
-			<TouchableOpacity onPress={handleSignOut} style={styles.signOutButton}>
-				<Text style={styles.signOutButtonText}>Sign Out</Text>
-			</TouchableOpacity>
+			<View style={{ flex: 1, justifyContent: 'flex-end', marginBottom: 20 }}>
+				<SafeAreaView style={globalStyles.safeArea}>
+                <TouchableOpacity onPress={handleSignOutClick} style={styles.signOutButton}>
+                    <Text style={styles.signOutButtonText}>Sign Out</Text>
+                </TouchableOpacity>
+				</SafeAreaView>
+            </View>
 		</View>
 	);
 };
@@ -235,14 +266,14 @@ export default Profile;
 const styles = StyleSheet.create({
 	container: {
 		padding: 0,
-		paddingBottom: 20,
-		paddingTop: 30,
+		// paddingBottom: 20,
+		// paddingTop: 30,
 	},
-	header: {
-		padding: 25,
-		marginBottom: 0,
-		alignItems: 'center'
-	},
+	// header: {
+	// 	padding: 25,
+	// 	marginBottom: 0,
+	// 	alignItems: 'center'
+	// },
 	profileText: {
 		textAlign: 'center',
 		flex: 1,
@@ -277,11 +308,17 @@ const styles = StyleSheet.create({
 	},
 	EditIconStyle: {
 		width: 24,
-		height: 24
+		height: 24,
+		marginRight: 10,
 	},
 	IconStyle: {
 		width: 30,
 		height: 30,
+		marginLeft: 10,
+	},
+	IconStyleTransparent: {
+		width: 6,
+		height: 6,
 	},
 	row: {
 		flexDirection: 'row',
@@ -304,14 +341,13 @@ const styles = StyleSheet.create({
 		backgroundColor: '#ef3e36',
 		padding: 10,
 		borderRadius: 5,
-		alignItems: 'center',
-		position: 'absolute',
-		top: 570,
-		left: '50%'
-	},	
+		alignSelf: 'center',
+	},
 	signOutButtonText: {
 		color: '#fff',
 		fontSize: 16,
+		fontWeight: 'bold',
+		textAlign: 'center',
 	}
 });
 

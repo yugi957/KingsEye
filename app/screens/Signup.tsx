@@ -116,7 +116,7 @@ export default Signup;
 const styles = StyleSheet.create({
 	container: {
 		// paddingBottom: 10,
-		paddingTop: 1,
+		paddingTop: 0,
 	},
   signUpText: {
     textAlign: 'center',

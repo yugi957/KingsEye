@@ -3,21 +3,31 @@ import React, {useState, useEffect, useRef} from 'react';
 import Chessboard, {ChessboardRef } from 'react-native-chessboard';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import globalStyles from '../styles/globalStyles';
+import AnalysisBar from '../components/AnalysisBar';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { useNavigation } from '@react-navigation/native';
+import HomeIcon from '../../assets/homeIcon.png';
 
 
-const Game = () => {
-  let gameObj = {
-    "gameId": 1,
-    "opponentName": "Dhruv Agarwal",
-    "date": "2023/05/11",
-    "moves": [
-      "rnbqkbnr/pp2pppp/3p4/2p5/2B1P3/5N2/PPPP1PPP/RNBQK2R b KQkq - 1 3",
-      "rnbqkb1r/pp2pppp/3p1n2/2p5/2B1P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 2 4",
-      "rnbqkb1r/pp2pppp/3p1n2/2p5/2B1P3/5N2/PPPP1PPP/RNBQ1RK1 b kq - 3 4"
-    ]
-  }
-  const [fen, setFen] = useState(gameObj.moves[0]);
-  const [fenHistory, setFenHistory] = useState(gameObj.moves);
+const Game = ({ route }) => {
+  // let gameObj = {
+  //   "gameId": 1,
+  //   "opponentName": "Dhruv Agarwal",
+  //   "date": "2023/05/11",
+  //   "moves": [
+  //     "rnbqkbnr/pp2pppp/3p4/2p5/2B1P3/5N2/PPPP1PPP/RNBQK2R b KQkq - 1 3",
+  //     "rnbqkb1r/pp2pppp/3p1n2/2p5/2B1P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 2 4",
+  //     "rnbqkb1r/pp2pppp/3p1n2/2p5/2B1P3/5N2/PPPP1PPP/RNBQ1RK1 b kq - 3 4"
+  //   ]
+  // }
+
+  	const navigation = useNavigation();
+	const navToHome = () => {
+		navigation.navigate('Home')
+	}
+
+  const [fen, setFen] = useState(route.params.item.moves[0]);
+  const [fenHistory, setFenHistory] = useState(route.params.item.moves);
   const [currentMoveIndex, setCurrentMoveIndex] = useState(0);
   const chessboardRef = useRef<ChessboardRef>(null);
 
@@ -54,21 +64,27 @@ const Game = () => {
     }
     console.log(fenHistory, currentMoveIndex);
   };
-
+  
   useEffect(() => {
     chessboardRef?.current?.resetBoard(fen);
   }, [fen]);
 
   return ( // Try removing GestureHandlerRootView
+	<SafeAreaView style={globalStyles.container}>
     <View style={[styles.square]}>
-      <GestureHandlerRootView style={{ flex: 1, paddingTop:40 }}>
+	<TouchableOpacity onPress={navToHome}>
+		<Image source={HomeIcon} style={styles.IconStyle} />
+	</TouchableOpacity>
+      <GestureHandlerRootView style={{ flex: 1 }}>
         <Chessboard
           // key={fen}
           fen={fen}
           onMove={onMove}
           ref={chessboardRef}
+          colors={{black: "#769656", white: "#eeeed2"}}
         />
       </GestureHandlerRootView>
+      <AnalysisBar fen={fen}></AnalysisBar>
       <View style={styles.controls}>
         <TouchableOpacity style={styles.button} onPress={undoMove}>
           <Text style={styles.buttonText}>Back</Text>
@@ -78,6 +94,7 @@ const Game = () => {
         </TouchableOpacity>
       </View>
     </View>
+	</SafeAreaView>
   );
 };
 
@@ -91,7 +108,7 @@ const styles = StyleSheet.create({
     // height: screenWidth,
     backgroundColor: '#2E2E2E',
     flex: 1, 
-    // alignItems: 'center',
+    alignItems: 'center',
     justifyContent: 'center'
   },
   controls: {
@@ -107,4 +124,9 @@ const styles = StyleSheet.create({
   buttonText: {
     color: '#fff',
   },
+  IconStyle: {
+	width: 30,
+	height: 30,
+	marginLeft: 10,
+},
 });
