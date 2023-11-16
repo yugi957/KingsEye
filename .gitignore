@@ -2,6 +2,7 @@
 
 # dependencies
 node_modules/
+!node_modules/stockfish/src/stockfish.js
 
 # Expo
 .expo/
