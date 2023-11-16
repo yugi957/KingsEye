@@ -1,32 +1,23 @@
-import React, { useEffect, useState, useCallback, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
 
 const AnalysisBar = ({ fen }) => {
   const [evScore, setEvScore] = useState(null);
   const [principalVariation, setPrincipalVariation] = useState([]);
-
-  function useDebounce(callback, delay) {
-    const latestCallback = useRef(callback);
-    const latestTimeout = useRef(null);
-
-    useEffect(() => {
-      latestCallback.current = callback;
-    }, [callback]);
-
-    return useCallback((...args) => {
-      if (latestTimeout.current) {
-        clearTimeout(latestTimeout.current);
-      }
-      latestTimeout.current = setTimeout(() => {
-        latestCallback.current(...args);
-      }, delay);
-    }, [delay]);
-  }
+  const [isLoading, setIsLoading] = useState(false);
+  let computed_fen = '';
+  let recent_fen = '';
 
   const fetchAnalysis = async () => {
+    if (isLoading) {
+      return;
+    }
+
+    computed_fen = fen;
+    setIsLoading(true);
+
     try {
       console.log("FETCHING ANALYSIS")
-      // Fetch the evaluation score
       const scoreResponse = await fetch('https://kingseye-1cd08c4764e5.herokuapp.com/evaluateScore', {
         method: 'POST',
         headers: {
@@ -35,7 +26,6 @@ const AnalysisBar = ({ fen }) => {
         body: JSON.stringify({ fen }),
       });
 
-      // Fetch the principal variation
       const pvResponse = await fetch('https://kingseye-1cd08c4764e5.herokuapp.com/getPrincipalVariation', {
         method: 'POST',
         headers: {
@@ -54,17 +44,27 @@ const AnalysisBar = ({ fen }) => {
       setPrincipalVariation(pvData.moves);
     } catch (error) {
       console.error(error);
+    } finally {
+      setIsLoading(false);
     }
   };
-
-  const debouncedFetchAnalysis = useDebounce(fetchAnalysis, 1000);
 
   useEffect(() => {
     if (fen) {
       setEvScore("Loading");
-      debouncedFetchAnalysis();
+      recent_fen = fen;
+      fetchAnalysis();
     }
-  }, [fen, debouncedFetchAnalysis]);
+  }, [fen]);
+
+  useEffect(() => {
+    if (isLoading == false) {
+      if (recent_fen != computed_fen) {
+        fetchAnalysis();
+        console.log('spam')
+      }
+    }
+  }, [isLoading]);
 
   const isWhiteWinning = evScore && evScore > 0 || typeof evScore === 'string' && !evScore.includes('-');
   const isBlackWinning = evScore && evScore < 0 || typeof evScore === 'string' && evScore.includes('-');
