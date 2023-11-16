@@ -171,6 +171,8 @@ engine.postMessage("uci");
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+const DEPTH = '10'
+
 app.post('/bestMove', (request, response) => {
   engine.onmessage = function (msg) {
     if (response.headersSent) {
@@ -192,7 +194,7 @@ app.post('/bestMove', (request, response) => {
 
   engine.postMessage('ucinewgame');
   engine.postMessage('position fen ' + request.body.fen);
-  engine.postMessage('go depth 18');
+  engine.postMessage(`go depth ${DEPTH}`);
 });
 
 
@@ -217,7 +219,7 @@ app.post('/evaluateScore', (request, response) => {
 
   engine.postMessage("ucinewgame");
   engine.postMessage("position fen " + request.body.fen);
-  engine.postMessage("go depth 18");
+  engine.postMessage(`go depth ${DEPTH}`);
 });
 
 app.post('/getPrincipalVariation', (request, response) => {
@@ -245,7 +247,7 @@ app.post('/getPrincipalVariation', (request, response) => {
 
   engine.postMessage('ucinewgame');
   engine.postMessage('position fen ' + request.body.fen);
-  engine.postMessage('go depth 18');
+  engine.postMessage(`go depth ${DEPTH}`);
 });
 
 
