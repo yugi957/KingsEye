@@ -185,10 +185,6 @@ const Profile = () => {
 		);
 	};
 
-	if (loading) {
-		return <Text>Loading...</Text>; // Replace with a loading spinner or other loading indicator
-	}
-
 	return (
 		<View style={[globalStyles.container, styles.container]}>
 			<SafeAreaView style={globalStyles.safeArea}>
@@ -205,7 +201,7 @@ const Profile = () => {
 			</SafeAreaView>
 			<View style={styles.row}>
 				<Text style={styles.infoTitle}>Profile Picture</Text>
-				<Image source={profileImage != "base64string" || sampleProfileImage} style={styles.profileImage} />
+				{!loading && <Image source={profileImage != "base64string" || sampleProfileImage} style={styles.profileImage} />}
 			</View>
 			<View style={styles.row}>
 				<Text style={styles.infoTitle}>Email</Text>
