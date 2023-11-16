@@ -171,7 +171,7 @@ engine.postMessage("uci");
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-const DEPTH = '10'
+const DEPTH = '14'
 
 app.post('/bestMove', (request, response) => {
   engine.onmessage = function (msg) {

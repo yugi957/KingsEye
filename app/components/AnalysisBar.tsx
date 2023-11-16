@@ -1,51 +1,71 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
 
 const AnalysisBar = ({ fen }) => {
   const [evScore, setEvScore] = useState(null);
   const [principalVariation, setPrincipalVariation] = useState([]);
 
-  useEffect(() => {
-    const fetchAnalysis = async () => {
-      try {
-        console.log("FETCHING ANALYSIS")
-        // Fetch the evaluation score
-        const scoreResponse = await fetch('https://kingseye-1cd08c4764e5.herokuapp.com/evaluateScore', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ fen }),
-        });
+  function useDebounce(callback, delay) {
+    const latestCallback = useRef(callback);
+    const latestTimeout = useRef(null);
 
-        // Fetch the principal variation
-        const pvResponse = await fetch('https://kingseye-1cd08c4764e5.herokuapp.com/getPrincipalVariation', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ fen }),
-        });
+    useEffect(() => {
+      latestCallback.current = callback;
+    }, [callback]);
 
-        if (!scoreResponse.ok) throw new Error('Error fetching evaluation score');
-        if (!pvResponse.ok) throw new Error('Error fetching principal variation');
-
-        const scoreData = await scoreResponse.json();
-        const pvData = await pvResponse.json();
-
-        setEvScore(scoreData.evaluation);
-        setPrincipalVariation(pvData.moves);
-      } catch (error) {
-        console.error(error);
+    return useCallback((...args) => {
+      if (latestTimeout.current) {
+        clearTimeout(latestTimeout.current);
       }
-    };
-    console.log("FEN", fen)
-    if (fen) {
-      setEvScore("Loading")
-      fetchAnalysis();
+      latestTimeout.current = setTimeout(() => {
+        latestCallback.current(...args);
+      }, delay);
+    }, [delay]);
+  }
+
+  const fetchAnalysis = async () => {
+    try {
+      console.log("FETCHING ANALYSIS")
+      // Fetch the evaluation score
+      const scoreResponse = await fetch('https://kingseye-1cd08c4764e5.herokuapp.com/evaluateScore', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ fen }),
+      });
+
+      // Fetch the principal variation
+      const pvResponse = await fetch('https://kingseye-1cd08c4764e5.herokuapp.com/getPrincipalVariation', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ fen }),
+      });
+
+      if (!scoreResponse.ok) throw new Error('Error fetching evaluation score');
+      if (!pvResponse.ok) throw new Error('Error fetching principal variation');
+
+      const scoreData = await scoreResponse.json();
+      const pvData = await pvResponse.json();
+
+      setEvScore(scoreData.evaluation);
+      setPrincipalVariation(pvData.moves);
+    } catch (error) {
+      console.error(error);
     }
-  }, [fen]);
-  
+  };
+
+  const debouncedFetchAnalysis = useDebounce(fetchAnalysis, 1000);
+
+  useEffect(() => {
+    if (fen) {
+      setEvScore("Loading");
+      debouncedFetchAnalysis();
+    }
+  }, [fen, debouncedFetchAnalysis]);
+
   const isWhiteWinning = evScore && evScore > 0 || typeof evScore === 'string' && !evScore.includes('-');
   const isBlackWinning = evScore && evScore < 0 || typeof evScore === 'string' && evScore.includes('-');
   const isMate = typeof evScore === 'string' && evScore.toLowerCase().includes('mate');
