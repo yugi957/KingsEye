@@ -95,43 +95,39 @@ const Profile = () => {
 
 	useEffect(() => {
 		const userEmail = fbAuth.currentUser.email;
-		fetch('https://kingseye-1cd08c4764e5.herokuapp.com/getUser', {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-			},
-			body: JSON.stringify({ email: userEmail }),
-		})
-			.then(data => {
-				console.log(data)
-				setProfileImage(data.profileImage);
-				setFirstName(data.firstName);
-				setLastName(data.lastName);
-				setEmail(data.email);
-				setLoading(false); // Set loading to false after data has been fetched
-			})
-			.catch(error => console.error('Error:', error));
-	}, []);
-
-
+		const url = `https://kingseye-1cd08c4764e5.herokuapp.com/getUser?email=${encodeURIComponent(userEmail)}`;
+	  
+		fetch(url)
+		  .then(response => response.json())
+		  .then(data => {
+			setProfileImage(data.profileImage);
+			setFirstName(data.firstName);
+			setLastName(data.lastName);
+			setEmail(data.email);
+			setLoading(false);
+		  })
+		  .catch(error => console.error('Error:', error));
+	  }, []);
+	  
 	const handleEditClick = () => {
 		setEditMode(!editMode);
 
 		if (editMode) {
 			fetch('https://kingseye-1cd08c4764e5.herokuapp.com/setUserData', {
-				method: 'POST',
+				method: 'PATCH',
 				headers: {
 					'Content-Type': 'application/json',
 				},
 				body: JSON.stringify({ email: fbAuth.currentUser.email, fname: firstName, lname: lastName, photo: profileImage }),
 			})
-				.then(response => response.json())
-				.then(data => {
-					console.log('user updated');
-				})
-				.catch(error => console.error('Error:', error));
+			.then(response => response.json())
+			.then(data => {
+				console.log('user updated');
+			})
+			.catch(error => console.error('Error:', error));
 			setEditIconSource(profileEditIcon);
-		} else {
+		}
+		 else {
 			setEditIconSource(profileSaveIcon);
 		}
 	};

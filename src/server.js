@@ -77,23 +77,31 @@ app.post('/googleLogin', async (req, res) => {
   }
 });
 
-app.post('/getUser', (req, res) => {
+app.get('/getUser', (req, res) => {
   var userData = {};
   async function run() {
     try {
       await client.connect();
       const collection = client.db("kings-eye").collection("user-database");
 
-      const query = { email: req.body.email };
+      const query = { email: req.query.email };
       const user = await collection.findOne(query);
-      userData = {
-        email: user["email"],
-        firstName: user["fname"],
-        lastName: user["lname"],
-        profileImage: user["profilePic"],
-      };
 
-      res.json(userData);
+      if (user) {
+        userData = {
+          email: user["email"],
+          firstName: user["fname"],
+          lastName: user["lname"],
+          profileImage: user["profilePic"],
+        };
+        res.json(userData);
+      } else {
+        res.status(404).json({ message: "User not found" });
+      }
+
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Internal server error" });
     } finally {
       await client.close();
     }
@@ -102,7 +110,8 @@ app.post('/getUser', (req, res) => {
   run().catch(console.dir);
 });
 
-app.post('/setUserData', async (req, res) => {
+
+app.patch('/setUserData', async (req, res) => {
   try {
     await client.connect();
     const collection = client.db("kings-eye").collection("user-database");
@@ -110,10 +119,20 @@ app.post('/setUserData', async (req, res) => {
     const query = { email: req.body.email };
     const newValues = { $set: { fname: req.body.fname, lname: req.body.lname, profilePic: req.body.photo } };
 
-    await collection.updateOne(query, newValues);
+    const result = await collection.updateOne(query, newValues);
+    
+    if (result.matchedCount === 0) {
+      res.status(404).json({ message: 'User not found' });
+    } else if (result.modifiedCount === 0) {
+      res.status(200).json({ message: 'No changes made to the user data' });
+    } else {
+      res.status(200).json({ message: 'User data updated successfully' });
+    }
   }
   catch (error) {
-    res.status(400).json({ message: error.message })
+    res.status(400).json({ message: error.message });
+  } finally {
+    await client.close();
   }
 });
 
@@ -122,7 +141,7 @@ app.post('/saveGame', async (req, res) => {
     await client.connect();
     const collection = client.db("kings-eye").collection("user-database");
 
-    const query = { 
+    const query = {
       email: req.body.email,
     };
 
@@ -132,6 +151,8 @@ app.post('/saveGame', async (req, res) => {
       "gameID": games.length + 1,
       "opponentName": req.body.opponent,
       "date": req.body.date,
+      "title": req.body.title,
+      "starred": false,
       "moves": [req.body.fen_string]
     });
 
@@ -140,7 +161,7 @@ app.post('/saveGame', async (req, res) => {
         games: games
       }
     };
- 
+
     await collection.updateOne(query, updateQuery);
   }
   catch (error) {
@@ -148,24 +169,28 @@ app.post('/saveGame', async (req, res) => {
   }
 });
 
-app.post('/getGames', async (req, res) => {
+app.get('/getGames', async (req, res) => {
   try {
     await client.connect();
     const collection = client.db("kings-eye").collection("user-database");
 
-    const query = { 
-      email: req.body.email,
-    };
+    const query = { email: req.query.email };
 
     const user = await collection.findOne(query);
-    let games = user["games"];
-
-    res.json({ pastGames: games });
-  }
-  catch (error) {
-    res.status(400).json({ message: error.message })
+    if (user) {
+      let games = user["games"];
+      res.json({ pastGames: games });
+    } else {
+      res.status(404).json({ message: "User not found" });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(400).json({ message: error.message });
+  } finally {
+    await client.close();
   }
 });
+
 
 engine.postMessage("uci");
 app.use(express.json());

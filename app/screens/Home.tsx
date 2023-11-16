@@ -31,24 +31,29 @@ const Home = () => {
     const [games, setGames] = useState([]);
     
     useEffect(() => {
-        const postData = async () => {
-          console.log('POSTING DATA')
-          const response = await fetch("https://kingseye-1cd08c4764e5.herokuapp.com/getGames", {
-              method: 'POST',
-              headers: {
-                  'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({ email: "andychange@gmail.com" }), // CHANGE TO auth.currentUser?.email
-          });
+      const fetchData = async () => {
+        console.log('FETCHING DATA');
+        const userEmail = "andychange@gmail.com"; // Replace with auth.currentUser?.email
+        const url = `https://kingseye-1cd08c4764e5.herokuapp.com/getGames?email=${encodeURIComponent(userEmail)}`;
+    
+        try {
+          const response = await fetch(url);
           console.log('RESPONSE', response);
-
+    
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+    
           const data = await response.json();
           setGames(data.pastGames);
           console.log('DATA', data);
-        };
-
-        postData();
-    }, []);
+        } catch (error) {
+          console.error('Error:', error);
+        }
+      };
+    
+      fetchData();
+    }, []);    
 
     useEffect(() => {
       console.log('GAMES', games)
