@@ -21,25 +21,17 @@
 
 ## Stockfish commands (curl calls)
 ### Get next bext moves
-- curl -X POST https://kingseye-1cd08c4764e5.herokuapp.com/bestmove \
--H "Content-Type: application/json" \
--d '{"fen": "rnbqkbnr/pppp1ppp/8/4p3/4P3/5N2/PPPP1PPP/RNBQKB1R b - - 0 14"}'
+- curl "https://kingseye-1cd08c4764e5.herokuapp.com/bestMove?fen=rnbqkbnr/pppp1ppp/8/4p3/4P3/5N2/PPPP1PPP/RNBQKB1R%20b%20-%20-%200%2014"
 > This outputs {"firstMove":"b8c6","secondMove":"b1c3"}
 
-### Get EV Score
-- curl -X POST https://kingseye-1cd08c4764e5.herokuapp.com/evaluateScore \
--H "Content-Type: application/json" \
--d '{"fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"}'
+### Get Evaluation Score
+- curl "https://kingseye-1cd08c4764e5.herokuapp.com/evaluationScore?fen=rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR%20w%20KQkq%20-%200%201"
 > This outputs {"evaluation": 17}, meaning white is at advantage. Negative score would mean black is at advantage
 
-- curl -X POST https://kingseye-1cd08c4764e5.herokuapp.com/evaluateScore \
--H "Content-Type: application/json" \
--d '{"fen": "8/8/8/8/8/7R/6RK/6k1 b - - 0 1"}'
+- curl "https://kingseye-1cd08c4764e5.herokuapp.com/evaluationScore?fen=8/8/8/8/8/7R/6RK/6k1%20b%20-%20-%200%201"
 > This outputs {"evaluation": 'Mate in -2'}, negative meaning black
 
 ### Get Principal Variation
-- curl -X POST https://kingseye-1cd08c4764e5.herokuapp.com/getPrincipalVariation \
--H "Content-Type: application/json" \
--d '{"fen": "r4rk1/p2qn1pp/2pbbp2/3pp3/4P3/Q1Nn1N2/P1PBBPPP/R4RK1 w - - 0 14"}'
+- curl "https://kingseye-1cd08c4764e5.herokuapp.com/principalVariation?fen=r4rk1/p2qn1pp/2pbbp2/3pp3/4P3/Q1Nn1N2/P1PBBPPP/R4RK1%20w%20-%20-%200%2014"
 > Gives optimal moves for a bunch of turns. First 2 moves should always be same as the /bestMove api call
 ```{"moves":["a3a5","d3c5","d2c1","d5d4","c3a4","c5e4","f3d2","e4d2","c1d2","d6c7","a5a6","d7d6","d2a5","c7b6","a5d2","e7d5","a6d3","b6c7","c2c4","d5f4","d2f4","e5f4","a1b1"]}```

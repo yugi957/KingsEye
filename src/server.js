@@ -120,7 +120,7 @@ app.patch('/setUserData', async (req, res) => {
     const newValues = { $set: { fname: req.body.fname, lname: req.body.lname, profilePic: req.body.photo } };
 
     const result = await collection.updateOne(query, newValues);
-    
+
     if (result.matchedCount === 0) {
       res.status(404).json({ message: 'User not found' });
     } else if (result.modifiedCount === 0) {
@@ -198,7 +198,7 @@ app.use(express.urlencoded({ extended: true }));
 
 const DEPTH = '12'
 
-app.post('/bestMove', (request, response) => {
+app.get('/bestMove', (request, response) => {
   engine.onmessage = function (msg) {
     if (response.headersSent) {
       return;
@@ -218,12 +218,12 @@ app.post('/bestMove', (request, response) => {
   };
 
   engine.postMessage('ucinewgame');
-  engine.postMessage('position fen ' + request.body.fen);
+  engine.postMessage('position fen ' + request.query.fen);
   engine.postMessage(`go depth ${DEPTH}`);
 });
 
 
-app.post('/evaluateScore', (request, response) => {
+app.get('/evaluationScore', (request, response) => {
   let evaluationScore = null;
   engine.onmessage = function (msg) {
     console.log(msg);
@@ -243,11 +243,11 @@ app.post('/evaluateScore', (request, response) => {
   }
 
   engine.postMessage("ucinewgame");
-  engine.postMessage("position fen " + request.body.fen);
+  engine.postMessage("position fen " + request.query.fen);
   engine.postMessage(`go depth ${DEPTH}`);
 });
 
-app.post('/getPrincipalVariation', (request, response) => {
+app.get('/principalVariation', (request, response) => {
   let principalVariation = null;
   let isGameOver = false;
 
@@ -271,7 +271,7 @@ app.post('/getPrincipalVariation', (request, response) => {
   };
 
   engine.postMessage('ucinewgame');
-  engine.postMessage('position fen ' + request.body.fen);
+  engine.postMessage('position fen ' + request.query.fen);
   engine.postMessage(`go depth ${DEPTH}`);
 });
 

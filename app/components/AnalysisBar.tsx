@@ -18,20 +18,18 @@ const AnalysisBar = ({ fen }) => {
 
     try {
       console.log("FETCHING ANALYSIS")
-      const scoreResponse = await fetch('https://kingseye-1cd08c4764e5.herokuapp.com/evaluateScore', {
-        method: 'POST',
+      const scoreResponse = await fetch(`https://kingseye-1cd08c4764e5.herokuapp.com/evaluationScore?fen=${fen}`, {
+        method: 'GET',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ fen }),
       });
 
-      const pvResponse = await fetch('https://kingseye-1cd08c4764e5.herokuapp.com/getPrincipalVariation', {
-        method: 'POST',
+      const pvResponse = await fetch(`https://kingseye-1cd08c4764e5.herokuapp.com/principalVariation?fen=${fen}`, {
+        method: 'GET',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ fen }),
       });
 
       if (!scoreResponse.ok) throw new Error('Error fetching evaluation score');
