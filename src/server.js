@@ -179,21 +179,17 @@ app.patch('/updateGame', async (req, res) => {
     const userEmail = req.body.email;
     const gameIdToUpdate = req.body.gameID;
 
-    // Find the user by email
     const user = await collection.findOne({ email: userEmail });
-    
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
     
-    // Find the game index by gameID
     const gameIndex = user.games.findIndex(game => game.gameID === gameIdToUpdate);
     
     if (gameIndex === -1) {
       return res.status(404).json({ message: 'Game not found' });
     }
 
-    // Construct the update query based on provided fields
     const updateQuery = { $set: {} };
 
     if ('moves' in req.body) {
@@ -209,12 +205,10 @@ app.patch('/updateGame', async (req, res) => {
       updateQuery.$set[`games.${gameIndex}.starred`] = req.body.starred;
     }
 
-    // Check if there's anything to update
     if (Object.keys(updateQuery.$set).length === 0) {
       return res.status(400).json({ message: 'No valid fields provided for update' });
     }
 
-    // Update the user's game
     await collection.updateOne({ email: userEmail }, updateQuery);
 
     res.status(200).json({ message: 'Game updated successfully' });
@@ -224,43 +218,6 @@ app.patch('/updateGame', async (req, res) => {
   }
 });
 
-app.patch('/starGame', async (req, res) => {
-  try {
-    await client.connect();
-    const collection = client.db("kings-eye").collection("user-database");
-
-    const userEmail = req.body.email;
-    const gameIdToStar = req.body.gameID;
-
-    const user = await collection.findOne({ email: userEmail });
-    
-    if (!user) {
-      return res.status(404).json({ message: 'User not found' });
-    }
-    
-    const games = user["games"];
-    const gameIndex = games.findIndex(game => game.gameID === gameIdToStar);
-    
-    if (gameIndex === -1) {
-      return res.status(404).json({ message: 'Game not found' });
-    }
-
-    games[gameIndex].starred = !games[gameIndex].starred;
-
-    const updateQuery = {
-      $set: {
-        ["games." + gameIndex]: games[gameIndex]
-      }
-    };
-
-    await collection.updateOne({ email: userEmail }, updateQuery);
-
-    res.status(200).json({ message: 'Game starred status toggled successfully' });
-  }
-  catch (error) {
-    res.status(400).json({ message: error.message });
-  }
-});
 
 app.get('/getGames', async (req, res) => {
   try {
@@ -284,6 +241,40 @@ app.get('/getGames', async (req, res) => {
   }
 });
 
+app.delete('/deleteGame', async (req, res) => {
+  try {
+    await client.connect();
+    const collection = client.db("kings-eye").collection("user-database");
+
+    const userEmail = req.body.email;
+    const gameIdToDelete = req.body.gameID;
+
+    const user = await collection.findOne({ email: userEmail });
+    
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    
+    const updatedGames = user.games.filter(game => game.gameID !== gameIdToDelete);
+
+    if (updatedGames.length === user.games.length) {
+      return res.status(404).json({ message: 'Game not found' });
+    }
+
+    const updateQuery = {
+      $set: {
+        games: updatedGames
+      }
+    };
+
+    await collection.updateOne({ email: userEmail }, updateQuery);
+
+    res.status(200).json({ message: 'Game deleted successfully' });
+  }
+  catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+});
 
 engine.postMessage("uci");
 app.use(express.json());
