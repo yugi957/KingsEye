@@ -171,6 +171,59 @@ app.post('/saveGame', async (req, res) => {
   }
 });
 
+app.patch('/updateGame', async (req, res) => {
+  try {
+    await client.connect();
+    const collection = client.db("kings-eye").collection("user-database");
+
+    const userEmail = req.body.email;
+    const gameIdToUpdate = req.body.gameID;
+
+    // Find the user by email
+    const user = await collection.findOne({ email: userEmail });
+    
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    
+    // Find the game index by gameID
+    const gameIndex = user.games.findIndex(game => game.gameID === gameIdToUpdate);
+    
+    if (gameIndex === -1) {
+      return res.status(404).json({ message: 'Game not found' });
+    }
+
+    // Construct the update query based on provided fields
+    const updateQuery = { $set: {} };
+
+    if ('moves' in req.body) {
+      updateQuery.$set[`games.${gameIndex}.moves`] = req.body.moves;
+    }
+    if ('opponentName' in req.body) {
+      updateQuery.$set[`games.${gameIndex}.opponentName`] = req.body.opponentName;
+    }
+    if ('title' in req.body) {
+      updateQuery.$set[`games.${gameIndex}.title`] = req.body.title;
+    }
+    if ('starred' in req.body) {
+      updateQuery.$set[`games.${gameIndex}.starred`] = req.body.starred;
+    }
+
+    // Check if there's anything to update
+    if (Object.keys(updateQuery.$set).length === 0) {
+      return res.status(400).json({ message: 'No valid fields provided for update' });
+    }
+
+    // Update the user's game
+    await collection.updateOne({ email: userEmail }, updateQuery);
+
+    res.status(200).json({ message: 'Game updated successfully' });
+  }
+  catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+});
+
 app.patch('/starGame', async (req, res) => {
   try {
     await client.connect();
