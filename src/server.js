@@ -175,23 +175,18 @@ app.patch('/updateGame', async (req, res) => {
   try {
     await client.connect();
     const collection = client.db("kings-eye").collection("user-database");
-
     const userEmail = req.body.email;
     const gameIdToUpdate = req.body.gameID;
-
     const user = await collection.findOne({ email: userEmail });
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
-    
     const gameIndex = user.games.findIndex(game => game.gameID === gameIdToUpdate);
     
     if (gameIndex === -1) {
       return res.status(404).json({ message: 'Game not found' });
     }
-
     const updateQuery = { $set: {} };
-
     if ('moves' in req.body) {
       updateQuery.$set[`games.${gameIndex}.moves`] = req.body.moves;
     }
@@ -204,11 +199,9 @@ app.patch('/updateGame', async (req, res) => {
     if ('starred' in req.body) {
       updateQuery.$set[`games.${gameIndex}.starred`] = req.body.starred;
     }
-
     if (Object.keys(updateQuery.$set).length === 0) {
       return res.status(400).json({ message: 'No valid fields provided for update' });
     }
-
     await collection.updateOne({ email: userEmail }, updateQuery);
 
     res.status(200).json({ message: 'Game updated successfully' });
@@ -223,9 +216,7 @@ app.get('/getGames', async (req, res) => {
   try {
     await client.connect();
     const collection = client.db("kings-eye").collection("user-database");
-
     const query = { email: req.query.email };
-
     const user = await collection.findOne(query);
     if (user) {
       let games = user["games"];
@@ -245,30 +236,22 @@ app.delete('/deleteGame', async (req, res) => {
   try {
     await client.connect();
     const collection = client.db("kings-eye").collection("user-database");
-
     const userEmail = req.body.email;
     const gameIdToDelete = req.body.gameID;
-
     const user = await collection.findOne({ email: userEmail });
-    
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
-    
     const updatedGames = user.games.filter(game => game.gameID !== gameIdToDelete);
-
     if (updatedGames.length === user.games.length) {
       return res.status(404).json({ message: 'Game not found' });
     }
-
     const updateQuery = {
       $set: {
         games: updatedGames
       }
     };
-
     await collection.updateOne({ email: userEmail }, updateQuery);
-
     res.status(200).json({ message: 'Game deleted successfully' });
   }
   catch (error) {
