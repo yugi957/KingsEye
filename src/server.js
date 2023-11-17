@@ -146,7 +146,9 @@ app.post('/saveGame', async (req, res) => {
     };
 
     const user = await collection.findOne(query);
+    console.log(user)
     let games = user["games"];
+    console.log(games)
     games.push({
       "gameID": games.length + 1,
       "opponentName": req.body.opponent,
