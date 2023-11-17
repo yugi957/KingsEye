@@ -146,9 +146,7 @@ app.post('/saveGame', async (req, res) => {
     };
 
     const user = await collection.findOne(query);
-    console.log(user)
     let games = user["games"];
-    console.log(games)
     games.push({
       "gameID": games.length + 1,
       "opponentName": req.body.opponent,
@@ -165,9 +163,49 @@ app.post('/saveGame', async (req, res) => {
     };
 
     await collection.updateOne(query, updateQuery);
+
+    res.status(200).json({ message: 'Game saved successfully' });
   }
   catch (error) {
     res.status(400).json({ message: error.message })
+  }
+});
+
+app.patch('/starGame', async (req, res) => {
+  try {
+    await client.connect();
+    const collection = client.db("kings-eye").collection("user-database");
+
+    const userEmail = req.body.email;
+    const gameIdToStar = req.body.gameID;
+
+    const user = await collection.findOne({ email: userEmail });
+    
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    
+    const games = user["games"];
+    const gameIndex = games.findIndex(game => game.gameID === gameIdToStar);
+    
+    if (gameIndex === -1) {
+      return res.status(404).json({ message: 'Game not found' });
+    }
+
+    games[gameIndex].starred = !games[gameIndex].starred;
+
+    const updateQuery = {
+      $set: {
+        ["games." + gameIndex]: games[gameIndex]
+      }
+    };
+
+    await collection.updateOne({ email: userEmail }, updateQuery);
+
+    res.status(200).json({ message: 'Game starred status toggled successfully' });
+  }
+  catch (error) {
+    res.status(400).json({ message: error.message });
   }
 });
 
