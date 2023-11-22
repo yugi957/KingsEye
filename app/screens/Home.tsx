@@ -1,11 +1,7 @@
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView, TextInput, Image, FlatList } from 'react-native';
-import { Camera, CameraType } from 'expo-camera';
-import * as Permissions from 'expo-permissions';
-import {NavigationContainer, useNavigation} from '@react-navigation/native';
+import { useNavigation} from '@react-navigation/native';
 import React, { useState, useEffect, useRef } from 'react'
 import { FIREBASE_AUTH } from '../../FirebaseConfig'
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
-import { getAuth, signInWithPopup, GoogleAuthProvider, OAuthProvider } from "firebase/auth";
 import globalStyles from '../styles/globalStyles';
 import profileImage from '../../assets/profile.png';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -15,7 +11,6 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 const Home = () => {
 		const fbAuth = FIREBASE_AUTH;
-		const auth = getAuth();
 		
 		const insets = useSafeAreaInsets();
 
@@ -33,7 +28,7 @@ const Home = () => {
     useEffect(() => {
       const fetchData = async () => {
         console.log('FETCHING DATA');
-        const userEmail = "andychange@gmail.com"; // Replace with auth.currentUser?.email
+        const userEmail = "andychange@gmail.com"; // Replace with fbAuth.currentUser?.email
         const url = `https://kingseye-1cd08c4764e5.herokuapp.com/getGames?email=${encodeURIComponent(userEmail)}`;
     
         try {

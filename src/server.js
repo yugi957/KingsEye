@@ -52,31 +52,6 @@ app.post('/signup', async (req, res) => {
   }
 });
 
-app.post('/googleLogin', async (req, res) => {
-  try {
-    await client.connect();
-    photo = req.body.photo
-    const user = await client.db("kings-eye").collection("user-database").findOne({ email: req.body.email });
-    if (user) {
-      await client.close();
-      res.json({ message: 'Email in use.' });
-    } else {
-      await client.db("kings-eye").collection("user-database").insertOne(
-        {
-          email: req.body.email,
-          id: stringToHash(req.body.email),
-          fname: req.body.name.split(" ")[0],
-          lname: req.body.name.split(" ")[1],
-          profilePic: 'base64string',
-          games: []
-        });
-      res.json({ message: 'Data recieved' });
-    }
-  } catch (err) {
-    console.error(err);
-  }
-});
-
 app.get('/getUser', (req, res) => {
   var userData = {};
   async function run() {

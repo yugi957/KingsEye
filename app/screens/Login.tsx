@@ -1,23 +1,17 @@
-import { Alert, View, Modal, TextInput, StyleSheet, Button, Text, TouchableOpacity, ActivityIndicator, KeyboardAvoidingView } from 'react-native'
-import { NavigationContainer, useNavigation } from '@react-navigation/native';
-import React, { useState, useEffect } from 'react'
-import { FIREBASE_AUTH, GOOGLE_PROVIDER } from '../../FirebaseConfig'
-import { GoogleSignin } from '@react-native-google-signin/google-signin';
+import { Alert, View, TextInput, StyleSheet, Text, TouchableOpacity, ActivityIndicator, KeyboardAvoidingView } from 'react-native'
+import { useNavigation } from '@react-navigation/native';
+import React, { useState } from 'react'
+import { FIREBASE_AUTH } from '../../FirebaseConfig'
 import globalStyles from '../styles/globalStyles';
-import { getAuth, sendPasswordResetEmail, signInWithPopup, GoogleAuthProvider, signInWithEmailAndPassword } from "firebase/auth";
-import { UserImportBuilder } from 'firebase-admin/lib/auth/user-import-builder';
+import { signInWithEmailAndPassword } from "firebase/auth";
 import { SafeAreaView } from 'react-native-safe-area-context';
-// import { StatusBar } from 'expo-status-bar';
 
 
 const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
-    // const [resetEmail, setResetEmail] = React.useState('');
-    // const [isModalVisible, setIsModalVisible] = React.useState(false);
     const [showForgotPassword, setShowForgotPassword] = useState(false);
-    const auth = getAuth();
 
     const navigation = useNavigation();
     const navToSignup = () => {
@@ -37,9 +31,6 @@ const Login = () => {
         }
     }
 
-    // const handleForgotPassword = () => {
-    //     setIsModalVisible(true);
-    // };
     const handleForgotPasswordClick = () => {
 		setShowForgotPassword(!showForgotPassword);
 		showPasswordForgotConfirmation();
@@ -48,7 +39,6 @@ const Login = () => {
 		Alert.prompt(
 			"Reset Password",
 			"Enter your email to reset your password",
-            //change placeholder to email
             [
 			  {
 				text: "Cancel",
@@ -86,50 +76,6 @@ const Login = () => {
                             <TouchableOpacity style={globalStyles.generalButton} onPress={signIn}>
                                 <Text style={styles.loginButtonText}>Sign In</Text>
                             </TouchableOpacity>
-                            {/* <TouchableOpacity style={globalStyles.generalButton} onPress={signUp}>
-                                <Text style={styles.loginButtonText}>Sign Up</Text>
-                            </TouchableOpacity> */}
-
-                            {/* sign in with google */}
-                            <TouchableOpacity
-                                style={globalStyles.generalButton}
-                                onPress={() => {
-                                    signInWithPopup(auth, GOOGLE_PROVIDER)
-                                        .then((result) => {
-                                            // This gives you a Google Access Token. You can use it to access the Google API.
-                                            const credential = GoogleAuthProvider.credentialFromResult(result);
-                                            if (credential) {
-                                                const token = credential.accessToken;
-                                            }
-                                            fetch("https://kingseye-1cd08c4764e5.herokuapp.com/googleLogin", {
-                                                method: 'POST',
-                                                headers: {
-                                                    'Content-Type': 'application/json',
-                                                },
-                                                body: JSON.stringify({ name: result.user.displayName, photo: result.user.photoURL, email: result.user.email })
-                                            })
-                                                .then(response => response.json())
-                                                .then(data => {
-                                                    console.log(data);
-                                                    navigation.navigate('Home');
-                                                })
-                                                .catch((error) => console.error('Error:', error));
-                                        })
-                                        .catch((error) => {
-                                            // Handle Errors here.
-                                            const errorCode = error.code;
-                                            const errorMessage = error.message;
-                                            // The email of the user's account used.
-                                            const email = error.customData.email;
-                                            // The AuthCredential type that was used.
-                                            const credential = GoogleAuthProvider.credentialFromError(error);
-                                            // ...
-                                        });
-                                }}
-                            >
-                                <Text style={styles.loginButtonText}>Sign In With Google</Text>
-                            </TouchableOpacity>
-
                         </>
                     )}
                     <Text style={styles.forgotPassword} onPress={handleForgotPasswordClick}>Forgot your password?</Text>
