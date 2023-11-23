@@ -111,7 +111,7 @@ app.get('/getUser', (req, res) => {
 });
 
 
-app.patch('/setUserData', async (req, res) => {
+app.post('/setUserData', async (req, res) => {
   try {
     await client.connect();
     const collection = client.db("kings-eye").collection("user-database");
