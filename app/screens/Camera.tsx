@@ -11,6 +11,7 @@ import rejectImage from '../../assets/rejectImage.png';
 import retakeImage from '../../assets/retakeImage.png'
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import * as ImageManipulator from 'expo-image-manipulator';
 import { Dimensions } from 'react-native';
 // import Reanimated, {
 //     useAnimatedProps,
@@ -60,7 +61,9 @@ const CameraComponent = () => {
         if (cameraRef.current) {
             const options = { quality: 0.5, base64: true };
             const data = await (cameraRef.current as Camera).takePictureAsync(options);
+            console.log(data.uri);
             setCapturedImage(data.uri);
+            console.log("After taking: URI: ", capturedImage);
             setShowCamera(false);
         }
     }
@@ -70,34 +73,84 @@ const CameraComponent = () => {
             console.error("No image captured");
             return;
         }
-        navigation.navigate("Confirmation");
-        // try {
-        //     const imageResponse = await fetch(capturedImage.uri);
-        //     const blob = await imageResponse.blob();
+
+        const preblob = await fetchAndConvertToBlob(capturedImage);
+        const pre = await readBlobAsBase64(preblob);
+
+        console.log("pre length: ", pre.length)
     
-        //     let formData = new FormData();
-        //     formData.append("image", blob, 'upload.jpg');
+        // Resize the image and wait for the operation to complete
+        const resizedImageUri = await resizeImage(capturedImage);
+        setCapturedImage(resizedImageUri);
     
-        //     let response = await fetch("https://your-server.com/upload", {
-        //         method: "POST",
-        //         body: formData,
-        //         headers: {
-        //             'Accept': 'application/json',
-        //             'Content-Type': 'multipart/form-data',
-        //         },
-        //     });
+        // Fetch the resized image and convert to blob
+        const blob = await fetchAndConvertToBlob(resizedImageUri);
     
-        //     let responseJson = await response.json();
-        //     console.log(responseJson);
+        // Read the blob as base64 and send it
+        const base64data = await readBlobAsBase64(blob);
+        console.log('post length: ', base64data.length);
+        console.log('64 type: ', typeof(base64data));
+        const image64 = base64data.split(",")[1];
+        console.log('start of string: ', image64.slice(0,100));
+        await sendBase64Image(image64);
     
-            // navigation.navigate("Game", { image: capturedImage });
-            
+        // Navigate to the next screen
+        navigation.navigate("Game", { image: resizedImageUri });
     
-        // } catch (error) {
-        //     console.error("Error uploading image: ", error);
-        // }
-    
+        // Reset the capturedImage state
         setCapturedImage(null);
+    };
+
+    const resizeImage = async (uri) => {
+        checkImageSize(uri)
+        const manipResult = await ImageManipulator.manipulateAsync(
+            uri,
+            [{ resize: { width: 640, height: 640 } }],
+            { compress: 0.7, format: ImageManipulator.SaveFormat.JPEG }
+        );
+        checkImageSize(manipResult)
+        return manipResult.uri;
+    };
+    
+    const fetchAndConvertToBlob = async (uri) => {
+        const imageResponse = await fetch(uri);
+        return await imageResponse.blob();
+    };
+
+    const readBlobAsBase64 = (blob) => {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(reader.result);
+            reader.onerror = reject;
+            reader.readAsDataURL(blob); 
+        });
+    };
+
+    const sendBase64Image = async (base64Image) => {
+        const url = "https://rbz0ltdjwg.execute-api.us-east-2.amazonaws.com/Development/process-image";
+        const headers = {
+            'Accept': '*/*',
+            'Content-Type': 'text/plain',
+        };
+        try {
+            const response = await fetch(url, {
+                method: "POST",
+                body: base64Image,
+                headers: headers,
+            });
+            const responseJson = await response.json();
+            console.log(responseJson);
+        } catch (error) {
+            console.error("Error uploading image: ", error);
+        }
+    };
+
+    const checkImageSize = (uri) => {
+        Image.getSize(uri, (width, height) => {
+            console.log(`The image dimensions are ${width}x${height}`);
+        }, (error) => {
+            console.error(`Couldn't get the image size: ${error.message}`);
+        });
     };
 
     const handleRetakePicture = () => {
