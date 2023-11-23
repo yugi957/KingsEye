@@ -8,17 +8,13 @@ import profileSaveIcon from '../../assets/editDoneIcon.png';
 import HomeIcon from '../../assets/homeIcon.png';
 import { getAuth, sendPasswordResetEmail, signOut } from "firebase/auth";
 import { FIREBASE_AUTH } from '../../FirebaseConfig';
-import { launchImageLibrary } from 'react-native-image-picker';
 import * as FileSystem from 'expo-file-system';
-import * as ImagePicker from 'react-native-image-picker';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import * as ImagePicker from 'expo-image-picker';
+import * as ImageManipulator from 'expo-image-manipulator';
+import basePfp from '../../assets/base_pfp.png';
 
 const Profile = () => {
-
-	//add logic here for pull image from db?
-	//pfpImage = smth from db
-	//tool button is for things like change password/username etc. buttons we can basically use to change profile features
-	//not sure how the extent of how much we will use it tho
 
 	const [editMode, setEditMode] = useState(false);
 	const [profileImage, setProfileImage] = React.useState(null);
@@ -26,111 +22,99 @@ const Profile = () => {
 	const [firstName, setFirstName] = useState('Fname');
 	const [lastName, setLastName] = useState('Lname');
 	const [editIconSource, setEditIconSource] = useState(profileEditIcon);
-	const [showImageOptions, setShowImageOptions] = useState(false);
 	const [showChangePassword, setShowChangePassword] = useState(false);
 	const [loading, setLoading] = useState(true);
 
 	const fbAuth = FIREBASE_AUTH;
 
-	const handleSubmit = (e) => {
-		e.preventDefault();
-	}
-
-	const handleFileUpload = async (e) => {
-		const file = e.target.files;
-		console.log(file);
-	}
-
 	const handleSignOut = async () => {
-		try {
-			await fbAuth.signOut();
-			navigation.navigate('Login');
-			// Handle successful sign out here
-		} catch (error) {
-			// Handle error here
-		}
+		await fbAuth.signOut();
+		navigation.navigate('Login');
 	};
 
 	const handleSignOutClick = () => {
 		showSignOutConfirmation();
-	}	
+	}
 
-	// function convertToBase64(file) {
-	// 	return new Promise((resolve, reject) => {
-	// 		const fileReader = new FileReader();
-	// 		fileReader.readAsDataURL(file);
-	// 		fileReader.onload = () => {
-	// 			resolve(fileReader.result);
-	// 		};
-	// 		fileReader.onerror = (error) => {
-	// 			reject(error);
-	// 		}
-	// 	})
-	// }
+	const resizeImage = async (uri) => {
+		try {
+			const manipResult = await ImageManipulator.manipulateAsync(
+				uri,
+				[{ resize: { width: 200, height: 200 } }],
+				{ compress: 0.5, format: ImageManipulator.SaveFormat.JPEG }
+			);
 
-	const convertImageToBase64 = async (uri) => {
-		const base64 = await FileSystem.readAsStringAsync(uri, { encoding: FileSystem.EncodingType.Base64 });
-		return base64;
+			const base64 = await FileSystem.readAsStringAsync(manipResult.uri, {
+				encoding: FileSystem.EncodingType.Base64,
+			});
+
+			return `data:image/jpeg;base64,${base64}`;
+		} catch (err) {
+			console.log(err);
+			return null;
+		}
 	};
 
-	const handleImageOptionsClick = () => {
-		ImagePicker.launchImageLibrary({
-			mediaType: 'photo',
-			includeBase64: false,
-			maxHeight: 200,
-			maxWidth: 200,
-		}, response => {
-			if (response.didCancel) {
-				console.log('User cancelled image picker');
-			} else if (response.error) {
-				console.log('ImagePicker Error: ', response.error);
-			} else {
-				const source = { uri: response.assets[0].uri };
-				console.log(convertImageToBase64(source))
-				setProfileImage(source);
-			}
+	const handleImageOptionsClick = async () => {
+		const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+		if (status !== 'granted') {
+			alert('Sorry, we need camera roll permissions to edit profile picture!');
+		}
+
+		let result = await ImagePicker.launchImageLibraryAsync({
+			mediaTypes: ImagePicker.MediaTypeOptions.Images,
+			allowsEditing: true,
+			aspect: [1, 1],
+			quality: .5,
 		});
-		setShowImageOptions(!showImageOptions);
+
+		if (!result.canceled) {
+			const resizedBase64Image = await resizeImage(result.uri);
+			if (resizedBase64Image) {
+				setProfileImage(resizedBase64Image);
+			}
+		}
 	};
+
 
 	useEffect(() => {
 		const userEmail = fbAuth.currentUser.email;
 		const url = `https://kingseye-1cd08c4764e5.herokuapp.com/getUser?email=${encodeURIComponent(userEmail)}`;
-	  
+
 		fetch(url)
-		  .then(response => response.json())
-		  .then(data => {
-			setProfileImage(data.profileImage);
-			setFirstName(data.firstName);
-			setLastName(data.lastName);
-			setEmail(data.email);
-			setLoading(false);
-		  })
-		  .catch(error => console.error('Error:', error));
-	  }, []);
-	  
+			.then(response => response.json())
+			.then(data => {
+				setProfileImage(data.profileImage);
+				setFirstName(data.firstName);
+				setLastName(data.lastName);
+				setEmail(data.email);
+				setLoading(false);
+			})
+			.catch(error => console.error('Error:', error));
+	}, []);
+
 	const handleEditClick = () => {
 		setEditMode(!editMode);
 
 		if (editMode) {
 			fetch('https://kingseye-1cd08c4764e5.herokuapp.com/setUserData', {
-				method: 'PATCH',
+				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
 				},
 				body: JSON.stringify({ email: fbAuth.currentUser.email, fname: firstName, lname: lastName, photo: profileImage }),
 			})
-			.then(response => response.json())
-			.then(data => {
-				console.log('user updated');
-			})
-			.catch(error => console.error('Error:', error));
+				.then(response => response.json())
+				.then(data => {
+					console.log('user updated');
+				})
+				.catch(error => console.error('Error:', error));
 			setEditIconSource(profileEditIcon);
-		}
-		 else {
+		} else {
 			setEditIconSource(profileSaveIcon);
 		}
 	};
+
 
 	const handleChangePasswordClick = () => {
 		setShowChangePassword(!showChangePassword);
@@ -188,20 +172,25 @@ const Profile = () => {
 	return (
 		<View style={[globalStyles.container, styles.container]}>
 			<SafeAreaView style={globalStyles.safeArea}>
-			<View style={globalStyles.header}>
-				<TouchableOpacity onPress={navToHome}>
-					<Image source={HomeIcon} style={styles.IconStyle} />
-				</TouchableOpacity>
-				<Text style={styles.profileText}>Profile</Text>
-				<View style={styles.IconStyleTransparent}></View>
-				<TouchableOpacity onPress={handleEditClick}>
-					<Image source={editIconSource} style={styles.EditIconStyle} />
-				</TouchableOpacity>
-			</View>
+				<View style={globalStyles.header}>
+					<TouchableOpacity onPress={navToHome}>
+						<Image source={HomeIcon} style={styles.IconStyle} />
+					</TouchableOpacity>
+					<Text style={styles.profileText}>Profile</Text>
+					<View style={styles.IconStyleTransparent}></View>
+					<TouchableOpacity onPress={handleEditClick}>
+						<Image source={editIconSource} style={styles.EditIconStyle} />
+					</TouchableOpacity>
+				</View>
 			</SafeAreaView>
 			<View style={styles.row}>
 				<Text style={styles.infoTitle}>Profile Picture</Text>
-				{!loading && <Image source={profileImage != "base64string" || sampleProfileImage} style={styles.profileImage} />}
+				{!loading && (
+					<Image
+						source={profileImage && profileImage !== 'none' ? { uri: profileImage } : basePfp}
+						style={styles.profileImage}
+					/>
+				)}
 			</View>
 			<View style={styles.row}>
 				<Text style={styles.infoTitle}>Email</Text>
@@ -235,7 +224,7 @@ const Profile = () => {
 			{editMode && (
 				<View>
 					<TouchableOpacity onPress={handleImageOptionsClick} style={[globalStyles.generalButton, styles.buttonContainer]}>
-						<Text style={styles.buttonText}>Edit Picture</Text>
+						<Text style={styles.buttonText}>Edit Profile Picture</Text>
 					</TouchableOpacity>
 					<TouchableOpacity onPress={handleChangePasswordClick} style={[globalStyles.generalButton, styles.buttonContainer]}>
 						<Text style={styles.buttonText}>Reset Password</Text>
@@ -244,11 +233,11 @@ const Profile = () => {
 			)}
 			<View style={{ flex: 1, justifyContent: 'flex-end', marginBottom: 20 }}>
 				<SafeAreaView style={globalStyles.safeArea}>
-                <TouchableOpacity onPress={handleSignOutClick} style={styles.signOutButton}>
-                    <Text style={styles.signOutButtonText}>Sign Out</Text>
-                </TouchableOpacity>
+					<TouchableOpacity onPress={handleSignOutClick} style={styles.signOutButton}>
+						<Text style={styles.signOutButtonText}>Sign Out</Text>
+					</TouchableOpacity>
 				</SafeAreaView>
-            </View>
+			</View>
 		</View>
 	);
 };

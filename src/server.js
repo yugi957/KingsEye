@@ -41,7 +41,7 @@ app.post('/signup', async (req, res) => {
         id: stringToHash(req.body.email),
         fname: req.body.fname,
         lname: req.body.lname,
-        profilePic: 'base64string',
+        profilePic: 'none',
         games: []
       });
 
