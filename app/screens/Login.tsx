@@ -5,7 +5,7 @@ import { FIREBASE_AUTH } from '../../FirebaseConfig'
 import globalStyles from '../styles/globalStyles';
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { SafeAreaView } from 'react-native-safe-area-context';
-
+import { sendPasswordResetEmail } from "firebase/auth";
 
 const Login = () => {
     const [email, setEmail] = useState('');
@@ -32,55 +32,66 @@ const Login = () => {
     }
 
     const handleForgotPasswordClick = () => {
-		setShowForgotPassword(!showForgotPassword);
-		showPasswordForgotConfirmation();
-	};
+        setShowForgotPassword(!showForgotPassword);
+        showPasswordForgotConfirmation();
+    };
+
     const showPasswordForgotConfirmation = () => {
-		Alert.prompt(
-			"Reset Password",
-			"Enter your email to reset your password",
+        Alert.prompt(
+            "Reset Password",
+            "Enter your email to reset your password",
             [
-			  {
-				text: "Cancel",
-				onPress: () => console.log("Cancel Pressed"),
-				style: "destructive"
-			  },
-			  {
-				text: "Send Email",
-				onPress: email => console.log("OK Pressed, password: " + email)
-			  }
-			],
+                {
+                    text: "Cancel",
+                    onPress: () => console.log("Cancel Pressed"),
+                    style: "destructive"
+                },
+                {
+                    text: "Send Email",
+                    onPress: async (email) => {
+                        if (email) {
+                            try {
+                                await sendPasswordResetEmail(FIREBASE_AUTH, email);
+                                Alert.alert("Password Reset", "Password reset email sent successfully.");
+                            } catch (error) {
+                                console.error("Password Reset Error", error);
+                                Alert.alert("Error", error.message);
+                            }
+                        }
+                    }
+                }
+            ],
             'plain-text'
-		  );
-	  };
+        );
+    };
 
     return (
-            <View style={[globalStyles.container, styles.container]}>
-                <SafeAreaView style={globalStyles.safeArea}>
-                    <View style={globalStyles.header}>
+        <View style={[globalStyles.container, styles.container]}>
+            <SafeAreaView style={globalStyles.safeArea}>
+                <View style={globalStyles.header}>
                     <View style={{ width: 50, height: 50 }} />
-                        {/* <Image source={{ uri: 'URL_TO_YOUR_LOGO' }} style={styles.logo} /> */}
-                        <Text style={styles.signInText}>Login</Text>
-                        <TouchableOpacity onPress={navToSignup}>
-                            <Text style={styles.signupButtonText}>Signup</Text>
+                    {/* <Image source={{ uri: 'URL_TO_YOUR_LOGO' }} style={styles.logo} /> */}
+                    <Text style={styles.signInText}>Login</Text>
+                    <TouchableOpacity onPress={navToSignup}>
+                        <Text style={styles.signupButtonText}>Signup</Text>
+                    </TouchableOpacity>
+                </View>
+            </SafeAreaView>
+
+            <KeyboardAvoidingView behavior='padding'>
+                <TextInput placeholder="Email" placeholderTextColor='#C3C3C3' autoCapitalize="none" value={email} style={globalStyles.input} onChangeText={(text) => setEmail(text)}></TextInput>
+                <TextInput placeholder="Password" placeholderTextColor='#C3C3C3' secureTextEntry value={password} style={globalStyles.input} onChangeText={(text) => setPassword(text)}></TextInput>
+
+                {loading ? <ActivityIndicator size="large" color="#0000ff" /> : (
+                    <>
+                        <TouchableOpacity style={globalStyles.generalButton} onPress={signIn}>
+                            <Text style={styles.loginButtonText}>Sign In</Text>
                         </TouchableOpacity>
-                    </View>
-                </SafeAreaView>
-
-                <KeyboardAvoidingView behavior='padding'>
-                    <TextInput placeholder="Email" placeholderTextColor='#C3C3C3' autoCapitalize="none" value={email} style={globalStyles.input} onChangeText={(text) => setEmail(text)}></TextInput>
-                    <TextInput placeholder="Password" placeholderTextColor='#C3C3C3' secureTextEntry value={password} style={globalStyles.input} onChangeText={(text) => setPassword(text)}></TextInput>
-
-                    {loading ? <ActivityIndicator size="large" color="#0000ff" /> : (
-                        <>
-                            <TouchableOpacity style={globalStyles.generalButton} onPress={signIn}>
-                                <Text style={styles.loginButtonText}>Sign In</Text>
-                            </TouchableOpacity>
-                        </>
-                    )}
-                    <Text style={styles.forgotPassword} onPress={handleForgotPasswordClick}>Forgot your password?</Text>
-                </KeyboardAvoidingView>
-            </View>
+                    </>
+                )}
+                <Text style={styles.forgotPassword} onPress={handleForgotPasswordClick}>Forgot your password?</Text>
+            </KeyboardAvoidingView>
+        </View>
     );
 };
 

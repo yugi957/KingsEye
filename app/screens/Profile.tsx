@@ -115,21 +115,30 @@ const Profile = () => {
 		}
 	};
 
+	const navigation = useNavigation();
+	const navToHome = () => {
+		navigation.navigate('Home')
+	}
 
 	const handleChangePasswordClick = () => {
 		setShowChangePassword(!showChangePassword);
 		showPasswordResetConfirmation();
 	};
 
-	const navigation = useNavigation();
-	const navToHome = () => {
-		navigation.navigate('Home')
-	}
+	const sendPasswordReset = async () => {
+		try {
+			await sendPasswordResetEmail(FIREBASE_AUTH, email);
+			Alert.alert("Password Reset", "Password reset email sent successfully.");
+		} catch (error) {
+			console.error("Password Reset Error", error);
+			Alert.alert("Password Reset Failed", "Failed to send password reset email.");
+		}
+	};
 
 	const showPasswordResetConfirmation = () => {
 		Alert.alert(
 			'Password Reset Confirmation',
-			'Are you sure you want to reset your password? An email will be sent to your {email}.',
+			'Are you sure you want to reset your password? An email will be sent to your email address.',
 			[
 				{
 					text: 'No',
@@ -138,10 +147,7 @@ const Profile = () => {
 				{
 					text: 'Yes',
 					style: 'default',
-					onPress: () => {
-						//handle the password reset logic here @qazx
-						//sendPasswordResetEmail();
-					},
+					onPress: sendPasswordReset,
 				},
 			],
 			{ cancelable: false }
