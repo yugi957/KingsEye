@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { StyleSheet, View, TouchableOpacity, Text, Image } from 'react-native';
+import { StyleSheet, View, TouchableOpacity, Text, Image, ActivityIndicator, Modal } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import * as Permissions from 'expo-permissions';
 import { Camera , CameraType } from 'expo-camera';
@@ -27,7 +27,10 @@ const CameraComponent = () => {
 
 	const insets = useSafeAreaInsets();
 
-
+    const [showCustomAlert, setShowCustomAlert] = useState(false);
+    const [alertMessage, setAlertMessage] = useState('');
+    const [debugImage, setDebugImage] = useState(null);
+    const [isLoading, setIsLoading] = useState(false);
     const [hasCameraPermission, setHasCameraPermission] = useState(false);
     const [showCamera, setShowCamera] = useState(true);
     const [capturedImage, setCapturedImage] = useState(null);
@@ -71,6 +74,7 @@ const CameraComponent = () => {
             console.error("No image captured");
             return;
         }
+        setIsLoading(true); // Start loading
 
         const preblob = await fetchAndConvertToBlob(capturedImage);
         const pre = await readBlobAsBase64(preblob);
@@ -99,6 +103,9 @@ const CameraComponent = () => {
             // Example: navigation.navigate("SuccessScreen", { data: response.body });
         } else if (response.status === 400) {
             // Handle client error (Bad Request)
+            setAlertMessage(response.body.error); // Set your error message
+            setDebugImage('data:image/[jpeg];base64,' + response.body.image); // Set the debug image URL
+            setShowCustomAlert(true);
             console.error("Bad Request: ", response.body.error);
             // Example: Show an error message to the user
         } else if (response.status === 500) {
@@ -146,10 +153,12 @@ const CameraComponent = () => {
                 headers: headers,
             });
             const responseJson = await response.json();
-            console.log(responseJson);
+            // console.log(responseJson);
+            setIsLoading(false); // Stop loading
             return { status: response.status, body: responseJson };
         } catch (error) {
             console.error("Error uploading image: ", error);
+            setIsLoading(false); // Stop loading in case of error
             return { status: 500, body: null, error };
         }
     };
@@ -201,8 +210,31 @@ const CameraComponent = () => {
             </View>
         </View>
     );
+
+    const CustomAlert = () => (
+        <Modal
+            animationType="slide"
+            transparent={true}
+            visible={showCustomAlert}
+            onRequestClose={() => {
+                setShowCustomAlert(!showCustomAlert);
+            }}>
+            <View style={styles.centeredView}>
+                <View style={styles.modalView}>
+                    <Text style={styles.modalText}>{alertMessage}</Text>
+                    <Image source={{ uri: debugImage }} style={styles.debugImage} />
+                    <TouchableOpacity
+                        style={styles.button}
+                        onPress={() => setShowCustomAlert(false)}>
+                        <Text style={[styles.buttonText, {color: 'black'}]}>Close</Text>
+                    </TouchableOpacity>
+                </View>
+            </View>
+        </Modal>
+    );
     
     return (
+        
         <View style={[globalStyles.container, styles.container]}>
             <SafeAreaView style={globalStyles.safeArea}>
             <View style={[globalStyles.header, styles.header, styles.headingContainer]}>
@@ -226,6 +258,12 @@ const CameraComponent = () => {
             ) : (
                 imageView
             ) }
+            {isLoading && (
+            <View style={styles.loadingContainer}>
+                <ActivityIndicator size="large" color="#0000ff" />
+            </View>
+            )}
+            <CustomAlert />
         </View>
     );
 };
@@ -290,4 +328,51 @@ const styles = StyleSheet.create({
         fontSize: 20,
         fontWeight: 'bold',
     },
+    loadingContainer: {
+        position: 'absolute',
+        left: 0,
+        right: 0,
+        top: 0,
+        bottom: 0,
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)', // semi-transparent background
+        zIndex: 2, //On top of other elements
+    },
+    centeredView: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        marginTop: 22
+    },
+    modalView: {
+        margin: 20,
+        backgroundColor: "white",
+        borderRadius: 20,
+        padding: 35,
+        alignItems: "center",
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 2
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 4,
+        elevation: 5
+    },
+    modalText: {
+        marginBottom: 15,
+        textAlign: "center"
+    },
+    debugImage: {
+        width: 200, // Adjust as needed
+        height: 200, // Adjust as needed
+        marginBottom: 15,
+    },
+    // button: {
+    //     // Button styling
+    // },
+    // buttonText: {
+    //     // Button text styling
+    // },
 });
