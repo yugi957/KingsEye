@@ -21,13 +21,17 @@ const Game = ({ route }) => {
   //   ]
   // }
 
-  	const navigation = useNavigation();
+  const navigation = useNavigation();
 	const navToHome = () => {
 		navigation.navigate('Home')
 	}
 
-  const [fen, setFen] = useState(route.params.item.moves[0]);
-  const [fenHistory, setFenHistory] = useState(route.params.item.moves);
+  console.log(route.params)
+
+  const initialFen = route.params?.fen ?? "start"; // "start" is a placeholder if no FEN is provided
+  console.log("initial: ", initialFen)
+  const [fen, setFen] = useState(initialFen);
+  const [fenHistory, setFenHistory] = useState([initialFen]);
   const [currentMoveIndex, setCurrentMoveIndex] = useState(0);
   const chessboardRef = useRef<ChessboardRef>(null);
 
@@ -77,7 +81,7 @@ const Game = ({ route }) => {
 	</TouchableOpacity>
       <GestureHandlerRootView style={{ flex: 1 }}>
         <Chessboard
-          // key={fen}
+          key={fen}
           fen={fen}
           onMove={onMove}
           ref={chessboardRef}

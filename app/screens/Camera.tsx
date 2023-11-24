@@ -61,9 +61,7 @@ const CameraComponent = () => {
         if (cameraRef.current) {
             const options = { quality: 0.5, base64: true };
             const data = await (cameraRef.current as Camera).takePictureAsync(options);
-            console.log(data.uri);
             setCapturedImage(data.uri);
-            console.log("After taking: URI: ", capturedImage);
             setShowCamera(false);
         }
     }
@@ -89,16 +87,25 @@ const CameraComponent = () => {
         // Read the blob as base64 and send it
         const base64data = await readBlobAsBase64(blob);
         console.log('post length: ', base64data.length);
-        console.log('64 type: ', typeof(base64data));
         const image64 = base64data.split(",")[1];
-        console.log('start of string: ', image64.slice(0,100));
-        await sendBase64Image(image64);
-    
-        // Navigate to the next screen
-        navigation.navigate("Game", { image: resizedImageUri });
-    
-        // Reset the capturedImage state
-        setCapturedImage(null);
+        const response = await sendBase64Image(image64);
+
+        if (response.status === 200) {
+            // Navigate to the next screen
+            navigation.navigate("Game", { fen: response.body + " w KQkq - 0 1" });
+            // Reset the capturedImage state
+            setCapturedImage(null);
+            console.log("Success: ", response.body);
+            // Example: navigation.navigate("SuccessScreen", { data: response.body });
+        } else if (response.status === 400) {
+            // Handle client error (Bad Request)
+            console.error("Bad Request: ", response.body.error);
+            // Example: Show an error message to the user
+        } else if (response.status === 500) {
+            // Handle server error
+            console.error("Server Error: ", response.error);
+            // Example: Show a server error message to the user
+        }
     };
 
     const resizeImage = async (uri) => {
@@ -140,8 +147,10 @@ const CameraComponent = () => {
             });
             const responseJson = await response.json();
             console.log(responseJson);
+            return { status: response.status, body: responseJson };
         } catch (error) {
             console.error("Error uploading image: ", error);
+            return { status: 500, body: null, error };
         }
     };
 
