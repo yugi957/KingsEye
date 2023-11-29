@@ -33,7 +33,7 @@ const Signup = () => {
       let data = { email: email, password: password, fname: fname, lname: lname };
 
       // Send a POST request to the server
-      let response = await fetch("https://kingseye-1cd08c4764e5.herokuapp.com/signup", {
+      let response = await fetch("https://kingseye-1cd08c4764e5.herokuapp.com/signUp", {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

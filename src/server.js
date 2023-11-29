@@ -32,7 +32,7 @@ function stringToHash(string) {
   return hash;
 }
 
-app.post('/signup', async (req, res) => {
+app.post('/signUp', async (req, res) => {
   try {
     await client.connect();
     await client.db("kings-eye").collection("user-database").insertOne(
@@ -49,6 +49,26 @@ app.post('/signup', async (req, res) => {
     res.json({ message: 'Data received!' });
   } catch (err) {
     console.error(err);
+  }
+});
+
+app.delete('/deleteAccount', async (req, res) => {
+  try {
+    await client.connect();
+    const result = await client.db("kings-eye").collection("user-database").deleteOne({
+      email: req.body.email
+    });
+
+    await client.close();
+
+    if (result.deletedCount === 0) {
+      res.json({ message: 'No account found with the provided email/id.' });
+    } else {
+      res.json({ message: 'Account deleted successfully.' });
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Error deleting account.' });
   }
 });
 
