@@ -36,6 +36,43 @@ const Profile = () => {
 		showSignOutConfirmation();
 	}
 
+	const handleDeleteAccount = async () => {
+		Alert.alert(
+			'Delete Account',
+			'Are you sure you want to delete your account? This action cannot be undone.',
+			[
+				{
+					text: 'Cancel',
+					style: 'cancel',
+				},
+				{
+					text: 'Delete',
+					style: 'destructive',
+					onPress: async () => {
+						try {
+							const response = await fetch('https://kingseye-1cd08c4764e5.herokuapp.com/deleteAccount', {
+								method: 'DELETE',
+								headers: {
+									'Content-Type': 'application/json',
+								},
+								body: JSON.stringify({ email: email }),
+							});
+							const data = await response.json();
+							console.log(data.message);
+							if (response.ok) {
+								await fbAuth.signOut();
+								navigation.navigate('Login');
+							}
+						} catch (error) {
+							console.error('Error:', error);
+						}
+					},
+				},
+			],
+			{ cancelable: false }
+		);
+	};
+
 	const resizeImage = async (uri) => {
 		try {
 			const manipResult = await ImageManipulator.manipulateAsync(
@@ -189,8 +226,7 @@ const Profile = () => {
 					</TouchableOpacity>
 				</View>
 			</SafeAreaView>
-			<View style={styles.row}>
-				<Text style={styles.infoTitle}>Profile Picture</Text>
+			<View style={styles.profileImageContainer}>
 				{!loading && (
 					<Image
 						source={profileImage && profileImage !== 'none' ? { uri: profileImage } : basePfp}
@@ -242,6 +278,9 @@ const Profile = () => {
 					<TouchableOpacity onPress={handleSignOutClick} style={styles.signOutButton}>
 						<Text style={styles.signOutButtonText}>Sign Out</Text>
 					</TouchableOpacity>
+					<TouchableOpacity onPress={handleDeleteAccount} style={styles.deleteAccountButton}>
+						<Text style={styles.deleteAccountButtonText}>Delete Account</Text>
+					</TouchableOpacity>
 				</SafeAreaView>
 			</View>
 		</View>
@@ -268,6 +307,11 @@ const styles = StyleSheet.create({
 		fontSize: 30,
 		fontWeight: 'bold',
 	},
+	profileImageContainer: {
+		alignItems: 'center',
+		justifyContent: 'center',
+		marginTop: -20
+	},
 	infoTitle: {
 		fontSize: 16,
 		fontWeight: 'bold',
@@ -290,8 +334,13 @@ const styles = StyleSheet.create({
 		alignSelf: 'flex-end'
 	},
 	profileImage: {
-		width: 100,
-		height: 100,
+		borderWidth: .5,
+		borderColor: 'white',
+		width: 120,
+		height: 120,
+		borderRadius: 60,
+		alignSelf: 'center',
+		marginBottom: 10,
 	},
 	EditIconStyle: {
 		width: 24,
@@ -335,6 +384,19 @@ const styles = StyleSheet.create({
 		fontSize: 16,
 		fontWeight: 'bold',
 		textAlign: 'center',
-	}
+	},
+	deleteAccountButton: {
+		marginTop: 10,
+		backgroundColor: 'red',
+		padding: 10,
+		borderRadius: 5,
+		alignSelf: 'center',
+	},
+	deleteAccountButtonText: {
+		color: '#fff',
+		fontSize: 16,
+		fontWeight: 'bold',
+		textAlign: 'center',
+	},
 });
 
