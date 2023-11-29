@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigation } from '@react-navigation/native';
-import { Button, Alert, View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Image, KeyboardAvoidingView } from 'react-native';
+import { Button, Alert, View, Text, TextInput, Keyboard, TouchableWithoutFeedback, TouchableOpacity, StyleSheet, ScrollView, Image, KeyboardAvoidingView } from 'react-native';
 import globalStyles from '../styles/globalStyles';
 import sampleProfileImage from '../../assets/sampleProfile.png';
 import profileEditIcon from '../../assets/profileEdit.png';
@@ -13,6 +13,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import * as ImagePicker from 'expo-image-picker';
 import * as ImageManipulator from 'expo-image-manipulator';
 import basePfp from '../../assets/base_pfp.png';
+
 
 const Profile = () => {
 
@@ -176,6 +177,7 @@ const Profile = () => {
 	};
 
 	return (
+		<TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
 		<View style={[globalStyles.container, styles.container]}>
 			<SafeAreaView style={globalStyles.safeArea}>
 				<View style={globalStyles.header}>
@@ -227,6 +229,7 @@ const Profile = () => {
 					<Text style={styles.infoDetails}>{lastName}</Text>
 				)}
 			</View>
+
 			{editMode && (
 				<View>
 					<TouchableOpacity onPress={handleImageOptionsClick} style={[globalStyles.generalButton, styles.buttonContainer]}>
@@ -245,6 +248,7 @@ const Profile = () => {
 				</SafeAreaView>
 			</View>
 		</View>
+		</TouchableWithoutFeedback>
 	);
 };
 
