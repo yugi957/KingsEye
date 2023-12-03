@@ -4,7 +4,7 @@ const engine = stockfish();
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const { MongoClient } = require('mongodb');
-import basePfp from '../assets/base64data_js'
+const basePfp = require('../assets/base64data_js');
 
 const app = express();
 app.use(cors());
