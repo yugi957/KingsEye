@@ -288,6 +288,7 @@ app.get('/bestMove', (request, response) => {
   };
 
   engine.postMessage('ucinewgame');
+  engine.postMessage('debug off');
   engine.postMessage('position fen ' + request.query.fen);
   engine.postMessage(`go depth ${DEPTH}`);
 });
