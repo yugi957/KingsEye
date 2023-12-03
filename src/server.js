@@ -105,7 +105,6 @@ app.get('/getUser', (req, res) => {
   run().catch(console.dir);
 });
 
-
 app.post('/setUserData', async (req, res) => {
   try {
     await client.connect();
@@ -148,7 +147,9 @@ app.post('/saveGame', async (req, res) => {
       "date": req.body.date,
       "title": req.body.title,
       "starred": false,
-      "moves": [req.body.fen_string]
+      "moves": [],
+      "status": req.body.status,
+      "side": req.body.side
     });
 
     const updateQuery = {
@@ -194,6 +195,9 @@ app.patch('/updateGame', async (req, res) => {
     if ('starred' in req.body) {
       updateQuery.$set[`games.${gameIndex}.starred`] = req.body.starred;
     }
+    if ('status' in req.body) {
+      updateQuery.$set[`games.${gameIndex}.status`] = req.body.status;
+    }
     if (Object.keys(updateQuery.$set).length === 0) {
       return res.status(400).json({ message: 'No valid fields provided for update' });
     }
@@ -205,7 +209,6 @@ app.patch('/updateGame', async (req, res) => {
     res.status(400).json({ message: error.message });
   }
 });
-
 
 app.get('/getGames', async (req, res) => {
   try {
