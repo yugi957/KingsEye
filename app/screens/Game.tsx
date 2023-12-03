@@ -9,7 +9,7 @@ import { useNavigation } from '@react-navigation/native';
 import HomeIcon from '../../assets/homeIcon.png';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import RNPickerSelect from 'react-native-picker-select';
-import { opponentPfp } from '../../assets/base64data';
+import { opponentPfp } from '../../assets/base64data_ts';
 import { FIREBASE_AUTH } from '../../FirebaseConfig';
 
 // BOOK BAGELMAKE ANDREWCHANG CANDYMANANDY SLOTHTURTLECORE CHINAMAN CHIN TODO -
