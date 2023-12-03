@@ -4,6 +4,7 @@ const engine = stockfish();
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const { MongoClient } = require('mongodb');
+import { basePfp } from '../assets/base64data'
 
 const app = express();
 app.use(cors());
@@ -41,7 +42,7 @@ app.post('/signUp', async (req, res) => {
         id: stringToHash(req.body.email),
         fname: req.body.fname,
         lname: req.body.lname,
-        profilePic: 'none',
+        profilePic: basePfp,
         games: []
       });
 
@@ -149,7 +150,8 @@ app.post('/saveGame', async (req, res) => {
       "starred": false,
       "moves": [],
       "status": req.body.status,
-      "side": req.body.side
+      "side": req.body.side,
+      "notes": req.body.notes
     });
 
     const updateQuery = {
@@ -197,6 +199,9 @@ app.patch('/updateGame', async (req, res) => {
     }
     if ('status' in req.body) {
       updateQuery.$set[`games.${gameIndex}.status`] = req.body.status;
+    }
+    if ('notes' in req.body) {
+      updateQuery.$set[`games.${gameIndex}.notes`] = req.body.notes;
     }
     if (Object.keys(updateQuery.$set).length === 0) {
       return res.status(400).json({ message: 'No valid fields provided for update' });

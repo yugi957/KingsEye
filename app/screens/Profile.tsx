@@ -60,6 +60,9 @@ const Profile = () => {
 							const data = await response.json();
 							console.log(data.message);
 							if (response.ok) {
+								//delete fb account
+								const user = fbAuth.currentUser;
+								await user.delete();
 								await fbAuth.signOut();
 								navigation.navigate('Login');
 							}
