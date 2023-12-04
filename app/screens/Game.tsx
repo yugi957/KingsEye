@@ -32,6 +32,7 @@ const Game = ({ route }) => {
 
   const [fen, setFen] = useState(route.params.item.moves[0]);
   const [fenHistory, setFenHistory] = useState(route.params.item.moves);
+  const [moveHistory, setMoveHistory] = useState(["Start"]);
   const [currentMoveIndex, setCurrentMoveIndex] = useState(0);
   const chessboardRef = useRef<ChessboardRef>(null);
   const [activeTab, setActiveTab] = useState(0);
@@ -44,6 +45,12 @@ const Game = ({ route }) => {
   const [iswhitePlayerNameEditable, setIswhitePlayerNameEditable] = useState(false);
   const [whitePlayerIcon, setWhitePlayerIcon] = useState(opponentPfp);
   const [blackPlayerIcon, setBlackPlayerIcon] = useState(opponentPfp);
+
+  useEffect(() => {
+    if (fenHistory.length == null) {
+      setFenHistory([fen]);
+    }
+  }, []);
 
   const updateGameDetails = async () => {
 
@@ -150,13 +157,85 @@ const Game = ({ route }) => {
   const renderTabContent = () => {
     switch (activeTab) {
       case 0:
-        return <Text style={styles.tabContent}>Convert Fens to moves</Text>;
+      {
+        const formattedMoves = moveHistory.map((move, index) => `${index + 1}. ${move}`);
+        return (
+          <View style={styles.movesContainer}>
+            {moveHistory.map((move, index) => (
+              <TouchableOpacity 
+                key={index} 
+                style={styles.button} 
+                onPress={() => setCurrentMoveIndex(index)}
+              >
+                <Text style={styles.moveText}>{`${index + 1}. ${move}`}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+          // <Text style={[styles.tabContent, styles.moveText]}>{formattedMoves.join('  ')}</Text>
+        );
+      }
+        
       case 1:
-        return <Text style={styles.tabContent}>Analysis</Text>;
+        return <AnalysisBar fen={fen}></AnalysisBar>;
+        // return <Text style={styles.tabContent}>Analysis</Text>;
       case 2:
         return <Text style={styles.tabContent}>Notes notes</Text>;
     }
   };
+
+
+  function parseFEN(fen) {
+      const board = [];
+      const rows = fen.split(' ')[0].split('/');
+
+      rows.forEach(row => {
+          const newRow = [];
+          for (const char of row) {
+              if (isNaN(char)) {
+                  newRow.push(char);
+              } else {
+                  for (let i = 0; i < parseInt(char, 10); i++) {
+                      newRow.push(null);
+                  }
+              }
+          }
+          board.push(newRow);
+      });
+
+      return board;
+  }
+
+  function findMove(fenBefore, fenAfter) {
+      const boardBefore = parseFEN(fenBefore);
+      const boardAfter = parseFEN(fenAfter);
+
+      let from = '';
+      let to = '';
+
+      for (let r = 0; r < 8; r++) {
+          for (let c = 0; c < 8; c++) {
+              if (boardBefore[r][c] !== boardAfter[r][c]) {
+                  const square = String.fromCharCode(97 + c) + (8 - r);
+                  if (boardBefore[r][c] && !boardAfter[r][c]) {
+                      from = square;
+                  } else if (!boardBefore[r][c] && boardAfter[r][c]) {
+                      to = square;
+                  }
+              }
+          }
+      }
+
+      return from + to;
+  }
+
+  function findAllMoves(fenList) {
+    const moves = ["Start"];
+    for (let i = 0; i < fenList.length - 1; i++) {
+        const move = findMove(fenList[i], fenList[i + 1]);
+        moves.push(move);
+    }
+    return moves;
+  }
 
   const onMove = ({ state }) => {
     console.log(state);
@@ -167,28 +246,14 @@ const Game = ({ route }) => {
 
     setFenHistory(newHistory);
     setCurrentMoveIndex(newHistory.length - 1);
-    setFen(state.fen);
+    setMoveHistory(findAllMoves(newHistory));
 
     console.log(fenHistory, currentMoveIndex);
   };
-
-  const undoMove = () => {
-    console.log(fenHistory, currentMoveIndex);
-    if (currentMoveIndex > 0) {
-      setCurrentMoveIndex(currentMoveIndex - 1);
-      setFen(fenHistory[currentMoveIndex - 1]);
-    }
-    console.log(fenHistory, currentMoveIndex);
-  };
-
-  const redoMove = () => {
-    console.log(fenHistory, currentMoveIndex);
-    if (currentMoveIndex < fenHistory.length - 1) {
-      setCurrentMoveIndex(currentMoveIndex + 1);
-      setFen(fenHistory[currentMoveIndex + 1]);
-    }
-    console.log(fenHistory, currentMoveIndex);
-  };
+  
+  useEffect(() => {
+    setFen(fenHistory[currentMoveIndex]);
+  }, [currentMoveIndex]);
 
   useEffect(() => {
     chessboardRef?.current?.resetBoard(fen);
@@ -351,6 +416,20 @@ export default Game;
 
 const screenWidth = Dimensions.get('window').width;
 const styles = StyleSheet.create({
+  movesContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+  },
+  button: {
+    margin: 2,
+  },
+  moveText: {
+    color: '#fff',
+    flexWrap: 'wrap',
+  },
+  tabContent: {
+    color: '#fff',
+  },
   titleContainer: {
     flexDirection: 'row',
     alignItems: 'center',
