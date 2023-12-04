@@ -23,6 +23,9 @@ const Home = () => {
     const navToCamera = () => {
       navigation.navigate('Camera');
     }
+    const navToDebug = () => {
+      navigation.navigate('Debug');
+    }
 
     const [games, setGames] = useState([]);
 
@@ -262,6 +265,9 @@ const Home = () => {
       <SafeAreaView style={globalStyles.safeArea}>
 			<TouchableOpacity style={[globalStyles.generalButton, styles.playButton]} onPress={navToCamera}>
 			<Text style={styles.playButtonText}>Take Picture</Text>
+			</TouchableOpacity>
+      <TouchableOpacity style={[globalStyles.generalButton, styles.playButton]} onPress={navToDebug}>
+			<Text style={styles.playButtonText}>Debug</Text>
 			</TouchableOpacity>
       </SafeAreaView>
 		</View>
