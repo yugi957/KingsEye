@@ -12,7 +12,7 @@
   "dependencies": {
     "@expo/webpack-config": "^19.0.0",
     "@react-native-google-signin/google-signin": "^10.1.0",
-    "@react-native-picker/picker": "^2.6.1",
+    "@react-native-picker/picker": "2.4.10",
     "@react-navigation/native": "^6.1.8",
     "@react-navigation/native-stack": "^6.9.14",
     "@react-navigation/stack": "^6.3.18",
@@ -22,7 +22,7 @@
     "dotenv": "^16.3.1",
     "expo": "~49.0.13",
     "expo-camera": "~13.4.4",
-    "expo-file-system": "~15.4.4",
+    "expo-file-system": "~15.4.5",
     "expo-image-manipulator": "~11.3.0",
     "expo-image-picker": "~14.3.2",
     "expo-permissions": "~14.2.1",
@@ -62,6 +62,8 @@
   "private": true,
   "proxy": "http://localhost:5000",
   "jest": {
-    "testMatch": ["<rootDir>/src/**/*.(test).{js,jsx,ts,tsx}"]
+    "testMatch": [
+      "<rootDir>/src/**/*.(test).{js,jsx,ts,tsx}"
+    ]
   }
 }

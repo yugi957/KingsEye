@@ -15,11 +15,11 @@ import { FIREBASE_AUTH } from '../../FirebaseConfig';
 const screenWidth = Dimensions.get('window').width;
 const buttonSize = screenWidth * 0.2;
 
-export default function Confirmation({ navigation }) {
+export default function Confirmation({ navigation, route }) {
   const currentdate = new Date().toISOString();
 
   // const [fen, setFen] = useState('rn1qkbnr/pppb1Qpp/3p4/4p3/2B1P3/8/PPPP1PPP/RNB1K1NR b KQkq - 0 4');
-  const startingFen = 'rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1';
+  const startingFen = route.params?.fen ?? "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1 ";
   const chessboardRef = useRef<ChessboardRef>(null);
   const [gameTitle, setGameTitle] = useState(currentdate.slice(0, -5) + ' Game');
   const [blackPlayerName, setBlackPlayerName] = useState('Opponent');
