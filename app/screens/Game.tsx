@@ -35,11 +35,6 @@ const Game = ({ route }) => {
   const [fen, setFen] = useState(initialFen);
   const [fenHistory, setFenHistory] = useState([initialFen]);
 
-  const navigation = useNavigation();
-  const navToHome = () => {
-    navigation.navigate('Home')
-  }
-
   const fbAuth = FIREBASE_AUTH;
 
   //was merge conflict

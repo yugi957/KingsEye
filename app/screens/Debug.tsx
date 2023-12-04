@@ -176,7 +176,7 @@ const DebugComponent = () => {
     const sendBase64Image = async (base64Image, endpoint) => {
         // const url = "https://rbz0ltdjwg.execute-api.us-east-2.amazonaws.com/Development/" + endpoint;
         console.log("Accessing ", endpoint)     
-        const url = "http://10.10.187.56:9000/2015-03-31/functions/function/invocations"
+        const url = "http://192.168.4.36:9000/2015-03-31/functions/function/invocations"
         const payload = {
             routeKey: 'd /' + endpoint, // Assuming 'endpoint' is a defined variable
             body: base64Image // Assuming 'base64Image' contains your base64-encoded image data
