@@ -28,19 +28,19 @@ const Game = ({ route }) => {
 		navigation.navigate('Home')
 	}
 
-  console.log(route.params)
+  // console.log(route.params)
 
-  const initialFen = route.params?.fen ?? "start"; // "start" is a placeholder if no FEN is provided
-  console.log("initial: ", initialFen)
+  const initialFen = route.params.item.moves[0] ?? "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1 "; // if no FEN is provided, but SHOULD NEVER HIT THIS CASE
   const [fen, setFen] = useState(initialFen);
-  const [fenHistory, setFenHistory] = useState([initialFen]);
+  const [fenHistory, setFenHistory] = useState(route.params.item.moves ?? [initialFen]);
+  console.log("initial: ", initialFen, "fen history", fenHistory)
 
   const fbAuth = FIREBASE_AUTH;
 
   //was merge conflict
   //const [fen, setFen] = useState(route.params.item.moves[0]);
   //const [fenHistory, setFenHistory] = useState(route.params.item.moves);
-  const [moveHistory, setMoveHistory] = useState(["Start"]);
+  const [moveHistory, setMoveHistory] = useState(findAllMoves(fenHistory));
   //was merge conflict
   
   const [currentMoveIndex, setCurrentMoveIndex] = useState(0);
