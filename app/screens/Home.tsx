@@ -167,19 +167,16 @@ const Home = () => {
 			style={styles.opponentItem}
           	onPress={() => navigation.navigate('Game', { item: item })}
       		>
-				{/* <Icon
-        name={starredStatus[item.gameID] ? 'star' : 'star-o'}
-        size={30}
-        style={styles.faveIcon}
-        onPress={() => handleStarClick(item.gameID)}
-      /> */}
 	  <Icon
         name={starredStatus[item.gameID] ? 'star' : 'star-o'}
         size={30}
         style={styles.faveIcon}
         onPress={() => handleStarClick(item.gameID)}
       />
-          <Text style={styles.titleName}>{item.title}</Text>
+         <Text style={styles.titleName} numberOfLines={1} ellipsizeMode='tail'>
+          {item.title}
+        </Text>
+
 
           {item.status === "Win" && (
               <View style={[styles.icon, styles.green]}>
@@ -230,7 +227,12 @@ const Home = () => {
           <FlatList
             data={games}
             renderItem={renderItem}
-            keyExtractor={item => item.gameID.toString()} // Replace with unique identifier
+            keyExtractor={item => item.gameID.toString()}
+            ListEmptyComponent={
+              <View style={styles.emptyContainer}>
+                <Text style={styles.noGamesText}>No Saved Games!</Text>
+              </View>
+            }
           />
           {/* <ScrollView style={styles.archiveList}>
           <FlatList
@@ -278,6 +280,17 @@ const Home = () => {
 export default Home;
 
 const styles = StyleSheet.create({
+  emptyContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  noGamesText: {
+    color: 'white',
+    fontSize: 20,
+    fontWeight: 'bold',
+  },
   statusText: {
     color: 'black',
     fontWeight: 'bold',
@@ -337,6 +350,7 @@ const styles = StyleSheet.create({
       marginLeft: 10,
     },
     faveIcon: {
+      color: '#f4d35e',
       width: 30,
       height: 30,
       alignItems: 'center',
