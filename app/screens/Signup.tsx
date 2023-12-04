@@ -1,11 +1,15 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, Keyboard, TouchableWithoutFeedback, TouchableOpacity, ActivityIndicator, KeyboardAvoidingView } from 'react-native';
+import { View, Image, Text, TextInput, Button, StyleSheet, Keyboard, TouchableWithoutFeedback, TouchableOpacity, ActivityIndicator, KeyboardAvoidingView, Dimensions } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import globalStyles from '../styles/globalStyles';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useHeaderHeight } from '@react-navigation/elements';
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { FIREBASE_AUTH } from '../../FirebaseConfig';
+import Logo from "../../assets/KING'S-EYE-LOGO-2.png";
+
+const screenWidth = Dimensions.get('window').width;
+const logoSize = screenWidth * .8;
 
 const Signup = () => {
   const [email, setEmail] = useState('');
@@ -65,6 +69,7 @@ const Signup = () => {
 	<TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
 		<View style={[globalStyles.container, styles.container]}>
 			<SafeAreaView style={globalStyles.safeArea}>
+    <Image source={Logo} style={styles.logoStyling}/>
 		<View style={globalStyles.header}>
 		<View style={{ width: 50, height: 50 }} />
 			<Text style={styles.signUpText}>Sign Up</Text>
@@ -116,6 +121,13 @@ const Signup = () => {
 export default Signup;
 
 const styles = StyleSheet.create({
+  logoStyling: {
+    width: logoSize,
+    height: 150,
+    resizeMode: 'contain', 
+    paddingBottom: 50,
+    alignSelf: 'center',
+  },
 	container: {
 		// paddingBottom: 10,
 		paddingTop: 0,

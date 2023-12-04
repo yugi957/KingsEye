@@ -1,4 +1,4 @@
-import { Alert, View, TextInput, StyleSheet, Text, Keyboard, TouchableWithoutFeedback, TouchableOpacity, ActivityIndicator, KeyboardAvoidingView } from 'react-native'
+import { Alert, Image, Dimensions, View, TextInput, StyleSheet, Text, Keyboard, TouchableWithoutFeedback, TouchableOpacity, ActivityIndicator, KeyboardAvoidingView } from 'react-native'
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import React, { useState } from 'react'
 import { FIREBASE_AUTH } from '../../FirebaseConfig'
@@ -6,7 +6,10 @@ import globalStyles from '../styles/globalStyles';
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { sendPasswordResetEmail } from "firebase/auth";
+import Logo from "../../assets/KING'S-EYE-LOGO-2.png";
 
+const screenWidth = Dimensions.get('window').width;
+const logoSize = screenWidth * .8;
 
 const Login = () => {
     const [email, setEmail] = useState('');
@@ -78,6 +81,7 @@ const Login = () => {
         <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
             <View style={[globalStyles.container, styles.container]}>
                 <SafeAreaView style={globalStyles.safeArea}>
+                    <Image source={Logo} style={styles.logoStyling}/>
                     <View style={globalStyles.header}>
                         <View style={{ width: 50, height: 50 }} />
                         {/* <Image source={{ uri: 'URL_TO_YOUR_LOGO' }} style={styles.logo} /> */}
@@ -116,6 +120,13 @@ const styles = StyleSheet.create({
     passButton: {
         backgroundColor: "#88ac4c"
     },
+    logoStyling: {
+        width: logoSize,
+        height: 150,
+        resizeMode: 'contain', 
+        paddingBottom: 50,
+        alignSelf: 'center',
+    },
     closeButton: {
         position: 'absolute',
         right: 0,
@@ -138,11 +149,6 @@ const styles = StyleSheet.create({
     forgotPasswordWrapper: {
         alignItems: 'flex-end',
         padding: 10,
-    },
-    logo: {
-        width: 100,
-        height: 100,
-        resizeMode: 'contain', // adjust this to your needs
     },
     signInText: {
         textAlign: 'center',
