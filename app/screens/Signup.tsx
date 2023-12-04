@@ -69,7 +69,6 @@ const Signup = () => {
 	<TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
 		<View style={[globalStyles.container, styles.container]}>
 			<SafeAreaView style={globalStyles.safeArea}>
-    <Image source={Logo} style={styles.logoStyling}/>
 		<View style={globalStyles.header}>
 		<View style={{ width: 50, height: 50 }} />
 			<Text style={styles.signUpText}>Sign Up</Text>
@@ -77,6 +76,7 @@ const Signup = () => {
 			<Text style={styles.signupButtonText}>Login</Text>
 			</TouchableOpacity>
 		</View>
+    <Image source={Logo} style={styles.logoStyling}/>
 		</SafeAreaView>
 		<KeyboardAvoidingView behavior='padding'>
 			<TextInput
