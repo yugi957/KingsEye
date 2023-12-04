@@ -1,21 +1,15 @@
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView, TextInput, Image, FlatList } from 'react-native';
-import { Camera, CameraType } from 'expo-camera';
-import * as Permissions from 'expo-permissions';
-import {NavigationContainer, useNavigation} from '@react-navigation/native';
+import { useNavigation} from '@react-navigation/native';
 import React, { useState, useEffect, useRef } from 'react'
 import { FIREBASE_AUTH } from '../../FirebaseConfig'
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
-import { getAuth, signInWithPopup, GoogleAuthProvider, OAuthProvider } from "firebase/auth";
 import globalStyles from '../styles/globalStyles';
 import profileImage from '../../assets/profile.png';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { SafeAreaView } from 'react-native-safe-area-context';
-
-
+import { useFocusEffect } from '@react-navigation/native';
 
 const Home = () => {
 		const fbAuth = FIREBASE_AUTH;
-		const auth = getAuth();
 		
 		const insets = useSafeAreaInsets();
 
@@ -32,31 +26,35 @@ const Home = () => {
     }
 
     const [games, setGames] = useState([]);
-    
-    useEffect(() => {
-      const fetchData = async () => {
-        console.log('FETCHING DATA');
-        const userEmail = "andychange@gmail.com"; // Replace with auth.currentUser?.email
-        const url = `https://kingseye-1cd08c4764e5.herokuapp.com/getGames?email=${encodeURIComponent(userEmail)}`;
-    
-        try {
-          const response = await fetch(url);
-          console.log('RESPONSE', response);
-    
-          if (!response.ok) {
-            throw new Error('Network response was not ok');
+
+    useFocusEffect(
+      React.useCallback(() => {
+        const fetchData = async () => {
+          console.log('FETCHING DATA');
+          const userEmail = fbAuth.currentUser?.email;
+          const url = `https://kingseye-1cd08c4764e5.herokuapp.com/getGames?email=${(userEmail)}`;
+          console.log(url)
+      
+          try {
+            const response = await fetch(url);
+            console.log('RESPONSE', response);
+      
+            if (!response.ok) {
+              throw new Error('Network response was not ok');
+            }
+      
+            const data = await response.json();
+            console.log('DATA', data.pastGames);
+            setGames(data.pastGames);
+            
+          } catch (error) {
+            console.error('Error:', error);
           }
-    
-          const data = await response.json();
-          setGames(data.pastGames);
-          console.log('DATA', data);
-        } catch (error) {
-          console.error('Error:', error);
-        }
-      };
-    
-      fetchData();
-    }, []);    
+        };
+      
+        fetchData();
+      }, [fbAuth, navigation])
+    );
 
     useEffect(() => {
       console.log('GAMES', games)
@@ -107,7 +105,7 @@ const Home = () => {
           <FlatList
             data={games}
             renderItem={renderItem}
-            keyExtractor={item => item.gameId.toString()} // Replace with unique identifier
+            keyExtractor={item => item.gameID.toString()} // Replace with unique identifier
           />
           {/* <ScrollView style={styles.archiveList}>
           <FlatList

@@ -4,6 +4,7 @@ const engine = stockfish();
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const { MongoClient } = require('mongodb');
+const basePfp = require('../assets/base64data_js');
 
 const app = express();
 app.use(cors());
@@ -32,7 +33,7 @@ function stringToHash(string) {
   return hash;
 }
 
-app.post('/signup', async (req, res) => {
+app.post('/signUp', async (req, res) => {
   try {
     await client.connect();
     await client.db("kings-eye").collection("user-database").insertOne(
@@ -41,7 +42,7 @@ app.post('/signup', async (req, res) => {
         id: stringToHash(req.body.email),
         fname: req.body.fname,
         lname: req.body.lname,
-        profilePic: 'base64string',
+        profilePic: basePfp,
         games: []
       });
 
@@ -52,28 +53,23 @@ app.post('/signup', async (req, res) => {
   }
 });
 
-app.post('/googleLogin', async (req, res) => {
+app.delete('/deleteAccount', async (req, res) => {
   try {
     await client.connect();
-    photo = req.body.photo
-    const user = await client.db("kings-eye").collection("user-database").findOne({ email: req.body.email });
-    if (user) {
-      await client.close();
-      res.json({ message: 'Email in use.' });
+    const result = await client.db("kings-eye").collection("user-database").deleteOne({
+      email: req.body.email
+    });
+
+    await client.close();
+
+    if (result.deletedCount === 0) {
+      res.json({ message: 'No account found with the provided email/id.' });
     } else {
-      await client.db("kings-eye").collection("user-database").insertOne(
-        {
-          email: req.body.email,
-          id: stringToHash(req.body.email),
-          fname: req.body.name.split(" ")[0],
-          lname: req.body.name.split(" ")[1],
-          profilePic: 'base64string',
-          games: []
-        });
-      res.json({ message: 'Data recieved' });
+      res.json({ message: 'Account deleted successfully.' });
     }
   } catch (err) {
     console.error(err);
+    res.status(500).json({ message: 'Error deleting account.' });
   }
 });
 
@@ -110,8 +106,7 @@ app.get('/getUser', (req, res) => {
   run().catch(console.dir);
 });
 
-
-app.patch('/setUserData', async (req, res) => {
+app.post('/setUserData', async (req, res) => {
   try {
     await client.connect();
     const collection = client.db("kings-eye").collection("user-database");
@@ -153,7 +148,10 @@ app.post('/saveGame', async (req, res) => {
       "date": req.body.date,
       "title": req.body.title,
       "starred": false,
-      "moves": [req.body.fen_string]
+      "moves": [],
+      "status": req.body.status,
+      "side": req.body.side,
+      "notes": req.body.notes
     });
 
     const updateQuery = {
@@ -199,6 +197,12 @@ app.patch('/updateGame', async (req, res) => {
     if ('starred' in req.body) {
       updateQuery.$set[`games.${gameIndex}.starred`] = req.body.starred;
     }
+    if ('status' in req.body) {
+      updateQuery.$set[`games.${gameIndex}.status`] = req.body.status;
+    }
+    if ('notes' in req.body) {
+      updateQuery.$set[`games.${gameIndex}.notes`] = req.body.notes;
+    }
     if (Object.keys(updateQuery.$set).length === 0) {
       return res.status(400).json({ message: 'No valid fields provided for update' });
     }
@@ -210,7 +214,6 @@ app.patch('/updateGame', async (req, res) => {
     res.status(400).json({ message: error.message });
   }
 });
-
 
 app.get('/getGames', async (req, res) => {
   try {
@@ -285,6 +288,7 @@ app.get('/bestMove', (request, response) => {
   };
 
   engine.postMessage('ucinewgame');
+  engine.postMessage('debug off');
   engine.postMessage('position fen ' + request.query.fen);
   engine.postMessage(`go depth ${DEPTH}`);
 });
