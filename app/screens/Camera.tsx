@@ -95,6 +95,8 @@ const CameraComponent = () => {
         const image64 = base64data.split(",")[1];
         const response = await sendBase64Image(image64);
 
+        console.log('NN response: ', response.status)
+
         if (response.status === 200) {
             // Navigate to the next screen
             navigation.navigate("Game", { fen: response.body + " w KQkq - 0 1" });
