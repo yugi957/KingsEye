@@ -1,11 +1,12 @@
-import { Alert, View, TextInput, StyleSheet, Text, TouchableOpacity, ActivityIndicator, KeyboardAvoidingView } from 'react-native'
-import { useNavigation } from '@react-navigation/native';
+import { Alert, View, TextInput, StyleSheet, Text, Keyboard, TouchableWithoutFeedback, TouchableOpacity, ActivityIndicator, KeyboardAvoidingView } from 'react-native'
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import React, { useState } from 'react'
 import { FIREBASE_AUTH } from '../../FirebaseConfig'
 import globalStyles from '../styles/globalStyles';
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { sendPasswordResetEmail } from "firebase/auth";
+
 
 const Login = () => {
     const [email, setEmail] = useState('');
@@ -17,6 +18,14 @@ const Login = () => {
     const navToSignup = () => {
         navigation.navigate('Signup')
     }
+
+    useFocusEffect(
+        React.useCallback(() => {
+          setEmail('');
+          setPassword('');
+        }, [])
+      );
+    
 
     const signIn = async () => {
         setLoading(true);
@@ -66,32 +75,38 @@ const Login = () => {
     };
 
     return (
-        <View style={[globalStyles.container, styles.container]}>
-            <SafeAreaView style={globalStyles.safeArea}>
-                <View style={globalStyles.header}>
-                    <View style={{ width: 50, height: 50 }} />
-                    {/* <Image source={{ uri: 'URL_TO_YOUR_LOGO' }} style={styles.logo} /> */}
-                    <Text style={styles.signInText}>Login</Text>
-                    <TouchableOpacity onPress={navToSignup}>
-                        <Text style={styles.signupButtonText}>Signup</Text>
-                    </TouchableOpacity>
-                </View>
-            </SafeAreaView>
-
-            <KeyboardAvoidingView behavior='padding'>
-                <TextInput placeholder="Email" placeholderTextColor='#C3C3C3' autoCapitalize="none" value={email} style={globalStyles.input} onChangeText={(text) => setEmail(text)}></TextInput>
-                <TextInput placeholder="Password" placeholderTextColor='#C3C3C3' secureTextEntry value={password} style={globalStyles.input} onChangeText={(text) => setPassword(text)}></TextInput>
-
-                {loading ? <ActivityIndicator size="large" color="#0000ff" /> : (
-                    <>
-                        <TouchableOpacity style={globalStyles.generalButton} onPress={signIn}>
-                            <Text style={styles.loginButtonText}>Sign In</Text>
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+            <View style={[globalStyles.container, styles.container]}>
+                <SafeAreaView style={globalStyles.safeArea}>
+                    <View style={globalStyles.header}>
+                        <View style={{ width: 50, height: 50 }} />
+                        {/* <Image source={{ uri: 'URL_TO_YOUR_LOGO' }} style={styles.logo} /> */}
+                        <Text style={styles.signInText}>Login</Text>
+                        <TouchableOpacity onPress={navToSignup}>
+                            <Text style={styles.signupButtonText}>Signup</Text>
                         </TouchableOpacity>
-                    </>
-                )}
-                <Text style={styles.forgotPassword} onPress={handleForgotPasswordClick}>Forgot your password?</Text>
-            </KeyboardAvoidingView>
-        </View>
+                    </View>
+                </SafeAreaView>
+
+                <KeyboardAvoidingView behavior='padding'>
+                    <TextInput placeholder="Email" placeholderTextColor='#C3C3C3' autoCapitalize="none" value={email} style={globalStyles.input} onChangeText={(text) => setEmail(text)}></TextInput>
+                    <TextInput placeholder="Password" placeholderTextColor='#C3C3C3' secureTextEntry value={password} style={globalStyles.input} onChangeText={(text) => setPassword(text)}></TextInput>
+
+                    {loading ? <ActivityIndicator size="large" color="#0000ff" /> : (
+                        <>
+                            <TouchableOpacity style={globalStyles.generalButton} onPress={signIn}>
+                                <Text style={styles.loginButtonText}>Sign In</Text>
+                            </TouchableOpacity>
+                        </>
+                    )}
+                    <View style={styles.forgotPasswordWrapper}>
+                        <TouchableOpacity onPress={handleForgotPasswordClick}>
+                            <Text style={styles.forgotPassword}>Forgot your password?</Text>
+                        </TouchableOpacity>
+                    </View>
+                </KeyboardAvoidingView>
+            </View>
+        </TouchableWithoutFeedback>
     );
 };
 
@@ -116,10 +131,13 @@ const styles = StyleSheet.create({
         paddingTop: 0,
     },
     forgotPassword: {
-        textAlign: 'right',
-        padding: 10,
+        // textAlign: 'right',
         textDecorationLine: 'underline',
         color: 'white',
+    },
+    forgotPasswordWrapper: {
+        alignItems: 'flex-end',
+        padding: 10,
     },
     logo: {
         width: 100,

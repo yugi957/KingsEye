@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigation } from '@react-navigation/native';
-import { Button, Alert, View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Image, KeyboardAvoidingView } from 'react-native';
+import { Button, Alert, View, Text, TextInput, Keyboard, TouchableWithoutFeedback, TouchableOpacity, StyleSheet, ScrollView, Image, KeyboardAvoidingView } from 'react-native';
 import globalStyles from '../styles/globalStyles';
 import sampleProfileImage from '../../assets/sampleProfile.png';
 import profileEditIcon from '../../assets/profileEdit.png';
@@ -13,6 +13,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import * as ImagePicker from 'expo-image-picker';
 import * as ImageManipulator from 'expo-image-manipulator';
 import basePfp from '../../assets/base_pfp.png';
+import HomeButton from '../components/HomeButton';
+
 
 const Profile = () => {
 
@@ -156,9 +158,6 @@ const Profile = () => {
 	};
 
 	const navigation = useNavigation();
-	const navToHome = () => {
-		navigation.navigate('Home')
-	}
 
 	const handleChangePasswordClick = () => {
 		setShowChangePassword(!showChangePassword);
@@ -216,12 +215,11 @@ const Profile = () => {
 	};
 
 	return (
+		<TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
 		<View style={[globalStyles.container, styles.container]}>
 			<SafeAreaView style={globalStyles.safeArea}>
 				<View style={globalStyles.header}>
-					<TouchableOpacity onPress={navToHome}>
-						<Image source={HomeIcon} style={styles.IconStyle} />
-					</TouchableOpacity>
+				<HomeButton navigation={navigation} onCustomPress={undefined} />
 					<Text style={styles.profileText}>Profile</Text>
 					<View style={styles.IconStyleTransparent}></View>
 					<TouchableOpacity onPress={handleEditClick}>
@@ -266,6 +264,7 @@ const Profile = () => {
 					<Text style={styles.infoDetails}>{lastName}</Text>
 				)}
 			</View>
+
 			{editMode && (
 				<View>
 					<TouchableOpacity onPress={handleImageOptionsClick} style={[globalStyles.generalButton, styles.buttonContainer]}>
@@ -287,6 +286,7 @@ const Profile = () => {
 				</SafeAreaView>
 			</View>
 		</View>
+		</TouchableWithoutFeedback>
 	);
 };
 
@@ -349,11 +349,6 @@ const styles = StyleSheet.create({
 		width: 24,
 		height: 24,
 		marginRight: 10,
-	},
-	IconStyle: {
-		width: 30,
-		height: 30,
-		marginLeft: 10,
 	},
 	IconStyleTransparent: {
 		width: 6,

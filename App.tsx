@@ -10,6 +10,7 @@ import Profile from './app/screens/Profile';
 import Game from './app/screens/Game';
 import Camera from './app/screens/Camera';
 import Confirmation from './app/screens/Confirmation';
+import DebugComponent from './app/screens/Debug';
 
 LogBox.ignoreAllLogs(true);
 
@@ -27,6 +28,7 @@ export default function App() {
         <Stack.Screen name="Profile" component={Profile} />
         <Stack.Screen name="Game" component={Game} />
         <Stack.Screen name="Camera" component={Camera} />
+        <Stack.Screen name="Debug" component={DebugComponent} />
         <Stack.Screen name="Confirmation" component={Confirmation} />
       </Stack.Navigator>
     </NavigationContainer>
