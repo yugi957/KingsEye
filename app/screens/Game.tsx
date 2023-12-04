@@ -412,12 +412,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
-  playerNameContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 10,
-  },
+  // playerNameContainer: {
+  //   flexDirection: 'row',
+  //   alignItems: 'center',
+  //   justifyContent: 'center',
+  //   padding: 10,
+  // },
   editableName: {
     borderBottomWidth: 1,
     borderBottomColor: 'white',
@@ -433,24 +433,24 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center'
   },
-  controls: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 20,
-  },
-  button: {
-    padding: 10,
-    backgroundColor: '#000',
-    marginHorizontal: 20,
-  },
-  buttonText: {
-    color: '#fff',
-  },
-  IconStyle: {
-    width: 15,
-    height: 30,
-    marginLeft: 10,
-  },
+  // controls: {
+  //   flexDirection: 'row',
+  //   justifyContent: 'space-between',
+  //   marginTop: 20,
+  // },
+  // button: {
+  //   padding: 10,
+  //   backgroundColor: '#000',
+  //   marginHorizontal: 20,
+  // },
+  // buttonText: {
+  //   color: '#fff',
+  // },
+  // IconStyle: {
+  //   width: 15,
+  //   height: 30,
+  //   marginLeft: 10,
+  // },
   tabArea: {
     alignSelf: 'flex-start',
     alignItems: 'flex-start',
@@ -506,35 +506,35 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: 'white',
   },
-  playerInfoContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    padding: 10,
-  },
-  playerInfo: {
-    alignItems: 'center',
-  },
-  profilePic: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-  },
-  dropdownStyle: {
-    backgroundColor: '#fff',
-    width: 60,
-    height: 20,
-    borderColor: '#ccc',
-    borderWidth: 1,
-    borderRadius: 5,
-  },
-  dropdownTextStyle: {
-    fontSize: 14,
-    color: '#333',
-  },
-  dropdownDropdownStyle: {
-    width: 60,
-    marginTop: 10,
-  },
+  // playerInfoContainer: {
+  //   flexDirection: 'row',
+  //   justifyContent: 'space-between',
+  //   padding: 10,
+  // },
+  // playerInfo: {
+  //   alignItems: 'center',
+  // },
+  // profilePic: {
+  //   width: 50,
+  //   height: 50,
+  //   borderRadius: 25,
+  // },
+  // dropdownStyle: {
+  //   backgroundColor: '#fff',
+  //   width: 60,
+  //   height: 20,
+  //   borderColor: '#ccc',
+  //   borderWidth: 1,
+  //   borderRadius: 5,
+  // },
+  // dropdownTextStyle: {
+  //   fontSize: 14,
+  //   color: '#333',
+  // },
+  // dropdownDropdownStyle: {
+  //   width: 60,
+  //   marginTop: 10,
+  // },
 });
 
 const pickerSelectStyles = StyleSheet.create({

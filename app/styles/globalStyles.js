@@ -11,7 +11,7 @@ const globalStyles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        marginBottom: 50,
+        marginBottom: 15,
     },
     safeArea: {
         // flex: 1,
