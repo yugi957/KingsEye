@@ -12,6 +12,7 @@ import retakeImage from '../../assets/retakeImage.png'
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Dimensions } from 'react-native';
+import HomeButton from '../components/HomeButton';
 // import Reanimated, {
 //     useAnimatedProps,
 //     useSharedValue,
@@ -117,20 +118,20 @@ const CameraComponent = () => {
     const imageView = (
         <View style={{ flex: 1 }}>
             <Image source={{ uri: capturedImage }} style={{ flex: 1 }} resizeMode="contain" />
-            <View style={{ flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center' }}>
-                <View style={{ flexDirection: 'column', alignItems: 'center', paddingBottom: 10 }}>
+            <View style={styles.buttonHorizontal}>
+                <View style={styles.buttonVertical}>
                     <TouchableOpacity onPress={handleCancelPicture}>
                         <Image source={rejectImage} style={styles.button} />
                     </TouchableOpacity>
                     <Text style={styles.buttonText}>Cancel</Text>
                 </View>
-                <View style={{ flexDirection: 'column', alignItems: 'center', paddingBottom: 10 }}>
+                <View style={styles.buttonVertical}>
                     <TouchableOpacity onPress={handleRetakePicture}>
                         <Image source={retakeImage} style={styles.button} />
                     </TouchableOpacity>
                     <Text style={styles.buttonText}>Retake</Text>
                 </View>
-                <View style={{ flexDirection: 'column', alignItems: 'center', paddingBottom: 10 }}>
+                <View style={styles.buttonVertical}>
                     <TouchableOpacity onPress={handleAcceptPicture}>
                         <Image source={acceptImage} style={styles.button} />
                     </TouchableOpacity>
@@ -144,9 +145,7 @@ const CameraComponent = () => {
         <View style={[globalStyles.container, styles.container]}>
             <SafeAreaView style={globalStyles.safeArea}>
             <View style={[globalStyles.header, styles.header, styles.headingContainer]}>
-                <TouchableOpacity onPress={handleCancelPicture}>
-					<Image source={HomeIcon} style={styles.iconStyle} />
-				</TouchableOpacity>
+            <HomeButton navigation={navigation} onCustomPress={undefined} />
                 <Text style={styles.cameraText}>Camera</Text>
                 <View style={styles.iconStylePlaceholder}></View>
             </View>
@@ -174,6 +173,16 @@ const CameraComponent = () => {
 export default CameraComponent;
 
 const styles = StyleSheet.create({
+    buttonHorizontal: {
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        alignItems: 'center',
+    },
+    buttonVertical: {
+        flexDirection: 'column',
+        alignItems: 'center',
+        paddingBottom: 10,
+    },
     container: {
 		padding: 0,
 	},

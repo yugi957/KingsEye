@@ -13,6 +13,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import * as ImagePicker from 'expo-image-picker';
 import * as ImageManipulator from 'expo-image-manipulator';
 import basePfp from '../../assets/base_pfp.png';
+import HomeButton from '../components/HomeButton';
 
 
 const Profile = () => {
@@ -157,9 +158,6 @@ const Profile = () => {
 	};
 
 	const navigation = useNavigation();
-	const navToHome = () => {
-		navigation.navigate('Home')
-	}
 
 	const handleChangePasswordClick = () => {
 		setShowChangePassword(!showChangePassword);
@@ -221,9 +219,7 @@ const Profile = () => {
 		<View style={[globalStyles.container, styles.container]}>
 			<SafeAreaView style={globalStyles.safeArea}>
 				<View style={globalStyles.header}>
-					<TouchableOpacity onPress={navToHome}>
-						<Image source={HomeIcon} style={styles.IconStyle} />
-					</TouchableOpacity>
+				<HomeButton navigation={navigation} onCustomPress={undefined} />
 					<Text style={styles.profileText}>Profile</Text>
 					<View style={styles.IconStyleTransparent}></View>
 					<TouchableOpacity onPress={handleEditClick}>
@@ -353,11 +349,6 @@ const styles = StyleSheet.create({
 		width: 24,
 		height: 24,
 		marginRight: 10,
-	},
-	IconStyle: {
-		width: 30,
-		height: 30,
-		marginLeft: 10,
 	},
 	IconStyleTransparent: {
 		width: 6,
