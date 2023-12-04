@@ -13,7 +13,6 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as ImageManipulator from 'expo-image-manipulator';
 import { Dimensions } from 'react-native';
-import HomeButton from '../components/HomeButton';
 // import Reanimated, {
 //     useAnimatedProps,
 //     useSharedValue,
@@ -22,9 +21,9 @@ import HomeButton from '../components/HomeButton';
 //   } from "react-native-reanimated"
 
 const screenWidth = Dimensions.get('window').width;
-const buttonSize = screenWidth * 0.2;
+const buttonSize = screenWidth * (1/6);
 
-const CameraComponent = () => {
+const DebugComponent = () => {
 
 	const insets = useSafeAreaInsets();
 
@@ -36,6 +35,16 @@ const CameraComponent = () => {
     const [showCamera, setShowCamera] = useState(true);
     const [capturedImage, setCapturedImage] = useState(null);
     const cameraRef = useRef(null);
+
+    function isValidBase64ImageString(base64String) {
+        // Regular expression to check if the string is a valid base64 image data URI
+        const regex = /^data:image\/[a-zA-Z]+;base64,[\s\S]+$/;
+        if(regex.test(base64String)){
+            console.log("correct base64");
+            return base64String;
+        }
+        else return "invalid base64";
+    }
 
     useEffect(() => {
         (async () => {
@@ -70,7 +79,7 @@ const CameraComponent = () => {
         }
     }
 
-    const handleAcceptPicture = async () => {
+    const handleAcceptPicture = async (endpoint) => {
         if (!capturedImage) {
             console.error("No image captured");
             return;
@@ -93,25 +102,48 @@ const CameraComponent = () => {
         const base64data = await readBlobAsBase64(blob);
         console.log('post length: ', base64data.length);
         const image64 = base64data.split(",")[1];
-        const response = await sendBase64Image(image64);
-
-        if (response.status === 200) {
-            // Navigate to the next screen
-            navigation.navigate("Game", { fen: response.body + " w KQkq - 0 1" });
-            // Reset the capturedImage state
-            setCapturedImage(null);
-            console.log("Success: ", response.body);
-            // Example: navigation.navigate("SuccessScreen", { data: response.body });
-        } else if (response.status === 400) {
-            // Handle client error (Bad Request)
-            setAlertMessage(response.body.error); // Set your error message
-            setDebugImage('data:image/[jpeg];base64,' + response.body.image); // Set the debug image URL
+        const response = await sendBase64Image(image64, endpoint);
+        // console.log("Response: ", JSON.parse(response.body.body));
+        var status = -1;
+        console.log("Response: ", response.body);
+        if('statusCode' in response) {
+            status = response.statusCode;
+        }
+        else {
+            status = response.body.statusCode;
+        }
+        console.log("Status: ", status);
+        console.log("headers: ", response.body.headers);
+        if (status === 200) {
+            //success
+            // console.log(response.body);
+            if(endpoint != "process-image"){
+                setAlertMessage("Debugging " + endpoint + " of image: "); // Set your error message
+                setDebugImage('data:image/jpeg;base64,' + JSON.parse(response.body.body)); // Set the debug image URL
+            }
+            else{
+                setAlertMessage("FEN retrieved: " + response.body.body); // Set your error message
+            }
+            
             setShowCustomAlert(true);
-            console.error("Bad Request: ", response.body.error);
+            // setCapturedImage(null);
+            // console.log("Success: ", response.body);
+            // Example: navigation.navigate("SuccessScreen", { data: response.body });
+        } else if (status === 400) {
+            // Handle client error (Bad Request)
+            const body = JSON.parse(response.body.body);
+            console.log("inner image: ", body.image)
+            if("error" in body) setAlertMessage(body.error); // Set your error message
+            else setAlertMessage(JSON.stringify(response.body));
+            if("image" in body) setDebugImage('data:image/[jpeg];base64,' + body.image); // Set the debug image URL
+            setShowCustomAlert(true);
+            console.error("Bad Request: ", body.error);
             // Example: Show an error message to the user
-        } else if (response.status === 500) {
+        } else if (status === 500) {
             // Handle server error
-            console.error("Server Error: ", response.error);
+            setAlertMessage("Error uploading image: Network request failed."); // Set your error message
+            setShowCustomAlert(true);
+            console.error("Error uploading image: Network request failed.");
             // Example: Show a server error message to the user
         }
     };
@@ -141,18 +173,24 @@ const CameraComponent = () => {
         });
     };
 
-    const sendBase64Image = async (base64Image) => {
-        const url = "https://rbz0ltdjwg.execute-api.us-east-2.amazonaws.com/Development/process-image";
-        const headers = {
-            'Accept': '*/*',
-            'Content-Type': 'text/plain',
+    const sendBase64Image = async (base64Image, endpoint) => {
+        // const url = "https://rbz0ltdjwg.execute-api.us-east-2.amazonaws.com/Development/" + endpoint;
+        console.log("Accessing ", endpoint)     
+        const url = "http://10.10.187.56:9000/2015-03-31/functions/function/invocations"
+        const payload = {
+            routeKey: 'd /' + endpoint, // Assuming 'endpoint' is a defined variable
+            body: base64Image // Assuming 'base64Image' contains your base64-encoded image data
         };
         try {
-            const response = await fetch(url, {
+            const request = {
                 method: "POST",
-                body: base64Image,
-                headers: headers,
-            });
+                body: JSON.stringify(payload),
+                headers: {
+                    'Accept': '*/*',
+                    'Content-Type': 'application/json',
+                }
+            };
+            const response = await fetch(url, request);
             const responseJson = await response.json();
             // console.log(responseJson);
             setIsLoading(false); // Stop loading
@@ -189,24 +227,42 @@ const CameraComponent = () => {
     const imageView = (
         <View style={{ flex: 1 }}>
             <Image source={{ uri: capturedImage }} style={{ flex: 1 }} resizeMode="contain" />
-            <View style={styles.buttonHorizontal}>
-                <View style={styles.buttonVertical}>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center' }}>
+                <View style={{ flexDirection: 'column', alignItems: 'center', paddingBottom: 10 }}>
                     <TouchableOpacity onPress={handleCancelPicture}>
                         <Image source={rejectImage} style={styles.button} />
                     </TouchableOpacity>
                     <Text style={styles.buttonText}>Cancel</Text>
                 </View>
-                <View style={styles.buttonVertical}>
+                <View style={{ flexDirection: 'column', alignItems: 'center', paddingBottom: 10 }}>
                     <TouchableOpacity onPress={handleRetakePicture}>
                         <Image source={retakeImage} style={styles.button} />
                     </TouchableOpacity>
                     <Text style={styles.buttonText}>Retake</Text>
                 </View>
-                <View style={styles.buttonVertical}>
-                    <TouchableOpacity onPress={handleAcceptPicture}>
+                <View style={{ flexDirection: 'column', alignItems: 'center', paddingBottom: 10 }}>
+                    <TouchableOpacity onPress={() => handleAcceptPicture("debug-corners")}>
                         <Image source={acceptImage} style={styles.button} />
                     </TouchableOpacity>
-                    <Text style={styles.buttonText}>Accept</Text>
+                    <Text style={styles.buttonText}>Corners</Text>
+                </View>
+                <View style={{ flexDirection: 'column', alignItems: 'center', paddingBottom: 10 }}>
+                    <TouchableOpacity onPress={() => handleAcceptPicture("debug-squares")}>
+                        <Image source={acceptImage} style={styles.button} />
+                    </TouchableOpacity>
+                    <Text style={styles.buttonText}>Squares</Text>
+                </View>
+                <View style={{ flexDirection: 'column', alignItems: 'center', paddingBottom: 10 }}>
+                    <TouchableOpacity onPress={() => handleAcceptPicture("debug-pieces")}>
+                        <Image source={acceptImage} style={styles.button} />
+                    </TouchableOpacity>
+                    <Text style={styles.buttonText}>Pieces</Text>
+                </View>
+                <View style={{ flexDirection: 'column', alignItems: 'center', paddingBottom: 10 }}>
+                    <TouchableOpacity onPress={() => handleAcceptPicture("process-image")}>
+                        <Image source={acceptImage} style={styles.button} />
+                    </TouchableOpacity>
+                    <Text style={styles.buttonText}>Full</Text>
                 </View>
             </View>
         </View>
@@ -226,7 +282,11 @@ const CameraComponent = () => {
                     <Image source={{ uri: debugImage }} style={styles.debugImage} />
                     <TouchableOpacity
                         style={styles.button}
-                        onPress={() => setShowCustomAlert(false)}>
+                        onPress={() => {
+                            setShowCustomAlert(false);
+                            setAlertMessage('');
+                            setDebugImage(null);
+                            }}>
                         <Text style={[styles.buttonText, {color: 'black'}]}>Close</Text>
                     </TouchableOpacity>
                 </View>
@@ -239,8 +299,10 @@ const CameraComponent = () => {
         <View style={[globalStyles.container, styles.container]}>
             <SafeAreaView style={globalStyles.safeArea}>
             <View style={[globalStyles.header, styles.header, styles.headingContainer]}>
-            <HomeButton navigation={navigation} onCustomPress={undefined} />
-                <Text style={styles.cameraText}>Camera</Text>
+                <TouchableOpacity onPress={handleCancelPicture}>
+					<Image source={HomeIcon} style={styles.iconStyle} />
+				</TouchableOpacity>
+                <Text style={styles.cameraText}>Test Image</Text>
                 <View style={styles.iconStylePlaceholder}></View>
             </View>
             </SafeAreaView>
@@ -270,19 +332,9 @@ const CameraComponent = () => {
 
 
 
-export default CameraComponent;
+export default DebugComponent;
 
 const styles = StyleSheet.create({
-    buttonHorizontal: {
-        flexDirection: 'row',
-        justifyContent: 'space-around',
-        alignItems: 'center',
-    },
-    buttonVertical: {
-        flexDirection: 'column',
-        alignItems: 'center',
-        paddingBottom: 10,
-    },
     container: {
 		padding: 0,
 	},
@@ -334,7 +386,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         margin:5,
         color: 'white',
-        fontSize: 20,
+        fontSize: 15,
         fontWeight: 'bold',
     },
     loadingContainer: {
