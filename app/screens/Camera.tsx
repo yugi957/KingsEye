@@ -99,7 +99,7 @@ const CameraComponent = () => {
 
         if (response.status === 200) {
             // Navigate to the next screen
-            navigation.navigate("Game", { fen: response.body + " w KQkq - 0 1" });
+            navigation.navigate("Confirmation", { fen: response.body + " w KQkq - 0 1" });
             // Reset the capturedImage state
             setCapturedImage(null);
             console.log("Success: ", response.body);
