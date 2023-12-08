@@ -148,7 +148,7 @@ app.post('/saveGame', async (req, res) => {
       "date": req.body.date,
       "title": req.body.title,
       "starred": false,
-      "moves": [],
+      "moves": [req.body.fen],
       "status": req.body.status,
       "side": req.body.side,
       "notes": req.body.notes

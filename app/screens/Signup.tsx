@@ -1,11 +1,15 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity, ActivityIndicator, KeyboardAvoidingView } from 'react-native';
+import { View, Image, Text, TextInput, Button, StyleSheet, Keyboard, TouchableWithoutFeedback, TouchableOpacity, ActivityIndicator, KeyboardAvoidingView, Dimensions } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import globalStyles from '../styles/globalStyles';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useHeaderHeight } from '@react-navigation/elements';
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { FIREBASE_AUTH } from '../../FirebaseConfig';
+import Logo from "../../assets/KING'S-EYE-LOGO-2.png";
+
+const screenWidth = Dimensions.get('window').width;
+const logoSize = screenWidth * .8;
 
 const Signup = () => {
   const [email, setEmail] = useState('');
@@ -62,58 +66,68 @@ const Signup = () => {
 
 
   return (
-    <View style={[globalStyles.container, styles.container]}>
-		<SafeAreaView style={globalStyles.safeArea}>
-      <View style={globalStyles.header}>
-	  <View style={{ width: 50, height: 50 }} />
-        <Text style={styles.signUpText}>Sign Up</Text>
-        <TouchableOpacity onPress={navToLogin}>
-          <Text style={styles.signupButtonText}>Login</Text>
-        </TouchableOpacity>
-      </View>
-	  </SafeAreaView>
-      <KeyboardAvoidingView behavior='padding'>
-        <TextInput
-          placeholder="First Name"
-          style={globalStyles.input}
-          value={fname}
-          placeholderTextColor='#C3C3C3'
-          onChangeText={setFname}
-        />
-        <TextInput
-          placeholder="Last Name"
-          style={globalStyles.input}
-          value={lname}
-          placeholderTextColor='#C3C3C3'
-          onChangeText={setLname}
-        />
-        <TextInput
-          placeholder="Email"
-          style={globalStyles.input}
-          value={email}
-          placeholderTextColor='#C3C3C3'
-          onChangeText={setEmail}
-          autoCapitalize="none"
-        />
-        <TextInput
-          placeholder="Password"
-          style={globalStyles.input}
-          secureTextEntry
-          value={password}
-          placeholderTextColor='#C3C3C3'
-          onChangeText={setPassword}
-        />
-        <TouchableOpacity style={globalStyles.generalButton} onPress={signUp}>
-          <Text style={styles.signupButtonText}>Sign Up</Text>
-        </TouchableOpacity>
-      </KeyboardAvoidingView>
-    </View>
+	<TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+		<View style={[globalStyles.container, styles.container]}>
+			<SafeAreaView style={globalStyles.safeArea}>
+		<View style={globalStyles.header}>
+		<View style={{ width: 50, height: 50 }} />
+			<Text style={styles.signUpText}>Sign Up</Text>
+			<TouchableOpacity onPress={navToLogin}>
+			<Text style={styles.signupButtonText}>Login</Text>
+			</TouchableOpacity>
+		</View>
+    <Image source={Logo} style={styles.logoStyling}/>
+		</SafeAreaView>
+		<KeyboardAvoidingView behavior='padding'>
+			<TextInput
+			placeholder="First Name"
+			style={globalStyles.input}
+			value={fname}
+			placeholderTextColor='#C3C3C3'
+			onChangeText={setFname}
+			/>
+			<TextInput
+			placeholder="Last Name"
+			style={globalStyles.input}
+			value={lname}
+			placeholderTextColor='#C3C3C3'
+			onChangeText={setLname}
+			/>
+			<TextInput
+			placeholder="Email"
+			style={globalStyles.input}
+			value={email}
+			placeholderTextColor='#C3C3C3'
+			onChangeText={setEmail}
+			autoCapitalize="none"
+			/>
+			<TextInput
+			placeholder="Password"
+			style={globalStyles.input}
+			secureTextEntry
+			value={password}
+			placeholderTextColor='#C3C3C3'
+			onChangeText={setPassword}
+			/>
+			<TouchableOpacity style={globalStyles.generalButton} onPress={signUp}>
+			<Text style={styles.signupButtonText}>Sign Up</Text>
+			</TouchableOpacity>
+		</KeyboardAvoidingView>
+		</View>
+		</TouchableWithoutFeedback>
   );
 };
 
 export default Signup;
 
 const styles = StyleSheet.create({
+  logoStyling: {
+    width: logoSize,
+    height: 150,
+    resizeMode: 'contain', 
+    paddingBottom: 50,
+    alignSelf: 'center',
+  },
 	container: {
 		// paddingBottom: 10,
 		paddingTop: 0,

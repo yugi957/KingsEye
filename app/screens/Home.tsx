@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView, TextInput, Image, FlatList } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, ActivityIndicator, ScrollView, TextInput, Image, FlatList, Alert } from 'react-native';
 import { useNavigation} from '@react-navigation/native';
 import React, { useState, useEffect, useRef } from 'react'
 import { FIREBASE_AUTH } from '../../FirebaseConfig'
@@ -7,6 +7,8 @@ import profileImage from '../../assets/profile.png';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
+import deleteGameIcon from '../../assets/delete.png';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 const Home = () => {
 		const fbAuth = FIREBASE_AUTH;
@@ -20,6 +22,9 @@ const Home = () => {
 		
     const navToCamera = () => {
       navigation.navigate('Camera');
+    }
+    const navToDebug = () => {
+      navigation.navigate('Debug');
     }
 
     const [games, setGames] = useState([]);
@@ -42,49 +47,169 @@ const Home = () => {
       
             const data = await response.json();
             console.log('DATA', data.pastGames);
-            setGames(data.pastGames);
+            // setGames(data.pastGames);
+			const sortedGames = [...data.pastGames].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+			setGames(sortedGames);
+			const initialStarredStatus = {};
+        	sortedGames.forEach(game => {
+        	initialStarredStatus[game.gameID] = game.starred;
+        	});
+        	setStarredStatus(initialStarredStatus);
             
           } catch (error) {
             console.error('Error:', error);
           }
         };
       
-        fetchData();
+        fetchData(); 
       }, [fbAuth, navigation])
     );
+    
+    const deleteGame = async ( gameId ) => {
+      const userEmail = fbAuth.currentUser?.email;
+      console.log("Deleting game with ID:", gameId);
+      console.log("Deleting game with email:", userEmail);
+      
+      try {
+        const response = await fetch(`https://kingseye-1cd08c4764e5.herokuapp.com/deleteGame`, {
+        
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ 
+            email: userEmail,
+            gameID: gameId,
+          }),
+        });
+        const data = await response.json();
+
+        if (response.ok) {
+			const url = `https://kingseye-1cd08c4764e5.herokuapp.com/getGames?email=${userEmail}`;
+			const responseReload = await fetch(url);
+			const pastGames = await responseReload.json();
+			console.log(data.message);
+			const sortedGames = pastGames.pastGames.sort((a, b) => new Date(b.date) - new Date(a.date));
+			setGames(sortedGames);
+			  const initialStarredStatus = {}; 
+    	sortedGames.forEach(game => {
+      	initialStarredStatus[game.gameID] = game.starred;
+    	});
+    	setStarredStatus(initialStarredStatus);
+        } else { 
+          console.error(data.message); 
+          console.error(`Error ${response.status}: ${response.statusText}`);
+          const errorText = await response.text();
+          console.error(errorText);
+        }
+      } catch (error) {
+        console.error('Detailed error:', error.message.stack);
+      }      
+    };
+    const handleDeleteGamePress = (gameId) => {
+      Alert.alert(
+        'Delete Game',
+        'Are you sure you want to delete this game?',
+        [
+          { text: 'Cancel', style: 'destructive' },
+          { text: 'Delete', onPress: () => deleteGame(gameId) },
+        ],
+      );
+    };
+    
+
 
     useEffect(() => {
       console.log('GAMES', games)
     }, [games]);
 
+	const [starredStatus, setStarredStatus] = useState({});
+
+
+	const handleStarClick = async (gameId) => {
+		const newStarredStatus = !starredStatus[gameId];
+		setStarredStatus({ ...starredStatus, [gameId]: newStarredStatus });
+	  
+		try {
+		  const userEmail = fbAuth.currentUser?.email;
+		  const response = await fetch(`https://kingseye-1cd08c4764e5.herokuapp.com/updateGame`, {
+			method: 'PATCH',
+			headers: {
+			  'Content-Type': 'application/json',
+			},
+			body: JSON.stringify({
+			  email: userEmail,
+			  gameID: gameId,
+			  starred: newStarredStatus,
+			}),
+		  });
+	  
+		  if (response.ok) {
+			console.log('Server response:', await response.json());
+			console.log(`Star status of game ${gameId} is now ${newStarredStatus}`)
+		  }
+		  else {
+			const errorResponse = await response.json();
+			console.error('Server response:', errorResponse);
+			throw new Error('Failed to update the game');
+		  }
+		} catch (error) {
+		  console.error('Error updating star:', error);
+		  setStarredStatus({ ...starredStatus, [gameId]: !newStarredStatus });
+		}
+	  };
+	  
+	  
+	
+
     const renderItem = ({ item }) => {
-      return <TouchableOpacity 
-          style={styles.opponentItem}
-          onPress={() => navigation.navigate('Game', { item: item })}
-      >
-          <Text style={styles.opponentName}>{item.opponentName}</Text>
-          {1%3 == 0 && (
+		return <TouchableOpacity
+			style={styles.opponentItem}
+          	onPress={() => navigation.navigate('Game', { item: item })}
+      		>
+	  <Icon
+        name={starredStatus[item.gameID] ? 'star' : 'star-o'}
+        size={30}
+        style={styles.faveIcon}
+        onPress={() => handleStarClick(item.gameID)}
+      />
+         <Text style={styles.titleName} numberOfLines={1} ellipsizeMode='tail'>
+          {item.title}
+        </Text>
+
+
+          {item.status === "Win" && (
               <View style={[styles.icon, styles.green]}>
-                  <Text>+</Text>
+                  <Text style={styles.statusText}>+</Text>
               </View>
           )}
-          {0%3 == 1 && (
+          {item.status === "Loss" && (
               <View style={[styles.icon, styles.red]}>
-                  <Text>-</Text>
+                  <Text style={styles.statusText}>—</Text>
               </View>
           )}
-          {0%3 == 2 && (
+          {item.status === "Draw" && (
               <View style={styles.icon}>
-                  <Text>=</Text>
+                  <Text style={styles.statusText}>=</Text>
               </View>
           )}
-          {/* {2%3 == 2 && ( */}
+          {item.status === "Playing" && (
+              <View style={[styles.icon, styles.yellow]}>
+                  {/* <Text style={styles.statusText}>IP</Text> */}
+                  <Text style={styles.statusText}>≈</Text>
+              </View>
+          )}
+          {item.status === "Unknown" && (
               <View style={styles.icon}>
                   <Text>?</Text>
               </View>
-          {/* )} */}
+          )}
+          <TouchableOpacity onPress={() => handleDeleteGamePress(item.gameID)}>
+            <Icon name="trash" size={30} backgroundColor='transparent' color="#EF4035" style={styles.trashIcon} />
+          </TouchableOpacity>
       </TouchableOpacity>
     };
+    
 
     return (
         <View style={[globalStyles.container, styles.container]}>
@@ -102,7 +227,12 @@ const Home = () => {
           <FlatList
             data={games}
             renderItem={renderItem}
-            keyExtractor={item => item.gameID.toString()} // Replace with unique identifier
+            keyExtractor={item => item.gameID.toString()}
+            ListEmptyComponent={
+              <View style={styles.emptyContainer}>
+                <Text style={styles.noGamesText}>No Saved Games!</Text>
+              </View>
+            }
           />
           {/* <ScrollView style={styles.archiveList}>
           <FlatList
@@ -138,6 +268,9 @@ const Home = () => {
 			<TouchableOpacity style={[globalStyles.generalButton, styles.playButton]} onPress={navToCamera}>
 			<Text style={styles.playButtonText}>Take Picture</Text>
 			</TouchableOpacity>
+      <TouchableOpacity style={[globalStyles.generalButton, styles.playButton]} onPress={navToDebug}>
+			<Text style={styles.playButtonText}>Debug</Text>
+			</TouchableOpacity>
       </SafeAreaView>
 		</View>
 		
@@ -147,17 +280,32 @@ const Home = () => {
 export default Home;
 
 const styles = StyleSheet.create({
+  emptyContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  noGamesText: {
+    color: 'white',
+    fontSize: 20,
+    fontWeight: 'bold',
+  },
+  statusText: {
+    color: 'black',
+    fontWeight: 'bold',
+  },
     container: {
       padding: 0,
       // paddingBottom: 20,
       // paddingTop: 30,
     },
     title: {
+      textAlign: 'center',
       flex: 1,
       color: 'white',
-      fontSize: 20,
+      fontSize: 30,
       fontWeight: 'bold',
-      textAlign: 'center'
     },
     search: {
       flex: 2,
@@ -180,7 +328,7 @@ const styles = StyleSheet.create({
       borderRadius: 10,
       borderColor: "#24231f",
     },
-    opponentName: {
+    titleName: {
       flex: 1,
       color: 'white',
       fontSize: 18,
@@ -194,11 +342,30 @@ const styles = StyleSheet.create({
       borderRadius: 8,
       marginLeft: 10,
     },
+    trashIcon: {
+      width: 30,
+      height: 30,
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginLeft: 10,
+    },
+    faveIcon: {
+      color: '#f4d35e',
+      width: 30,
+      height: 30,
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginRight: 10,
+      // marginLeft: 10,
+    },
     green: {
         backgroundColor: '#90b35a'
     },
     red: {
         backgroundColor: '#c44542'
+    },
+    yellow: {
+        backgroundColor: '#f4d35e'
     },
     playButton: {
       margin: 20
