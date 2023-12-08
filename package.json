@@ -7,7 +7,7 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "test": "jest"
+    "test": "jest --silent --detectOpenHandles --forceExit"
   },
   "dependencies": {
     "@expo/webpack-config": "^19.0.0",
@@ -61,6 +61,7 @@
   "private": true,
   "proxy": "http://localhost:5000",
   "jest": {
-    "testMatch": ["<rootDir>/src/**/*.(test).{js,jsx,ts,tsx}"]
+    "testMatch": ["<rootDir>/src/__tests__/*.(test).{js,jsx,ts,tsx}"],
+    "testPathIgnorePatterns": ["/node_modules/"]
   }
 }

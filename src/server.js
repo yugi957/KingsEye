@@ -347,7 +347,7 @@ app.get('/principalVariation', (request, response) => {
 });
 
 
-app.listen(port, (err) => {
+module.exports = app.listen(port, (err) => {
   if (err) {
     return console.log('Something bad happened', err);
   }
