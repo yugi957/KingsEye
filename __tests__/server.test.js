@@ -1,5 +1,5 @@
 const request = require('supertest');
-const app = require('../server.js');
+const app = require('../src/server.js');
 
 describe("Signup endpoint", () => {
   test('Should signup a user', async () => {
@@ -109,4 +109,7 @@ describe("Change game data", () => {
   });
 });
   
-  
+
+afterAll(() => {
+  app.close();
+});
