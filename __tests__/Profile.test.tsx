@@ -1,3 +1,25 @@
+beforeEach(() => {
+    global.fetch = jest.fn((url: string, options?: RequestInit) => {
+      if (url.includes('getUser')) {
+        return Promise.resolve({
+          json: () => Promise.resolve({ profileImage: 'mockedImageUrl' }),
+        } as Response);
+      } else if (url.includes('setUserData')) {
+        return Promise.resolve({
+          json: () => Promise.resolve({ message: 'User data updated successfully' }),
+        } as Response);
+      }
+      return Promise.resolve({
+        json: () => Promise.resolve({}),
+      } as Response);
+    }) as jest.Mock;
+  });
+  
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+  
+  
 jest.mock('firebase/app', () => ({
     initializeApp: jest.fn(),
   }));
