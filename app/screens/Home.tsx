@@ -5,7 +5,7 @@ import { FIREBASE_AUTH } from '../../FirebaseConfig'
 import globalStyles from '../styles/globalStyles';
 import profileImage from '../../assets/profile.png';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
 import deleteGameIcon from '../../assets/delete.png';
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -13,7 +13,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 const Home = () => {
 		const fbAuth = FIREBASE_AUTH;
 		
-		const insets = useSafeAreaInsets();
+		// const insets = useSafeAreaInsets();
 
 		const navigation = useNavigation();
 		const navToProfile = () => {
@@ -27,7 +27,7 @@ const Home = () => {
       navigation.navigate('Debug');
     }
 
-    const [games, setGames] = useState([]);
+    const [games, setGames] = useState([{gameID: 1}, {gameID: 2}]);
 
     useFocusEffect(
       React.useCallback(() => {
@@ -48,9 +48,9 @@ const Home = () => {
             const data = await response.json();
             console.log('DATA', data.pastGames);
             // setGames(data.pastGames);
-			const sortedGames = [...data.pastGames].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-			setGames(sortedGames);
-			const initialStarredStatus = {};
+          const sortedGames = [...data.pastGames].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+          setGames(sortedGames);
+			    const initialStarredStatus = {};
         	sortedGames.forEach(game => {
         	initialStarredStatus[game.gameID] = game.starred;
         	});
@@ -163,7 +163,7 @@ const Home = () => {
 	
 
     const renderItem = ({ item }) => {
-		return <TouchableOpacity
+		return <TouchableOpacity testID={item.gameID.toString()}
 			style={styles.opponentItem}
           	onPress={() => navigation.navigate('Game', { item: item })}
       		>

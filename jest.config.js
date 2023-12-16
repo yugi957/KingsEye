@@ -12,7 +12,8 @@ module.exports = {
         "/node_modules/"
     ],
     transformIgnorePatterns: [
-      "node_modules/(?!(jest-)?react-native|react-native|@react-native-community|@react-navigation/.*|@firebase/app|@firebase/auth|expo(nent)?|@expo(nent)?/.*|unimodules-permissions-interface/.*|@react-native/.*)"
+    //   "node_modules/(?!(jest-)?react-native|@react-native|react-native-vector-icons|@react-native-community|@react-navigation/.*|@firebase/app|@firebase/auth|expo(nent)?|@expo(nent)?/.*|unimodules-permissions-interface/.*|@react-native/.*)"
+        "node_modules/(?!(@react-native|react-native|react-native-vector-icons)/)"
     ]
   };
   
