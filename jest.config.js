@@ -13,6 +13,9 @@ module.exports = {
     ],
     transformIgnorePatterns: [
       "node_modules/(?!(jest-)?react-native|react-native|@react-native-community|@react-navigation/.*|@firebase/app|@firebase/auth|expo(nent)?|@expo(nent)?/.*|unimodules-permissions-interface/.*|@react-native/.*)"
-    ]
+    ],
+    moduleNameMapper: {
+      '^.+\\.ttf$': '<rootDir>/fileMock.js'
+    }
   };
   

@@ -23,13 +23,7 @@ beforeEach(() => {
 jest.mock('firebase/app', () => ({
     initializeApp: jest.fn(),
   }));
-  jest.mock('firebase/auth', () => ({
-    getAuth: jest.fn(),
-    sendPasswordResetEmail: jest.fn(),
-    signOut: jest.fn(),
-    //currentuser
 
-  }));
   
 // jest.mock('../FirebaseConfig', () => ({
 //     FIREBASE_AUTH: {
