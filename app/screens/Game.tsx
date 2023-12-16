@@ -11,8 +11,9 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import RNPickerSelect from 'react-native-picker-select';
 import { opponentPfp } from '../../assets/base64data_ts';
 import { FIREBASE_AUTH } from '../../FirebaseConfig';
+import { Chess } from 'chess.js';
 
-// BOOK BAGELMAKE ANDREWCHANG CANDYMANANDY SLOTHTURTLECORE CHINAMAN CHIN TODO -
+// BOOK BAGELMAKE ANDREWCHANG CANDYMANANDY SLOTHTURTLECORE TODO -
 // 1) populate each of the tabs
 //      i made this assuming the back and next arrows only being shown in the moves tab. probably want to highlight what move you are on or something
 // 2) on click home Icon, maybe alert you have unsaved changes are you sure you want to go back?
@@ -273,7 +274,7 @@ const Game = ({ route }) => {
     <SafeAreaView style={styles.gameContainer}>
       <View style={styles.square}>
         <View style={styles.titleContainer}>
-          <TouchableOpacity onPress={navToHome} style={styles.leftIconContainer}>
+          <TouchableOpacity onPress={navToHome} >
             <Image source={HomeIcon} style={styles.homeIconStyle} />
           </TouchableOpacity>
 
@@ -294,7 +295,7 @@ const Game = ({ route }) => {
             </TouchableOpacity>
           </View>
 
-          <TouchableOpacity onPress={handleSave} style={styles.rightIconContainer}>
+          <TouchableOpacity onPress={handleSave}>
             <Icon name="save" size={20} color="#fff" />
           </TouchableOpacity>
         </View>

@@ -60,7 +60,7 @@ export default function Confirmation({ navigation, route }) {
       date: currentdate,
       title: gameTitle,
       status: gameStatus,
-      // moves: [firstMove],
+      moves: [firstMove],
       side: userSide,
       // notes: notes
       // IMPLEMENT NOTES LATER
