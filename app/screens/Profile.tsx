@@ -222,7 +222,7 @@ const Profile = () => {
 				<HomeButton navigation={navigation} onCustomPress={undefined} />
 					<Text style={styles.profileText}>Profile</Text>
 					<View style={styles.IconStyleTransparent}></View>
-					<TouchableOpacity onPress={handleEditClick}>
+					<TouchableOpacity onPress={handleEditClick} testID="editButton">
 						<Image source={editIconSource} style={styles.EditIconStyle} />
 					</TouchableOpacity>
 				</View>
@@ -246,6 +246,7 @@ const Profile = () => {
 						style={styles.infoInput}
 						value={firstName}
 						onChangeText={(text) => setFirstName(text)}
+						testID="firstNameInput"
 					/>
 				) : (
 					<Text style={styles.infoDetails}>{firstName}</Text>
@@ -259,6 +260,7 @@ const Profile = () => {
 						style={styles.infoInput}
 						value={lastName}
 						onChangeText={(text) => setLastName(text)}
+						testID="lastNameInput"
 					/>
 				) : (
 					<Text style={styles.infoDetails}>{lastName}</Text>
