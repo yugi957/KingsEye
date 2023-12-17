@@ -38,17 +38,26 @@ export default function Confirmation({ navigation, route }) {
 		navigation.navigate('Home')
 	}
 
-  const handleSave = () => {
-    saveblackPlayerName();
-    savewhitePlayerName();
-    saveGame();
-    navToHome();
-  };
-
   const handleReject = () => {
     navigation.navigate('Camera');
   };
 
+  // Save player names and exit edit mode
+  const saveblackPlayerName = () => {
+    if (blackPlayerName.trim().length === 0) {
+      setBlackPlayerName('Player 1');
+    }
+    setOpponentName(blackPlayerName);
+    setIsblackPlayerNameEditable(false);
+  };
+
+  const savewhitePlayerName = () => {
+    if (whitePlayerName.trim().length === 0) {
+      setWhitePlayerName('Player 2');
+    }
+    setOpponentName(whitePlayerName);
+    setIswhitePlayerNameEditable(false);
+  };
 
   const fbAuth = FIREBASE_AUTH;
   const saveGame = async () => {
@@ -60,7 +69,7 @@ export default function Confirmation({ navigation, route }) {
       date: currentdate,
       title: gameTitle,
       status: gameStatus,
-      moves: [firstMove],
+      fen: firstMove,
       side: userSide,
       // notes: notes
       // IMPLEMENT NOTES LATER
@@ -72,7 +81,7 @@ export default function Confirmation({ navigation, route }) {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(saveData),
+        body: JSON.stringify({email: 'qaz@qaz.com'}),
       });
 
       const result = await response.json();
@@ -101,6 +110,13 @@ export default function Confirmation({ navigation, route }) {
     }
   };
 
+  const handleSave = async () => {
+    saveblackPlayerName();
+    savewhitePlayerName();
+    await saveGame();
+    navToHome();
+  };
+
   useEffect(() => {
     const userEmail = fbAuth.currentUser.email;
     const url = `https://kingseye-1cd08c4764e5.herokuapp.com/getUser?email=${userEmail}`;
@@ -124,24 +140,6 @@ export default function Confirmation({ navigation, route }) {
       })
       .catch(error => console.error('Error:', error));
   }, [userSide]);
-
-  // Save player names and exit edit mode
-  const saveblackPlayerName = () => {
-    if (blackPlayerName.trim().length === 0) {
-      setBlackPlayerName('Player 1');
-    }
-    setOpponentName(blackPlayerName);
-    setIsblackPlayerNameEditable(false);
-  };
-
-  const savewhitePlayerName = () => {
-    if (whitePlayerName.trim().length === 0) {
-      setWhitePlayerName('Player 2');
-    }
-    setOpponentName(whitePlayerName);
-    setIswhitePlayerNameEditable(false);
-  };
-
 
   // useEffect(() => {
   //   setFen(chessboardRef.current?.getState().fen);

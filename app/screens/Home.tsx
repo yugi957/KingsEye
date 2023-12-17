@@ -28,11 +28,11 @@ const Home = () => {
     }
 
     const [games, setGames] = useState([{gameID: 1}, {gameID: 2}]);
+    
 
     useFocusEffect(
       React.useCallback(() => {
         const fetchData = async () => {
-          console.log('FETCHING DATA');
           const userEmail = fbAuth.currentUser?.email;
           const url = `https://kingseye-1cd08c4764e5.herokuapp.com/getGames?email=${(userEmail)}`;
           console.log(url)
@@ -46,7 +46,6 @@ const Home = () => {
             }
       
             const data = await response.json();
-            console.log('DATA', data.pastGames);
             // setGames(data.pastGames);
           const sortedGames = [...data.pastGames].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
           setGames(sortedGames);
@@ -117,11 +116,6 @@ const Home = () => {
       );
     };
     
-
-
-    useEffect(() => {
-      console.log('GAMES', games)
-    }, [games]);
 
 	const [starredStatus, setStarredStatus] = useState({});
 
