@@ -27,7 +27,7 @@ const Home = () => {
       navigation.navigate('Debug');
     }
 
-    const [games, setGames] = useState([{gameID: 1}, {gameID: 2}]);
+    const [games, setGames] = useState([]);
     
 
     useFocusEffect(
