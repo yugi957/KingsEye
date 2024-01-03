@@ -70,7 +70,24 @@ return {
 //     };
 //   });
   
-  
+jest.mock('react-native-chessboard', () => {
+  const React = require('react');
+  const ChessboardMock = React.forwardRef(({ fen, onMove, colors, ...props }, ref) => {
+    return (
+      <div {...props} ref={ref}>
+        Mock Chessboard: FEN = {fen}
+      </div>
+    );
+  });
+
+  return {
+    __esModule: true,
+    default: ChessboardMock,
+    Chessboard: ChessboardMock,
+  };
+});
+
+jest.mock('react-native-gesture-handler', () => require('../RNGesHandler'));
   
 jest.mock('firebase/app', () => ({
     initializeApp: jest.fn(),
@@ -92,14 +109,31 @@ return {
 });
 
 jest.mock('expo-asset', () => ({
-    Asset: {
-      fromModule: jest.fn(),
-    },
-  }));
-  
+  Asset: {
+    fromModule: jest.fn(),
+  },
+}));
+
+jest.mock('react-native-vector-icons/FontAwesome', () => 'Icon');
+
+jest.mock('react-native-picker-select', () => {
+return function PickerMock(props) {
+    return (
+    <select
+        value={props.value}
+        onChange={e => props.onValueChange(e.currentTarget.value)}
+    >
+        {props.items.map(item => (
+        <option key={item.value} value={item.value}>
+            {item.label}
+        </option>
+        ))}
+    </select>
+    );
+};
+});
 
 // jest.mock('react-native-gesture-handler', () => require('../RNGesHandler'));
-// jest.mock('react-native-vector-icons/FontAwesome', () => 'Icon');
 
 const mockGame = {
     item: {
@@ -125,11 +159,6 @@ import { render } from '@testing-library/react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import Game from '../app/screens/Game';
 
-// import Chessboard from 'react-native-chessboard';
-
-// it('should handle chessboard moves', () => {
-//     render(<Chessboard fen="some-fen" onMove={() => {}} colors={{ black: "#000", white: "#FFF" }} />);
-//   });
 
 describe('<Game />', () => {
   it('displays game information correctly', () => {
@@ -145,13 +174,3 @@ describe('<Game />', () => {
 
   });
 });
-
-// describe('<Game />', () => {
-//     it('renders without crashing', () => {
-//         render(
-//                     <NavigationContainer>
-//                       <Game route={{ params: mockGame }} />
-//                     </NavigationContainer>
-//                   );
-//     });
-//   });
