@@ -1,5 +1,7 @@
 # KingsEye
-![What is King's Eye and how to use it](https://drive.google.com/file/d/1rVLODHcqqeoMd1b_u2NQpbmCA7T3kGP_/view?usp=sharing)
+
+### Demo
+[![King's Eye Demo](https://github.com/yugi957/KingsEye/assets/74220837/1a6090ba-dbec-4dd8-a27e-4b79d195942e)](https://drive.google.com/file/d/1rVLODHcqqeoMd1b_u2NQpbmCA7T3kGP_/view?usp=sharing)
 
 ### Install Dependencies
 - Node.js
