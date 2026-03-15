@@ -1,68 +1,40 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { getEvaluationScore, getPrincipalVariation } from '../../src/mock/stockfish';
 
 const AnalysisBar = ({ fen }) => {
   const [evScore, setEvScore] = useState(null);
   const [principalVariation, setPrincipalVariation] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  let computed_fen = '';
-  let recent_fen = '';
 
-  const fetchAnalysis = async () => {
-    if (isLoading) {
-      return;
-    }
+  useEffect(() => {
+    if (!fen) return;
 
-    computed_fen = fen;
+    let cancelled = false;
+    setEvScore('Loading');
+    setPrincipalVariation([]);
     setIsLoading(true);
 
-    try {
-      console.log("FETCHING ANALYSIS")
-      const scoreResponse = await fetch(`https://kingseye-1cd08c4764e5.herokuapp.com/evaluationScore?fen=${fen}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-
-      const pvResponse = await fetch(`https://kingseye-1cd08c4764e5.herokuapp.com/principalVariation?fen=${fen}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-
-      if (!scoreResponse.ok) throw new Error('Error fetching evaluation score');
-      if (!pvResponse.ok) throw new Error('Error fetching principal variation');
-
-      const scoreData = await scoreResponse.json();
-      const pvData = await pvResponse.json();
-
-      setEvScore(scoreData.evaluation);
-      setPrincipalVariation(pvData.moves);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    if (fen) {
-      setEvScore("Loading");
-      recent_fen = fen;
-      fetchAnalysis();
-    }
-  }, [fen]);
-
-  useEffect(() => {
-    if (isLoading == false) {
-      if (recent_fen != computed_fen) {
-        fetchAnalysis();
-        console.log('spam')
+    (async () => {
+      try {
+        const [score, pv] = await Promise.all([
+          getEvaluationScore(fen),
+          getPrincipalVariation(fen),
+        ]);
+        if (!cancelled) {
+          setEvScore(score);
+          setPrincipalVariation(pv);
+        }
+      } catch (error) {
+        console.error(error);
+        if (!cancelled) setEvScore('Error');
+      } finally {
+        if (!cancelled) setIsLoading(false);
       }
-    }
-  }, [isLoading]);
+    })();
+
+    return () => { cancelled = true; };
+  }, [fen]);
 
   const isWhiteWinning = evScore && evScore > 0 || typeof evScore === 'string' && !evScore.includes('-');
   const isBlackWinning = evScore && evScore < 0 || typeof evScore === 'string' && evScore.includes('-');

@@ -12,6 +12,7 @@ import RNPickerSelect from 'react-native-picker-select';
 import { opponentPfp } from '../../assets/base64data_ts';
 import { FIREBASE_AUTH } from '../../FirebaseConfig';
 import { Chess } from 'chess.js';
+import { getUser, updateGame } from '../../src/mock/store';
 
 // BOOK BAGELMAKE ANDREWCHANG CANDYMANANDY SLOTHTURTLECORE TODO -
 // 1) populate each of the tabs
@@ -64,35 +65,18 @@ const Game = ({ route }) => {
   }, []);
 
   const updateGameDetails = async () => {
-
-    const updateData = {
-      email: fbAuth.currentUser.email,
-      gameID: route.params.item.gameID,
-      moves: fenHistory,
-      opponentName: route.params.item.side === "White" ? blackPlayerName : whitePlayerName,
-      title: gameTitle,
-      status: gameStatus,
-      // notes: notes
-    };
-
     try {
-      const response = await fetch('https://kingseye-1cd08c4764e5.herokuapp.com/updateGame', {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(updateData),
+      const userEmail = fbAuth.currentUser.email;
+      await updateGame(userEmail, route.params.item.gameID, {
+        moves: fenHistory,
+        opponentName: route.params.item.side === "White" ? blackPlayerName : whitePlayerName,
+        title: gameTitle,
+        status: gameStatus,
       });
-
-      const result = await response.json();
-      if (response.status === 200) {
-        alert('Game saved successfully');
-      } else {
-        alert('Error updating game: ' + result.message);
-      }
+      alert('Game saved successfully');
     } catch (error) {
       console.error('Error:', error);
-      alert('An error occurred while updating the game.');
+      alert('An error occurred while saving the game.');
     }
   };
 
@@ -119,24 +103,17 @@ const Game = ({ route }) => {
 
   useEffect(() => {
     const userEmail = fbAuth.currentUser.email;
-    const url = `https://kingseye-1cd08c4764e5.herokuapp.com/getUser?email=${userEmail}`;
-
-    fetch(url)
-      .then(response => response.json())
-      .then(data => {
-        // Assuming basePfp is available and holds the other player's base64 image
-        // Check the side and assign names and icons accordingly
-        if (route.params.item.side === "White") {
-          setWhitePlayerName(`${data.firstName} ${data.lastName}`);
-          setBlackPlayerName(route.params.item.opponentName);
-          setWhitePlayerIcon(data.profileImage);
-        } else if (route.params.item.side === "Black") {
-          setBlackPlayerName(`${data.firstName} ${data.lastName}`);
-          setWhitePlayerName(route.params.item.opponentName);
-          setBlackPlayerIcon(data.profileImage);
-        }
-      })
-      .catch(error => console.error('Error:', error));
+    getUser(userEmail).then(data => {
+      if (route.params.item.side === "White") {
+        setWhitePlayerName(`${data.firstName} ${data.lastName}`);
+        setBlackPlayerName(route.params.item.opponentName);
+        setWhitePlayerIcon(data.profileImage);
+      } else if (route.params.item.side === "Black") {
+        setBlackPlayerName(`${data.firstName} ${data.lastName}`);
+        setWhitePlayerName(route.params.item.opponentName);
+        setBlackPlayerIcon(data.profileImage);
+      }
+    }).catch(error => console.error('Error:', error));
   }, [route.params.item.side, route.params.item.opponentName]);
 
   const toggleGameTitleEdit = () => {

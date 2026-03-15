@@ -14,6 +14,7 @@ import * as ImagePicker from 'expo-image-picker';
 import * as ImageManipulator from 'expo-image-manipulator';
 import basePfp from '../../assets/base_pfp.png';
 import HomeButton from '../components/HomeButton';
+import { getUser, setUserData } from '../../src/mock/store';
 
 
 const Profile = () => {
@@ -30,8 +31,8 @@ const Profile = () => {
 	const fbAuth = FIREBASE_AUTH;
 
 	const handleSignOut = async () => {
-		await fbAuth.signOut();
-		navigation.navigate('Login');
+		// Demo mode: sign-out is a no-op, just go back to Home
+		navigation.navigate('Home');
 	};
 
 	const handleSignOutClick = () => {
@@ -39,43 +40,7 @@ const Profile = () => {
 	}
 
 	const handleDeleteAccount = async () => {
-		Alert.alert(
-			'Delete Account',
-			'Are you sure you want to delete your account? This action cannot be undone.',
-			[
-				{
-					text: 'Cancel',
-					style: 'cancel',
-				},
-				{
-					text: 'Delete',
-					style: 'destructive',
-					onPress: async () => {
-						try {
-							const response = await fetch('https://kingseye-1cd08c4764e5.herokuapp.com/deleteAccount', {
-								method: 'DELETE',
-								headers: {
-									'Content-Type': 'application/json',
-								},
-								body: JSON.stringify({ email: email }),
-							});
-							const data = await response.json();
-							console.log(data.message);
-							if (response.ok) {
-								//delete fb account
-								const user = fbAuth.currentUser;
-								await user.delete();
-								await fbAuth.signOut();
-								navigation.navigate('Login');
-							}
-						} catch (error) {
-							console.error('Error:', error);
-						}
-					},
-				},
-			],
-			{ cancelable: false }
-		);
+		Alert.alert('Demo Mode', 'Account deletion is not available in the demo.');
 	};
 
 	const resizeImage = async (uri) => {
@@ -121,10 +86,7 @@ const Profile = () => {
 
 	useEffect(() => {
 		const userEmail = fbAuth.currentUser.email;
-		const url = `https://kingseye-1cd08c4764e5.herokuapp.com/getUser?email=${encodeURIComponent(userEmail)}`;
-
-		fetch(url)
-			.then(response => response.json())
+		getUser(userEmail)
 			.then(data => {
 				setProfileImage(data.profileImage);
 				setFirstName(data.firstName);
@@ -139,17 +101,8 @@ const Profile = () => {
 		setEditMode(!editMode);
 
 		if (editMode) {
-			fetch('https://kingseye-1cd08c4764e5.herokuapp.com/setUserData', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-				},
-				body: JSON.stringify({ email: fbAuth.currentUser.email, fname: firstName, lname: lastName, photo: profileImage }),
-			})
-				.then(response => response.json())
-				.then(data => {
-					console.log('user updated');
-				})
+			setUserData(fbAuth.currentUser.email, firstName, lastName, profileImage)
+				.then(() => console.log('user updated'))
 				.catch(error => console.error('Error:', error));
 			setEditIconSource(profileEditIcon);
 		} else {
