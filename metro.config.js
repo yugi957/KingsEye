@@ -4,7 +4,16 @@ const path = require('path');
 
 const defaultConfig = getDefaultConfig(__dirname);
 
-defaultConfig.resolver.assetExts.push('cjs');
+// Exclude worktrees that live inside the repo to prevent Metro duplicate-module errors.
+defaultConfig.watchFolders = (defaultConfig.watchFolders || []).filter(
+  (f) => !f.includes('.claude')
+);
+defaultConfig.resolver.blockList = [
+  /\.claude/,
+];
+
+
+defaultConfig.resolver.assetExts.push('cjs', 'wasm');
 
 // stockfish.js (v10, asm.js) requires Node built-ins (fs, path, crypto, etc.)
 // inside ENVIRONMENT_IS_NODE guards that never fire in the browser.

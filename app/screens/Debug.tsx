@@ -109,7 +109,7 @@ const DebugComponent = () => {
 export default DebugComponent;
 
 const styles = StyleSheet.create({
-  container: { padding: 0 },
+  container: { padding: 0, maxWidth: 480, alignSelf: 'center' as any },
   content: { padding: 20, flex: 1 },
   title: {
     flex: 1,

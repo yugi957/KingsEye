@@ -252,6 +252,8 @@ const styles = StyleSheet.create({
 		padding: 0,
 		// paddingBottom: 20,
 		// paddingTop: 30,
+		maxWidth: 480,
+		alignSelf: 'center' as any,
 	},
 	// header: {
 	// 	padding: 25,

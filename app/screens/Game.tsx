@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, StyleSheet, Dimensions, Image, TextInput } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Dimensions, Image, TextInput, Platform } from 'react-native';
 import React, { useState, useEffect, useRef } from 'react';
 import Chessboard, { ChessboardRef } from 'react-native-chessboard';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -339,22 +339,36 @@ const Game = ({ route }) => {
 
           <View style={styles.statusContainer}>
             <Text style={{ color: 'white', marginRight: 5, fontSize: 12 }}>Status:</Text>
-            <RNPickerSelect
-              onValueChange={(value) => setGameStatus(value)}
-              items={[
-                { label: 'Playing', value: 'Playing' },
-                { label: 'Win', value: 'Win' },
-                { label: 'Draw', value: 'Draw' },
-                { label: 'Loss', value: 'Loss' },
-              ]}
-              style={pickerSelectStyles}
-              value={gameStatus}
-              useNativeAndroidPickerStyle={false}
-              placeholder={{}}
-              Icon={() => {
-                return <Icon name="chevron-down" size={8} color="white" />;
-              }}
-            />
+            {Platform.OS === 'web' ? (
+              // @ts-ignore — web-only HTML element
+              <select
+                value={gameStatus}
+                onChange={(e: any) => setGameStatus(e.target.value)}
+                style={{ fontSize: 12, color: 'white', backgroundColor: 'transparent', border: '1px solid gray', borderRadius: 4, padding: '2px 8px' }}
+              >
+                <option value="Playing">Playing</option>
+                <option value="Win">Win</option>
+                <option value="Draw">Draw</option>
+                <option value="Loss">Loss</option>
+              </select>
+            ) : (
+              <RNPickerSelect
+                onValueChange={(value) => setGameStatus(value)}
+                items={[
+                  { label: 'Playing', value: 'Playing' },
+                  { label: 'Win', value: 'Win' },
+                  { label: 'Draw', value: 'Draw' },
+                  { label: 'Loss', value: 'Loss' },
+                ]}
+                style={pickerSelectStyles}
+                value={gameStatus}
+                useNativeAndroidPickerStyle={false}
+                placeholder={{}}
+                Icon={() => {
+                  return <Icon name="chevron-down" size={8} color="white" />;
+                }}
+              />
+            )}
           </View>
         </View>
 
@@ -450,6 +464,9 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#2E2E2E',
     padding: 10,
+    maxWidth: 480,
+    alignSelf: 'center' as any,
+    width: '100%',
   },
   playerIcon: {
     width: 30,
@@ -498,7 +515,9 @@ const styles = StyleSheet.create({
   },
   square: {
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
+    maxWidth: 480,
+    width: '100%',
   },
   // controls: {
   //   flexDirection: 'row',
@@ -519,7 +538,7 @@ const styles = StyleSheet.create({
   //   marginLeft: 10,
   // },
   tabArea: {
-    alignSelf: 'flex-start',
+    alignSelf: 'stretch',
     alignItems: 'flex-start',
     marginTop: Dimensions.get('window').height * .008,
     paddingBottom: Dimensions.get('window').height * .012
@@ -559,7 +578,7 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: 10,
     borderBottomRightRadius: 10,
     borderTopRightRadius: 10,
-    width: Dimensions.get('window').width - 20,
+    width: '100%',
     height: Dimensions.get('window').height * .15,
   },
   firstTab: {

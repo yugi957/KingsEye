@@ -153,11 +153,15 @@ const Home = () => {
               </View>
             }
           />
-		{/* No camera button in demo — use Debug screen to add a game by FEN */}
       <SafeAreaView style={globalStyles.safeArea}>
-      <TouchableOpacity style={[globalStyles.generalButton, styles.playButton]} onPress={navToDebug}>
-			<Text style={styles.playButtonText}>New Game (FEN)</Text>
-			</TouchableOpacity>
+        <View style={styles.buttonRow}>
+          <TouchableOpacity style={[globalStyles.generalButton, styles.halfButton]} onPress={() => navigation.navigate('Upload' as never)}>
+            <Text style={styles.playButtonText}>Upload Photo</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={[globalStyles.generalButton, styles.halfButton]} onPress={navToDebug}>
+            <Text style={styles.playButtonText}>Enter FEN</Text>
+          </TouchableOpacity>
+        </View>
       </SafeAreaView>
 		</View>
 
@@ -184,6 +188,8 @@ const styles = StyleSheet.create({
   },
     container: {
       padding: 0,
+      maxWidth: 480,
+      alignSelf: 'center' as any,
     },
     title: {
       textAlign: 'center',
@@ -244,8 +250,14 @@ const styles = StyleSheet.create({
     yellow: {
         backgroundColor: '#f4d35e'
     },
-    playButton: {
-      margin: 20
+    buttonRow: {
+      flexDirection: 'row',
+      gap: 10,
+      margin: 20,
+    },
+    halfButton: {
+      flex: 1,
+      margin: 0,
     },
     playButtonText: {
       color: 'white',

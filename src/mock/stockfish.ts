@@ -6,13 +6,14 @@
  *   GET /evaluationScore?fen=...   → getEvaluationScore(fen)
  *   GET /principalVariation?fen=.. → getPrincipalVariation(fen)
  *
- * Uses a shared Worker so the engine is only initialized once.
+ * Uses the no-Worker NNUE variant so it runs on the main thread
+ * without needing a Web Worker URL (which breaks after Metro bundling).
  */
 
-// The `stockfish` package exposes a factory function that returns a Worker-like object
-// compatible with both browser (Web Worker) and Node environments.
+// stockfish-nnue-16-no-Worker runs synchronously on the main thread.
+// API: engine.addMessageListener(fn) and engine.postMessage(str)
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const Stockfish = require('stockfish');
+const Stockfish = require('stockfish/src/stockfish-nnue-16-no-Worker');
 
 interface EngineResult {
   evaluation: string;
@@ -31,9 +32,7 @@ function getEngine() {
 
   engine = Stockfish();
 
-  engine.onmessage = (event: any) => {
-    const msg: string = typeof event === 'string' ? event : event.data;
-
+  engine.addMessageListener((msg: string) => {
     if (msg === 'readyok') {
       engineReady = true;
       return;
@@ -62,7 +61,7 @@ function getEngine() {
       const result: EngineResult = { evaluation: currentScore, moves: pvMoves };
       resolvers.forEach((r) => r(result));
     }
-  };
+  });
 
   engine.postMessage('uci');
   engine.postMessage('isready');
