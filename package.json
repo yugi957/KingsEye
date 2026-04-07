@@ -10,7 +10,7 @@
     "build:web": "expo export --platform web",
     "postinstall": "node scripts/postinstall.js",
     "test": "jest --detectOpenHandles --forceExit",
-    "test:e2e": "npx serve dist -p 3000 & sleep 3 && npx playwright test --reporter=list; kill %1"
+    "test:e2e": "node scripts/serve-e2e.js & sleep 3 && npx playwright test --reporter=list; kill %1"
   },
   "dependencies": {
     "@expo/webpack-config": "^19.0.0",
