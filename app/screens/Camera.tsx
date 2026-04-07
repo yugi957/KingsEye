@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { StyleSheet, View, TouchableOpacity, Text, Image, ActivityIndicator, Modal } from 'react-native';
+import { StyleSheet, View, TouchableOpacity, Text, Image, ActivityIndicator, Modal, Platform } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import * as Permissions from 'expo-permissions';
 import { Camera , CameraType } from 'expo-camera';
@@ -14,6 +14,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as ImageManipulator from 'expo-image-manipulator';
 import { Dimensions } from 'react-native';
 import HomeButton from '../components/HomeButton';
+import { saveGame } from '../../src/mock/store';
 // import Reanimated, {
 //     useAnimatedProps,
 //     useSharedValue,
@@ -38,13 +39,14 @@ const CameraComponent = () => {
     const cameraRef = useRef(null);
 
     useEffect(() => {
+        if (Platform.OS === 'web') return; // no camera permission needed on web
         (async () => {
             const cameraPermission = await Camera.getCameraPermissionsAsync();
             if (cameraPermission.status === 'granted') {
                 setHasCameraPermission(true);
             }
             else if (cameraPermission.status === 'undetermined') {
-                const newCameraPermission = await Camera.requestCameraPermissionsAsync(); 
+                const newCameraPermission = await Camera.requestCameraPermissionsAsync();
                 if (newCameraPermission.status === 'granted') {
                     setHasCameraPermission(true);
                 } else {
@@ -98,12 +100,25 @@ const CameraComponent = () => {
         console.log('NN response: ', response.status)
 
         if (response.status === 200) {
-            // Navigate to the next screen
-            navigation.navigate("Confirmation", { fen: response.body + " w KQkq - 0 1" });
-            // Reset the capturedImage state
-            setCapturedImage(null);
+            const fen = response.body + " w KQkq - 0 1";
+            if (Platform.OS === 'web') {
+                // Demo branch: save to mock store and navigate to Game directly
+                const newGame = await saveGame({
+                    title: new Date().toISOString().slice(0, 16) + ' Game',
+                    status: 'Playing',
+                    side: 'White',
+                    opponentName: 'Opponent',
+                    moves: [fen],
+                });
+                setCapturedImage(null);
+                navigation.navigate("Game" as never, { item: newGame } as never);
+            } else {
+                // Navigate to the Confirmation screen on native
+                navigation.navigate("Confirmation", { fen });
+                // Reset the capturedImage state
+                setCapturedImage(null);
+            }
             console.log("Success: ", response.body);
-            // Example: navigation.navigate("SuccessScreen", { data: response.body });
         } else if (response.status === 400) {
             // Handle client error (Bad Request)
             setAlertMessage(response.body.error); // Set your error message
@@ -237,7 +252,7 @@ const CameraComponent = () => {
     );
     
     return (
-        
+
         <View style={[globalStyles.container, styles.container]}>
             <SafeAreaView style={globalStyles.safeArea}>
             <View style={[globalStyles.header, styles.header, styles.headingContainer]}>
@@ -246,19 +261,38 @@ const CameraComponent = () => {
                 <View style={styles.iconStylePlaceholder}></View>
             </View>
             </SafeAreaView>
-            {showCamera ? (  
-            <View style={{ flex: 1 }}>
-			  <Camera style={{ flex: 1 , paddingBottom: insets.bottom > 0 ? insets.bottom : 10}} type={CameraType.back} ref={cameraRef}>
-				<View style={{ flex: 1, backgroundColor: 'transparent', flexDirection: 'row' }}>
-                    <TouchableOpacity style={{ flex: 1, alignSelf: 'flex-end', alignItems: 'center' }} onPress={handleTakePicture}>
-                        <Image source={takeImage} style={styles.takeImageStyle}></Image>
-				  </TouchableOpacity>
-				</View>
-			  </Camera>
-			</View>
+            {Platform.OS === 'web' ? (
+                capturedImage ? imageView : (
+                    <View style={styles.webPickerContainer}>
+                        <Text style={styles.webPickerLabel}>Select a photo of a chess board</Text>
+                        {/* @ts-ignore */}
+                        <input
+                            type="file"
+                            accept="image/*"
+                            style={{ color: 'white', marginTop: 20, fontSize: 16 } as any}
+                            onChange={(e: any) => {
+                                const file = e.target.files[0];
+                                if (file) {
+                                    setCapturedImage(URL.createObjectURL(file));
+                                    setShowCamera(false);
+                                }
+                            }}
+                        />
+                    </View>
+                )
             ) : (
-                imageView
-            ) }
+                showCamera ? (
+                <View style={{ flex: 1 }}>
+                  <Camera style={{ flex: 1, paddingBottom: insets.bottom > 0 ? insets.bottom : 10 }} type={CameraType.back} ref={cameraRef}>
+                    <View style={{ flex: 1, backgroundColor: 'transparent', flexDirection: 'row' }}>
+                        <TouchableOpacity style={{ flex: 1, alignSelf: 'flex-end', alignItems: 'center' }} onPress={handleTakePicture}>
+                            <Image source={takeImage} style={styles.takeImageStyle} />
+                        </TouchableOpacity>
+                    </View>
+                  </Camera>
+                </View>
+                ) : imageView
+            )}
             {isLoading && (
             <View style={styles.loadingContainer}>
                 <ActivityIndicator size="large" color="#0000ff" />
@@ -338,6 +372,17 @@ const styles = StyleSheet.create({
         color: 'white',
         fontSize: 20,
         fontWeight: 'bold',
+    },
+    webPickerContainer: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: 30,
+    },
+    webPickerLabel: {
+        color: 'white',
+        fontSize: 18,
+        textAlign: 'center',
     },
     loadingContainer: {
         position: 'absolute',

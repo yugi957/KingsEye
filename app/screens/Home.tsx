@@ -155,7 +155,7 @@ const Home = () => {
           />
       <SafeAreaView style={globalStyles.safeArea}>
         <View style={styles.buttonRow}>
-          <TouchableOpacity style={[globalStyles.generalButton, styles.halfButton]} onPress={() => navigation.navigate('Upload' as never)}>
+          <TouchableOpacity style={[globalStyles.generalButton, styles.halfButton]} onPress={() => navigation.navigate('Camera' as never)}>
             <Text style={styles.playButtonText}>Upload Photo</Text>
           </TouchableOpacity>
           <TouchableOpacity style={[globalStyles.generalButton, styles.halfButton]} onPress={navToDebug}>

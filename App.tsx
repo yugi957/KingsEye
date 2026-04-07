@@ -8,14 +8,14 @@ import Profile from './app/screens/Profile';
 import Game from './app/screens/Game';
 import Confirmation from './app/screens/Confirmation';
 import DebugComponent from './app/screens/Debug';
-import Upload from './app/screens/Upload';
+import Camera from './app/screens/Camera';
 
 LogBox.ignoreAllLogs(true);
 
 const Stack = createNativeStackNavigator();
 
 // DEMO BRANCH: Skip Login/Signup — auto-logged in as Demo User.
-// Camera screen removed (requires device hardware).
+// Camera screen: uses hardware camera on native; file picker on web.
 
 export default function App() {
   const [fontsLoaded] = useFonts({
@@ -32,7 +32,7 @@ export default function App() {
         <Stack.Screen name="Game" component={Game} />
         <Stack.Screen name="Debug" component={DebugComponent} />
         <Stack.Screen name="Confirmation" component={Confirmation} />
-        <Stack.Screen name="Upload" component={Upload} options={{ headerShown: false }} />
+        <Stack.Screen name="Camera" component={Camera} options={{ headerShown: false }} />
       </Stack.Navigator>
     </NavigationContainer>
   );
