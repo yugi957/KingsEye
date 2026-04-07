@@ -79,6 +79,27 @@ const CameraComponent = () => {
         }
         setIsLoading(true); // Start loading
 
+        // ── Web / demo mock ──────────────────────────────────────────────────
+        // Skip the real Lambda call on web. Simulate a 1-second processing
+        // delay, then return a hardcoded Italian Game FEN so the full
+        // Upload Photo → Game flow works without internet access.
+        if (Platform.OS === 'web') {
+            await new Promise(r => setTimeout(r, 1000));
+            const fen = 'rnbqkb1r/pppp1ppp/5n2/4p3/2B1P3/8/PPPP1PPP/RNBQK1NR w KQkq - 2 3';
+            const newGame = await saveGame({
+                title: new Date().toISOString().slice(0, 16) + ' Game',
+                status: 'Playing',
+                side: 'White',
+                opponentName: 'Opponent',
+                moves: [fen],
+            });
+            setIsLoading(false);
+            setCapturedImage(null);
+            navigation.navigate('Game' as never, { item: newGame } as never);
+            return;
+        }
+        // ── End web mock ─────────────────────────────────────────────────────
+
         const preblob = await fetchAndConvertToBlob(capturedImage);
         const pre = await readBlobAsBase64(preblob);
 
