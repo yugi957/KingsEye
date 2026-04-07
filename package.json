@@ -9,7 +9,8 @@
     "web": "expo start --web",
     "build:web": "expo export --platform web",
     "postinstall": "node scripts/postinstall.js",
-    "test": "jest --detectOpenHandles --forceExit"
+    "test": "jest --detectOpenHandles --forceExit",
+    "test:e2e": "npx serve dist -p 3000 & sleep 3 && npx playwright test --reporter=list; kill %1"
   },
   "dependencies": {
     "@expo/webpack-config": "^19.0.0",
@@ -63,6 +64,7 @@
     "@babel/plugin-transform-private-property-in-object": "^7.23.4",
     "@babel/preset-env": "^7.23.6",
     "@babel/preset-typescript": "^7.23.3",
+    "@playwright/test": "^1.59.1",
     "@testing-library/jest-native": "^5.4.3",
     "@testing-library/react-native": "^12.4.1",
     "@types/jest": "^29.5.11",
