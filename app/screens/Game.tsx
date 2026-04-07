@@ -1,7 +1,6 @@
-import { View, Text, TouchableOpacity, StyleSheet, Dimensions, Image, TextInput, Platform } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Dimensions, Image, TextInput, Platform, useWindowDimensions } from 'react-native';
 import React, { useState, useEffect, useRef } from 'react';
 import Chessboard, { ChessboardRef } from 'react-native-chessboard';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import globalStyles from '../styles/globalStyles';
 import AnalysisBar from '../components/AnalysisBar';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -24,6 +23,9 @@ import { getUser, updateGame } from '../../src/mock/store';
 //     for the purpose of sorting games on home screen.
 
 const Game = ({ route }) => {
+
+  const { width: windowWidth } = useWindowDimensions();
+  const boardSize = Math.min(windowWidth, 480);
 
   const navigation = useNavigation();
 	const navToHome = () => {
@@ -301,15 +303,14 @@ const Game = ({ route }) => {
         </View>
 
         <View>
-          <GestureHandlerRootView>
-            <Chessboard
-              // key={fen}
-              fen={fen}
-              onMove={onMove}
-              ref={chessboardRef}
-              colors={{ black: "#769656", white: "#eeeed2" }}
-            />
-          </GestureHandlerRootView>
+          <Chessboard
+            // key={fen}
+            fen={fen}
+            onMove={onMove}
+            ref={chessboardRef}
+            boardSize={boardSize}
+            colors={{ black: "#769656", white: "#eeeed2" }}
+          />
         </View>
 
 
