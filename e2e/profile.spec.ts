@@ -20,7 +20,7 @@ test.describe('Profile screen', () => {
   });
 
   test('first name "Demo" is visible', async ({ page }) => {
-    await expect(page.locator('text=Demo')).toBeVisible();
+    await expect(page.getByText('Demo', { exact: true })).toBeVisible();
   });
 
   test('last name "User" is visible', async ({ page }) => {

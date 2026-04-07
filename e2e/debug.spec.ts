@@ -24,7 +24,7 @@ test.describe('Debug (New Game) screen', () => {
   });
 
   test('sample position buttons are visible', async ({ page }) => {
-    await expect(page.locator('text=Starting Position')).toBeVisible();
+    await expect(page.getByText('Starting Position', { exact: true })).toBeVisible();
     await expect(page.locator('text=Sicilian (after 1.e4 c5 2.Nf3)')).toBeVisible();
     await expect(page.locator('text=Ruy Lopez (after 3.Bb5)')).toBeVisible();
     await expect(page.locator('text=Endgame (K+Q vs K)')).toBeVisible();

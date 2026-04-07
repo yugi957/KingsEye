@@ -11,21 +11,34 @@ test.describe('Critical User Journey tests', () => {
     await page.locator('text=Italian Game').first().click();
 
     // 3. Assert Game screen loads — board images present (non-zero dimensions)
-    await page.waitForTimeout(1000);
-    const allImgs = page.locator('img');
-    const imgCount = await allImgs.count();
-    expect(imgCount).toBeGreaterThan(3);
-    const firstImg = allImgs.first();
+    // Wait for chess piece images from react-native-chessboard to appear
+    await page.waitForSelector('img[src*="react-native-chessboard"]', { timeout: 10000 });
+    const boardImgs = page.locator('img[src*="react-native-chessboard"]');
+    const imgCount = await boardImgs.count();
+    expect(imgCount).toBeGreaterThan(0);
+    const firstImg = boardImgs.first();
     const box = await firstImg.boundingBox();
     expect(box).not.toBeNull();
     expect(box!.width).toBeGreaterThan(0);
 
     // 4. Click Home button (the homeIcon image)
-    // HomeIcon is an <img> rendered in a TouchableOpacity in the title bar
-    const homeIconImgs = page.locator('img');
-    // The home icon is the first img in the title bar area
-    // Click on the first pressable img (homeIcon.png rendered as img)
-    await homeIconImgs.first().click();
+    // HomeIcon is rendered as <img src="/assets/assets/homeIcon.png"> in the Game title bar.
+    // React Native Web wraps TouchableOpacity in nested divs; the press handler is on a role="button"
+    // ancestor. Find the closest role="button" ancestor and click it.
+    await page.evaluate(() => {
+      const img = document.querySelector('img[src*="homeIcon"]') as HTMLElement | null;
+      if (!img) throw new Error('homeIcon img not found');
+      let el: HTMLElement | null = img;
+      while (el) {
+        if (el.getAttribute('role') === 'button' || el.tagName === 'BUTTON') {
+          (el as HTMLElement).click();
+          return;
+        }
+        el = el.parentElement;
+      }
+      // fallback: click img directly
+      img.click();
+    });
 
     // 5. Assert back at Home — "Game Archive" heading visible
     await page.waitForSelector('text=Game Archive', { timeout: 10000 });
@@ -45,11 +58,11 @@ test.describe('Critical User Journey tests', () => {
     await page.locator('text=Ruy Lopez (after 3.Bb5)').click();
 
     // 4. Assert Game screen loads — board present with non-zero dimensions
-    await page.waitForTimeout(1000);
-    const allImgs = page.locator('img');
-    const imgCount = await allImgs.count();
-    expect(imgCount).toBeGreaterThan(3);
-    const firstImg = allImgs.first();
+    await page.waitForSelector('img[src*="react-native-chessboard"]', { timeout: 10000 });
+    const boardImgs = page.locator('img[src*="react-native-chessboard"]');
+    const imgCount = await boardImgs.count();
+    expect(imgCount).toBeGreaterThan(0);
+    const firstImg = boardImgs.first();
     const box = await firstImg.boundingBox();
     expect(box).not.toBeNull();
     expect(box!.width).toBeGreaterThan(0);
