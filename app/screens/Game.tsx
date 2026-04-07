@@ -465,8 +465,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#2E2E2E',
     padding: 10,
-    maxWidth: 480,
-    alignSelf: 'center' as any,
     width: '100%',
   },
   playerIcon: {
@@ -517,7 +515,6 @@ const styles = StyleSheet.create({
   square: {
     alignItems: 'center',
     justifyContent: 'center',
-    maxWidth: 480,
     width: '100%',
   },
   // controls: {
