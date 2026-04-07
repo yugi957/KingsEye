@@ -15,6 +15,7 @@ import * as ImageManipulator from 'expo-image-manipulator';
 import { Dimensions } from 'react-native';
 import HomeButton from '../components/HomeButton';
 import { saveGame } from '../../src/mock/store';
+import { Asset } from 'expo-asset';
 // import Reanimated, {
 //     useAnimatedProps,
 //     useSharedValue,
@@ -23,7 +24,7 @@ import { saveGame } from '../../src/mock/store';
 //   } from "react-native-reanimated"
 
 const screenWidth = Dimensions.get('window').width;
-const buttonSize = screenWidth * 0.2;
+const buttonSize = Math.min(screenWidth * 0.2, 60);
 
 const CameraComponent = () => {
 
@@ -39,7 +40,16 @@ const CameraComponent = () => {
     const cameraRef = useRef(null);
 
     useEffect(() => {
-        if (Platform.OS === 'web') return; // no camera permission needed on web
+        if (Platform.OS === 'web') {
+            // Pre-load chess.jpg so the user sees the image preview immediately
+            (async () => {
+                const asset = Asset.fromModule(require('../../assets/chess.jpg'));
+                await asset.downloadAsync();
+                setCapturedImage(asset.localUri || asset.uri);
+                setShowCamera(false);
+            })();
+            return;
+        }
         (async () => {
             const cameraPermission = await Camera.getCameraPermissionsAsync();
             if (cameraPermission.status === 'granted') {
@@ -391,7 +401,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         margin:5,
         color: 'white',
-        fontSize: 20,
+        fontSize: 14,
         fontWeight: 'bold',
     },
     webPickerContainer: {
