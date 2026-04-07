@@ -8,6 +8,7 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "build:web": "expo export --platform web",
+    "postbuild:web": "node scripts/copy-wasm.js",
     "postinstall": "node scripts/postinstall.js",
     "test": "jest --detectOpenHandles --forceExit",
     "test:e2e": "node scripts/serve-e2e.js & sleep 3 && npx playwright test --reporter=list; kill %1"
