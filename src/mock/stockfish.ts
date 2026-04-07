@@ -9,10 +9,22 @@
  *
  * This ensures the Analysis tab always shows a score (never "Error")
  * in the demo, satisfying the DoD requirement.
+ *
+ * WASM path fix: when Metro bundles this module, document.currentScript is
+ * null inside the module factory wrapper, so the engine computes an empty
+ * base path and tries to fetch the WASM from the page root instead of
+ * /bundles/. We override this by passing locateFile to the inner factory.
+ * The postbuild:web script (copy-wasm.js) copies the WASM to dist/bundles/.
  */
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const StockfishFactory = require('stockfish/src/stockfish-nnue-16-single');
+
+// Resolve the WASM from /bundles/ regardless of the current page URL.
+// This matches where copy-wasm.js places the file after `npm run build:web`.
+const STOCKFISH_OPTIONS = {
+  locateFile: (file: string) => `/bundles/${file}`,
+};
 
 interface EngineResult {
   evaluation: string;
@@ -58,7 +70,7 @@ function initEngine(): Promise<any> {
       rawResult && typeof rawResult.then === 'function'
         ? rawResult
         : typeof rawResult === 'function'
-        ? rawResult({})
+        ? rawResult(STOCKFISH_OPTIONS)
         : Promise.resolve(rawResult);
 
     engPromise.then((eng: any) => {
