@@ -17,6 +17,11 @@ All known issues resolved. 26/26 E2E tests passing. Build exits 0. Verified afte
 - [x] **Chessboard moves not accepted** — fixed `b5bc67d`: `GestureHandlerRootView` moved to `App.tsx` root
 - [x] **Screen height too tall** — fixed `b5bc67d`: capped to 812px max-height with overflow hidden
 - [ ] Update `docs/LEARNINGS.md` with findings from this session
+- [x] **Camera accept/deny/retake buttons too large** — fixed `cebafe7`: capped to 60px, fontSize 14
+- [x] **Auto-load chess.jpg on Camera screen** — fixed `cebafe7`: expo-asset loads chess.jpg on mount; E2E updated `787401e`
+- [ ] **Stockfish shows material balance, not engine eval** — `locateFile` fix in `84b4902` routes WASM to `/bundles/`; needs runtime verification that engine actually initializes and returns non-zero for starting position
+- [x] **Screen dimensions shift between screens** — fixed `977592b`: removed per-screen maxWidth; App.tsx wrapper is sole constraint
+- [ ] Update `docs/LEARNINGS.md` with findings from this session — agent in progress
 
 ## E2E Test Coverage Required
 
