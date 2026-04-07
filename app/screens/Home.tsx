@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView, TextInput, Image, FlatList, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView, TextInput, Image, FlatList, Alert, Platform } from 'react-native';
 import { useNavigation} from '@react-navigation/native';
 import React, { useState } from 'react'
 import { FIREBASE_AUTH } from '../../FirebaseConfig'
@@ -63,14 +63,20 @@ const Home = () => {
     };
 
     const handleDeleteGamePress = (gameId) => {
-      Alert.alert(
-        'Delete Game',
-        'Are you sure you want to delete this game?',
-        [
-          { text: 'Cancel', style: 'destructive' },
-          { text: 'Delete', onPress: () => handleDeleteGame(gameId) },
-        ],
-      );
+      if (Platform.OS === 'web') {
+        if (window.confirm('Are you sure you want to delete this game?')) {
+          handleDeleteGame(gameId);
+        }
+      } else {
+        Alert.alert(
+          'Delete Game',
+          'Are you sure you want to delete this game?',
+          [
+            { text: 'Cancel', style: 'destructive' },
+            { text: 'Delete', onPress: () => handleDeleteGame(gameId) },
+          ],
+        );
+      }
     };
 
 	const [starredStatus, setStarredStatus] = useState({});
