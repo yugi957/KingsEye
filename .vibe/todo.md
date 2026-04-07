@@ -16,12 +16,12 @@ All known issues resolved. 26/26 E2E tests passing. Build exits 0. Verified afte
 - [x] **Chessboard wider than screen** — fixed `0f5d05a`: `boardSize={Math.min(windowWidth, 480)}` prop
 - [x] **Chessboard moves not accepted** — fixed `b5bc67d`: `GestureHandlerRootView` moved to `App.tsx` root
 - [x] **Screen height too tall** — fixed `b5bc67d`: capped to 812px max-height with overflow hidden
-- [ ] Update `docs/LEARNINGS.md` with findings from this session
 - [x] **Camera accept/deny/retake buttons too large** — fixed `cebafe7`: capped to 60px, fontSize 14
 - [x] **Auto-load chess.jpg on Camera screen** — fixed `cebafe7`: expo-asset loads chess.jpg on mount; E2E updated `787401e`
-- [ ] **Stockfish shows material balance, not engine eval** — `locateFile` fix in `84b4902` routes WASM to `/bundles/`; needs runtime verification that engine actually initializes and returns non-zero for starting position
 - [x] **Screen dimensions shift between screens** — fixed `977592b`: removed per-screen maxWidth; App.tsx wrapper is sole constraint
-- [ ] Update `docs/LEARNINGS.md` with findings from this session — agent in progress
+- [ ] **Stockfish real eval not verified** — `locateFile` fix landed (`84b4902`) but runtime behavior unconfirmed; need to serve the built app, open Analysis tab, and check that starting position shows ~+0.20 (real Stockfish) not 0.00 (material fallback). If still 0.00, try switching to `stockfish/src/stockfish.js` (pure JS, no WASM needed)
+- [ ] **E2E regression check needed** — camera.spec.ts was updated for chess.jpg auto-load (`787401e`) but full suite hasn't been re-run since `977592b` (maxWidth removal) — run `npm run build:web && npx playwright test` to confirm all tests still pass
+- [ ] **docs/LEARNINGS.md** — document: Metro+document.currentScript bug, GestureHandlerRootView at root, Alert.alert no-op on web, boardSize prop, per-screen maxWidth shifts, expo-asset for bundled image URIs
 
 ## E2E Test Coverage Required
 
